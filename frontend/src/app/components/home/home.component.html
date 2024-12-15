@@ -1,0 +1,87 @@
+<main class="home">
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Collection Exclusive de Bijoux</h1>
+      <p>Découvrez notre sélection de pièces uniques et raffinées</p>
+      <a href="/collections" class="btn btn-primary">Découvrir</a>
+    </div>
+  </section>
+
+  <!-- Featured Categories -->
+  <section class="categories">
+    <div class="container">
+      <h2>Nos Collections</h2>
+      <div class="category-grid">
+        <div class="category-card">
+          <img src="" alt="Bagues">
+          <div class="category-content">
+            <h3>Bagues</h3>
+            <a href="/categories/bagues" class="btn btn-secondary">Voir plus</a>
+          </div>
+        </div>
+        <div class="category-card">
+          <img src="" alt="Colliers">
+          <div class="category-content">
+            <h3>Colliers</h3>
+            <a href="/categories/colliers" class="btn btn-secondary">Voir plus</a>
+          </div>
+        </div>
+        <div class="category-card">
+          <img src="" alt="Bracelets">
+          <div class="category-content">
+            <h3>Bracelets</h3>
+            <a href="/categories/bracelets" class="btn btn-secondary">Voir plus</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Products -->
+  <section class="featured-products">
+    <div class="container">
+      <h2>Nos Pièces Phares</h2>
+      <div class="product-grid">
+        <div class="product-card" *ngFor="let product of featuredProducts">
+          <div class="product-image">
+            <img [src]="" [alt]="product.name">
+            <div class="product-overlay">
+              <button class="btn-quick-view">Aperçu rapide</button>
+            </div>
+          </div>
+          <div class="product-info">
+            <h3>{{product.name}}</h3>
+            <p class="price">{{product.price | currency:'EUR'}}</p>
+            <button class="btn btn-primary">Ajouter au panier</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Promotional Banner -->
+  <section class="promo-banner">
+    <div class="container">
+      <div class="promo-content">
+        <h2>Collection Été 2024</h2>
+        <p>Profitez de -20% sur notre nouvelle collection</p>
+        <a href="/promotions" class="btn btn-secondary">Voir les offres</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Newsletter -->
+  <section class="newsletter">
+    <div class="container">
+      <div class="newsletter-content">
+        <h2>Restez informé</h2>
+        <p>Inscrivez-vous à notre newsletter pour recevoir nos dernières nouveautés et offres exclusives</p>
+        <form class="newsletter-form">
+          <input type="email" placeholder="Votre adresse email" required>
+          <button type="submit" class="btn btn-primary">S'inscrire</button>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>

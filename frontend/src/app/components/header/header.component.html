@@ -1,0 +1,39 @@
+<header class="header">
+  <div class="container">
+    <nav class="nav">
+      <div class="logo">
+        <a routerLink="/">
+          <img src="../../../assets/images/logo.png" alt="Logo" width="83px" height="77px">
+        </a>
+      </div>
+      
+      <div class="nav-links">
+        <a routerLink="/" class="nav-link active">Accueil</a>
+        <div class="dropdown">
+          <a routerLink="/categories" class="nav-link">Collections</a>
+          <div class="dropdown-content">
+            <a routerLink="/categories/bagues">Bagues</a>
+            <a routerLink="/categories/colliers">Colliers</a>
+            <a routerLink="/categories/bracelets">Bracelets</a>
+            <a routerLink="/categories/boucles-oreilles">Boucles d'oreilles</a>
+          </div>
+        </div>
+        <a routerLink="/nouveautes" class="nav-link">Nouveautés</a>
+        <a routerLink="/promotions" class="nav-link">Promotions</a>
+      </div>
+
+      <div class="nav-actions">
+        <button class="icon-btn search-btn">
+          <i class="fas fa-search"></i>
+        </button>
+        <button class="icon-btn account-btn">
+          <i class="fas fa-user"></i>
+        </button>
+        <button class="icon-btn cart-btn">
+          <i class="fas fa-shopping-bag"></i>
+          <span class="cart-count">0</span>
+        </button>
+      </div>
+    </nav>
+  </div>
+</header>
