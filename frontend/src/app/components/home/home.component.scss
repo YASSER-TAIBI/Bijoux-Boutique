@@ -7,17 +7,17 @@
   background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('../../../assets/images/home.jpg');
   background-size: cover;
   background-position: center;
-  height: 600px;
+  height: 750px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  text-align: center;
+  justify-content: left;
+  text-align: left;
   color: white;
   margin-bottom: 4rem;
 
   .hero-content {
-    max-width: 800px;
-    padding: 0 20px;
+    max-width: 600px;
+    padding: 0 50px;
 
     h1 {
       font-size: 3rem;
@@ -43,6 +43,39 @@
       &:hover {
         background-color: var(--secondary-color);
         transform: translateY(-2px);
+      }
+    }
+  }
+}
+
+// Tablette
+@media screen and (max-width: 992px) {
+  .hero {
+    justify-content: flex-start;
+    text-align: left;
+    
+    .hero-content {
+      margin-left: 5%;
+    }
+  }
+}
+
+// Mobile
+@media screen and (max-width: 576px) {
+  .hero {
+    justify-content: flex-start;
+    text-align: left;
+    
+    .hero-content {
+      margin-left: 5%;
+      padding: 0 20px;
+      
+      h1 {
+        font-size: 2.5rem;
+      }
+      
+      p {
+        font-size: 1.1rem;
       }
     }
   }
