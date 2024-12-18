@@ -8,7 +8,7 @@
       </div>
       
       <div class="nav-links">
-        <a routerLink="/" class="underline nav-link active">HOME</a>
+        <a routerLink="/" class="underline nav-link active">Accueil</a>
         <div class="dropdown">
           <a routerLink="/categories" class="nav-link">Collections</a>
           <div class="dropdown-content">
@@ -29,7 +29,7 @@
         <button class="icon-btn account-btn">
           <i class="fas fa-user"></i>
         </button>
-        <button class="icon-btn cart-btn">
+        <button class="icon-btn cart-btn" (click)="toggleCart()">
           <i class="fas fa-shopping-bag"></i>
           <span class="cart-count">0</span>
         </button>
@@ -37,3 +37,5 @@
     </nav>
   </div>
 </header>
+
+<app-cart-modal [isOpen]="isCartOpen" (closeCart)="closeCart()"></app-cart-modal>
