@@ -1,0 +1,17 @@
+// Shared styles for category pages
+.category-title {
+  text-align: center;
+  margin: 2rem 0;
+  font-size: 2rem;
+  font-weight: 500;
+  color: var(--text-color);
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 2rem;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}

@@ -1,8 +1,19 @@
 import { Routes } from '@angular/router';
 import { HomeComponent } from './components/home/home.component';
+import { RingsComponent } from './components/rings/rings.component';
+import { BraceletsComponent } from './components/bracelets/bracelets.component';
+import { NecklacesComponent } from './components/necklaces/necklaces.component';
+import { EarringsComponent } from './components/earrings/earrings.component';
+import { NewArrivalsComponent } from './components/new-arrivals/new-arrivals.component';
+import { SalesComponent } from './components/sales/sales.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
-  { path: 'home', component: HomeComponent },
+  { path: 'categories/rings', component: RingsComponent },
+  { path: 'categories/bracelets', component: BraceletsComponent },
+  { path: 'categories/necklaces', component: NecklacesComponent },
+  { path: 'categories/earrings', component: EarringsComponent },
+  { path: 'new-arrivals', component: NewArrivalsComponent },
+  { path: 'sales', component: SalesComponent },
   { path: '**', redirectTo: '' }
 ];
