@@ -1,6 +1,30 @@
 <div class="rings-container">
   <h1 class="category-title">Collection de Bagues</h1>
+  
+  <div class="breadcrumb">
+    <a routerLink="/">Accueil</a> / <span>Bagues</span>
+  </div>
+
+  <div class="products-header">
+    <p class="results-count">Affichage de {{ products.length }} résultats</p>
+    <select class="sort-select">
+      <option value="default">Tri par défaut</option>
+      <option value="price-asc">Prix croissant</option>
+      <option value="price-desc">Prix décroissant</option>
+      <option value="name-asc">Nom, A à Z</option>
+      <option value="name-desc">Nom, Z à A</option>
+    </select>
+  </div>
+
   <div class="products-grid">
-    <!-- Product cards will be added here -->
+    <div class="product-card" *ngFor="let product of products">
+      <div class="product-image">
+        <img [src]="product.image" [alt]="product.name">
+      </div>
+      <div class="product-info">
+        <h3 class="product-name">{{ product.name }}</h3>
+        <p class="product-price">{{ product.price | currency:'EUR':'symbol':'1.2-2' }}</p>
+      </div>
+    </div>
   </div>
 </div>
