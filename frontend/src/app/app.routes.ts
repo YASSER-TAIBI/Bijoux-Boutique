@@ -6,6 +6,7 @@ import { NecklacesComponent } from './components/necklaces/necklaces.component';
 import { EarringsComponent } from './components/earrings/earrings.component';
 import { NewArrivalsComponent } from './components/new-arrivals/new-arrivals.component';
 import { SalesComponent } from './components/sales/sales.component';
+import { ProductDetailComponent } from './components/product-detail/product-detail.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -15,5 +16,5 @@ export const routes: Routes = [
   { path: 'categories/earrings', component: EarringsComponent },
   { path: 'new-arrivals', component: NewArrivalsComponent },
   { path: 'sales', component: SalesComponent },
-  { path: '**', redirectTo: '' }
+  { path: 'product/:id', component: ProductDetailComponent }
 ];

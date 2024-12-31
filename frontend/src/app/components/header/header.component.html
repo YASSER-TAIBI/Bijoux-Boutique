@@ -1,25 +1,33 @@
 <header class="header">
   <div class="container">
     <nav class="nav">
+      <!-- Menu burger pour mobile -->
+      <button class="menu-toggle" (click)="toggleMenu()">
+        <i class="fas" [class.fa-bars]="!isMenuOpen" [class.fa-times]="isMenuOpen"></i>
+      </button>
+
       <div class="logo">
         <a routerLink="/">
           <img src="../../../assets/images/jalorine.png" alt="Logo" width="auto" height="67px">
         </a>
       </div>
       
-      <div class="nav-links">
-        <a routerLink="/" class="underline nav-link active">Accueil</a>
+      <div class="nav-links" [class.active]="isMenuOpen">
+        <a routerLink="/" class="underline nav-link active" (click)="closeMenu()">Accueil</a>
         <div class="dropdown">
-          <a routerLink="/categories" class="nav-link">Collections</a>
+          <a routerLink="/categories" class="nav-link" (click)="toggleDropdown($event)">
+            Collections
+            <i class="fas fa-chevron-down"></i>
+          </a>
           <div class="dropdown-content">
-            <a routerLink="/categories/rings">Bagues</a>
-            <a routerLink="/categories/necklaces">Colliers</a>
-            <a routerLink="/categories/bracelets">Bracelets</a>
-            <a routerLink="/categories/earrings">Boucles d'oreilles</a>
+            <a routerLink="/categories/rings" (click)="closeMenu()">Bagues</a>
+            <a routerLink="/categories/necklaces" (click)="closeMenu()">Colliers</a>
+            <a routerLink="/categories/bracelets" (click)="closeMenu()">Bracelets</a>
+            <a routerLink="/categories/earrings" (click)="closeMenu()">Boucles d'oreilles</a>
           </div>
         </div>
-        <a routerLink="/new-arrivals" class="nav-link">Nouveautés</a>
-        <a routerLink="/sales" class="nav-link">Promotions</a>
+        <a routerLink="/new-arrivals" class="nav-link" (click)="closeMenu()">Nouveautés</a>
+        <a routerLink="/sales" class="nav-link" (click)="closeMenu()">Promotions</a>
       </div>
 
       <div class="nav-actions">
@@ -38,4 +46,5 @@
   </div>
 </header>
 
+<div class="menu-overlay" [class.active]="isMenuOpen" (click)="closeMenu()"></div>
 <app-cart-modal [isOpen]="isCartOpen" (closeCart)="closeCart()"></app-cart-modal>

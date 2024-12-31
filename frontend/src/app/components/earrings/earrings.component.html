@@ -17,13 +17,22 @@
   </div>
 
   <div class="products-grid">
-    <div class="product-card" *ngFor="let product of products">
+    <div class="product-card" *ngFor="let product of products" [routerLink]="['/product', product.id]">
       <div class="product-image">
         <img [src]="product.image" [alt]="product.name">
       </div>
       <div class="product-info">
         <h3 class="product-name">{{ product.name }}</h3>
-        <p class="product-price">{{ product.price | currency:'EUR':'symbol':'1.2-2' }}</p>
+        <div class="price-container">
+          <p class="product-price">{{ product.price | currency:'EUR':'symbol':'1.2-2' }}</p>
+          <p class="old-price" *ngIf="product.oldPrice">{{ product.oldPrice | currency:'EUR':'symbol':'1.2-2' }}</p>
+        </div>
+        <div class="product-rating" *ngIf="product.rating">
+          <span class="rating">{{ product.rating }}/5</span>
+          <span class="stock-status" [class.in-stock]="product.inStock" [class.out-of-stock]="!product.inStock">
+            {{ product.inStock ? 'En stock' : 'Rupture de stock' }}
+          </span>
+        </div>
       </div>
     </div>
   </div>

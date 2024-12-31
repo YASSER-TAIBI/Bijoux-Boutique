@@ -1,0 +1,279 @@
+<div class="product-detail" *ngIf="product">
+  <div class="breadcrumb">
+    <a routerLink="/">Home</a> / 
+    <a routerLink="/earrings">{{ product.category }}</a> / 
+    <span>{{ product.name }}</span>
+  </div>
+
+  <div class="container">
+    <!-- Product Gallery -->
+    <div class="product-gallery">
+      <div class="thumbnail-list">
+        <div class="thumbnail" 
+             [class.active]="selectedImage === product.image"
+             (click)="changeImage(product.image)">
+          <img [src]="product.image" [alt]="product.name">
+        </div>
+        <div class="thumbnail" 
+             *ngFor="let img of product.images"
+             [class.active]="selectedImage === img"
+             (click)="changeImage(img)">
+          <img [src]="img" [alt]="product.name">
+        </div>
+      </div>
+      <div class="main-image">
+        <img [src]="selectedImage" [alt]="product.name">
+      </div>
+    </div>
+
+    <!-- Product Info -->
+    <div class="product-info">
+      <h1>{{ product.name }}</h1>
+      
+      <div class="price-container">
+        <span class="current-price">{{ product.price | currency:'EUR':'symbol':'1.2-2' }}</span>
+        <span class="old-price" *ngIf="product.oldPrice">{{ product.oldPrice | currency:'EUR':'symbol':'1.2-2' }}</span>
+        <span class="free-shipping" *ngIf="product.price >= 100">+ Free Shipping</span>
+      </div>
+
+      <div class="description">
+        <p>{{ product.description }}</p>
+      </div>
+
+      <div class="purchase-section">
+        <div class="quantity-selector">
+          <button (click)="decrementQuantity()">-</button>
+          <input type="texte" [(ngModel)]="quantity" min="1" [max]="product.quantity || 10">
+          <button (click)="incrementQuantity()">+</button>
+        </div>
+        <button class="add-to-cart">ADD TO CART</button>
+      </div>
+
+      <!-- <div class="payment-methods">
+        <p class="payment-title">Guaranteed Safe Checkout</p>
+        <div class="payment-icons">
+          <img src="../../../assets/images/payment/visa.png" alt="Visa">
+          <img src="../../../assets/images/payment/mastercard.png" alt="Mastercard">
+          <img src="../../../assets/images/payment/amex.png" alt="American Express">
+          <img src="../../../assets/images/payment/paypal.png" alt="PayPal">
+          <img src="../../../assets/images/payment/applepay.png" alt="Apple Pay">
+        </div>
+      </div> -->
+
+      <fieldset class="payment-methods">
+				<legend class="payment-title">Guaranteed Safe Checkout</legend>
+        <div class="payment-icons">
+          <img src="../../../assets/images/payment/visa.png" alt="Visa">
+          <img src="../../../assets/images/payment/mastercard.png" alt="Mastercard">
+          <img src="../../../assets/images/payment/amex.png" alt="American Express">
+          <img src="../../../assets/images/payment/paypal.png" alt="PayPal">
+          <img src="../../../assets/images/payment/applepay.png" alt="Apple Pay">
+        </div>
+
+			</fieldset>
+
+    </div>
+  </div>
+
+  <!-- Product Tabs - Full Width -->
+  <div class="tabs-section">
+    <div class="container-full">
+      <div class="product-tabs">
+        <div class="tabs">
+          <button class="tab-button" [class.active]="activeTab === 'description'"
+                  (click)="changeTab('description')">Description</button>
+          <button class="tab-button" [class.active]="activeTab === 'details'"
+                  (click)="changeTab('details')">Additional Information</button>
+          <button class="tab-button" [class.active]="activeTab === 'reviews'"
+                  (click)="changeTab('reviews')">Reviews</button>
+        </div>
+
+        <div class="tab-content" [ngSwitch]="activeTab">
+          <!-- Description Tab -->
+          <div *ngSwitchCase="'description'" class="description-tab">
+            <div class="content-wrapper">
+              <div class="main-description">
+                <h3>Product Description</h3>
+                <p>{{ product.description }}</p>
+                
+                <div class="key-features" *ngIf="product.features?.length">
+                  <h4>Key Features</h4>
+                  <ul>
+                    <li *ngFor="let feature of product.features">
+                      <span class="feature-icon">✓</span>
+                      {{ feature }}
+                    </li>
+                  </ul>
+                </div>
+
+                <div class="care-instructions" *ngIf="product.careInstructions">
+                  <h4>Care Instructions</h4>
+                  <p>{{ product.careInstructions }}</p>
+                </div>
+              </div>
+
+              <div class="product-highlights">
+                <div class="highlight-box">
+                  <span class="highlight-icon">🌟</span>
+                  <h4>Premium Quality</h4>
+                  <p>Made with the finest materials for lasting beauty</p>
+                </div>
+                <div class="highlight-box">
+                  <span class="highlight-icon">📦</span>
+                  <h4>Free Shipping</h4>
+                  <p>On orders over €100</p>
+                </div>
+                <div class="highlight-box">
+                  <span class="highlight-icon">💎</span>
+                  <h4>Authenticity</h4>
+                  <p>Certified genuine jewelry pieces</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Details Tab -->
+          <div *ngSwitchCase="'details'" class="details-tab">
+            <div class="specifications-grid">
+              <div class="spec-item" *ngIf="product.material">
+                <h4>Material</h4>
+                <p>{{ product.material }}</p>
+              </div>
+              <div class="spec-item" *ngIf="product.dimensions">
+                <h4>Dimensions</h4>
+                <p>{{ product.dimensions }}</p>
+              </div>
+              <div class="spec-item" *ngIf="product.weight">
+                <h4>Weight</h4>
+                <p>{{ product.weight }}</p>
+              </div>
+              <div class="spec-item" *ngIf="product.style">
+                <h4>Style</h4>
+                <p>{{ product.style }}</p>
+              </div>
+              <div class="spec-item" *ngIf="product.occasion">
+                <h4>Occasion</h4>
+                <p>{{ product.occasion }}</p>
+              </div>
+              <div class="spec-item" *ngIf="product.warranty">
+                <h4>Warranty</h4>
+                <p>{{ product.warranty }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Reviews Tab -->
+          <div *ngSwitchCase="'reviews'" class="reviews-tab">
+            <div class="reviews-summary" *ngIf="product.rating">
+              <div class="rating-overview">
+                <div class="average-rating">
+                  <span class="rating-number">{{ product.rating }}</span>
+                  <div class="stars">
+                    <span *ngFor="let star of [1,2,3,4,5]"
+                          [class.filled]="star <= product.rating">★</span>
+                  </div>
+                  <p class="total-reviews">Based on {{ product.reviewCount || 0 }} reviews</p>
+                </div>
+                <div class="rating-bars">
+                  <div class="rating-bar" *ngFor="let i of [5,4,3,2,1]">
+                    <span class="stars">{{ i }} stars</span>
+                    <div class="bar-container">
+                      <div class="bar" [style.width.%]="getRatingPercentage(i)"></div>
+                    </div>
+                    <span class="percentage">{{ getRatingPercentage(i) }}%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="reviews-list" *ngIf="product.reviews?.length">
+              <h3>Customer Reviews</h3>
+              <div class="review-item" *ngFor="let review of product.reviews">
+                <div class="review-header">
+                  <div class="reviewer-info">
+                    <h4>{{ review.userName }}</h4>
+                    <div class="stars">
+                      <span *ngFor="let star of [1,2,3,4,5]"
+                            [class.filled]="star <= review.rating">★</span>
+                    </div>
+                  </div>
+                  <span class="review-date">{{ review.date | date }}</span>
+                </div>
+                <p class="review-comment">{{ review.comment }}</p>
+              </div>
+            </div>
+
+            <div class="review-form">
+              <h3>Write a Review</h3>
+              <form (ngSubmit)="submitReview()">
+                <div class="rating-select">
+                  <label>Your Rating *</label>
+                  <div class="stars">
+                    <span *ngFor="let i of [5,4,3,2,1]"
+                          (click)="rating = i"
+                          [class.active]="rating >= i">★</span>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label>Your Review *</label>
+                  <textarea [(ngModel)]="review.comment" 
+                           name="comment" 
+                           required 
+                           rows="5"
+                           placeholder="Share your thoughts about this product..."></textarea>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Name *</label>
+                    <input type="text" 
+                           [(ngModel)]="review.userName" 
+                           name="userName" 
+                           required
+                           placeholder="Your name">
+                  </div>
+                  <div class="form-group">
+                    <label>Email *</label>
+                    <input type="email" 
+                           [(ngModel)]="review.email" 
+                           name="email" 
+                           required
+                           placeholder="Your email">
+                  </div>
+                </div>
+
+                <button type="submit" class="submit-review">Submit Review</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Related Products -->
+  <div class="related-products">
+    <div class="container-part">
+      <h2 class="section-title">Related products</h2>
+      <div class="products-grid">
+        <div class="product-card" *ngFor="let product of relatedProducts">
+          <a [routerLink]="['/categories/earrings', product.id]" class="product-link">
+            <div class="product-image">
+              <img [src]="product.image" [alt]="product.name">
+            </div>
+            <div class="product-info">
+              <div class="product-category">{{ product.category }}</div>
+              <h3 class="product-name">{{ product.name }}</h3>
+              <div class="product-price">
+                <span class="current-price">${{ product.price.toFixed(2) }}</span>
+                <span class="old-price" *ngIf="product.oldPrice">${{ product.oldPrice.toFixed(2) }}</span>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
