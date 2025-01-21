@@ -1,63 +1,51 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-  image: string;
-}
+import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { necklacesProducts } from '../../models/product.interface';
 
 @Component({
   selector: 'app-necklaces',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './necklaces.component.html',
   styleUrls: ['./necklaces.component.scss']
 })
 export class NecklacesComponent {
-  products: Product[] = [
-    {
-      id: 1,
-      name: 'Collier Étoile Filante',
-      price: 950.00,
-      image: '../../../assets/images/Colliers/collier_1.jpg'
-    },
-    {
-      id: 2,
-      name: 'Collier Perle de Lune',
-      price: 890.00,
-      image: '../../../assets/images/Colliers/collier_2.jpg'
-    },
-    {
-      id: 3,
-      name: 'Collier Goutte d\'Or',
-      price: 1250.00,
-      image: '../../../assets/images/Colliers/collier_3.jpg'
-    },
-    {
-      id: 4,
-      name: 'Collier Cristal Royal',
-      price: 1450.00,
-      image: '../../../assets/images/Colliers/collier_4.jpg'
-    },
-    {
-      id: 5,
-      name: 'Collier Papillon d\'Argent',
-      price: 750.00,
-      image: '../../../assets/images/Colliers/collier_5.jpg'
-    },
-    {
-      id: 6,
-      name: 'Collier Rose Dorée',
-      price: 1150.00,
-      image: '../../../assets/images/Colliers/collier_6.jpg'
-    },
-    {
-      id: 7,
-      name: 'Collier Rose Dorée',
-      price: 550.00,
-      image: '../../../assets/images/Colliers/collier_7.jpg'
-    }
+  products = necklacesProducts;
+  sortOptions = [
+    { value: 'default', label: 'Tri par défaut' },
+    { value: 'price-asc', label: 'Prix croissant' },
+    { value: 'price-desc', label: 'Prix décroissant' },
+    { value: 'name-asc', label: 'Nom, A à Z' },
+    { value: 'name-desc', label: 'Nom, Z à A' }
   ];
+
+  selectedSort = 'default';
+
+  onSortChange(event: Event): void {
+    const select = event.target as HTMLSelectElement;
+    this.selectedSort = select.value;
+    this.sortProducts();
+  }
+
+  sortProducts(): void {
+    switch (this.selectedSort) {
+      case 'price-asc':
+        this.products.sort((a, b) => a.price - b.price);
+        break;
+      case 'price-desc':
+        this.products.sort((a, b) => b.price - a.price);
+        break;
+      case 'name-asc':
+        this.products.sort((a, b) => a.name.localeCompare(b.name));
+        break;
+      case 'name-desc':
+        this.products.sort((a, b) => b.name.localeCompare(a.name));
+        break;
+      default:
+        // Restaurer l'ordre par défaut
+        this.products = [...necklacesProducts];
+    }
+  }
 }

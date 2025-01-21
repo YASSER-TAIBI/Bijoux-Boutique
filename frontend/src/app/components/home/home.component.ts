@@ -16,22 +16,22 @@ export class HomeComponent {
     {
       name: 'Bague Diamant Solitaire',
       price: 1299.99,
-      image: 'assets/images/products/ring1.jpg'
+      image: ''
     },
     {
       name: 'Collier Or Rose',
       price: 899.99,
-      image: 'assets/images/products/necklace1.jpg'
+      image: ''
     },
     {
       name: 'Bracelet Tennis Diamants',
       price: 2499.99,
-      image: 'assets/images/products/bracelet1.jpg'
+      image: ''
     },
     {
       name: 'Boucles d\'Oreilles Perles',
       price: 799.99,
-      image: 'assets/images/products/earrings1.jpg'
+      image: ''
     }
   ];
 

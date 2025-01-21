@@ -1,110 +1,151 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { RouterModule, ActivatedRoute } from '@angular/router';
-import { Product, Review, earringsProducts } from '../../models/product.interface';
+import { FormsModule } from '@angular/forms';
+import { Product, Review, braceletsProducts, ringsProducts, necklacesProducts, earringsProducts } from '../../models/product.interface';
 
 @Component({
   selector: 'app-product-detail',
-  templateUrl: './product-detail.component.html',
-  styleUrls: ['./product-detail.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule]
+  imports: [CommonModule, RouterModule, FormsModule],
+  templateUrl: './product-detail.component.html',
+  styleUrls: ['./product-detail.component.scss']
 })
 export class ProductDetailComponent implements OnInit {
-  product: Product | undefined;
-  selectedImage: string = '';
+  product: Product | null = null;
   quantity: number = 1;
-  activeTab: string = 'description';
-  rating: number = 5;
-  relatedProducts: Product[] = [];
+  selectedRating: number = 0;
   review: Review = {
     userName: '',
     email: '',
-    rating: 5,
+    rating: 0,
     comment: '',
     date: new Date()
   };
+  activeTab: string = 'description';
+  relatedProducts: Product[] = [];
+  selectedImage: string = '';
 
   constructor(private route: ActivatedRoute) {}
 
   ngOnInit() {
     this.route.params.subscribe(params => {
-      const productId = params['id'];
-      this.product = earringsProducts.find(p => p.id === productId);
-      if (this.product) {
-        this.selectedImage = this.product.image;
-        this.loadRelatedProducts(productId);
-      }
+      const id = +params['id'];
+      this.findProduct(id);
     });
   }
 
-  changeImage(image: string): void {
+  findProduct(id: number) {
+    const allProducts = [
+      ...braceletsProducts,
+      ...ringsProducts,
+      ...necklacesProducts,
+      ...earringsProducts
+    ];
+    
+    const foundProduct = allProducts.find(p => p.id === id);
+    if (foundProduct) {
+      this.product = foundProduct;
+      this.selectedImage = foundProduct.image;
+      this.findRelatedProducts();
+    }
+  }
+
+  findRelatedProducts() {
+    if (!this.product) return;
+
+    const allProducts = [
+      ...braceletsProducts,
+      ...ringsProducts,
+      ...necklacesProducts,
+      ...earringsProducts
+    ];
+
+    this.relatedProducts = allProducts
+      .filter(p => p.category === this.product?.category && p.id !== this.product?.id)
+      .slice(0, 4);
+  }
+
+  changeTab(tab: string) {
+    this.activeTab = tab;
+  }
+
+  changeImage(image: string) {
     this.selectedImage = image;
   }
 
-  decrementQuantity(): void {
+  incrementQuantity() {
+    this.quantity++;
+  }
+
+  decrementQuantity() {
     if (this.quantity > 1) {
       this.quantity--;
     }
   }
 
-  incrementQuantity(): void {
-    if (this.product && this.product.quantity && this.quantity < this.product.quantity) {
-      this.quantity++;
-    }
+  setRating(rating: number) {
+    this.selectedRating = rating;
+    this.review.rating = rating;
   }
 
-  changeTab(tab: string): void {
-    this.activeTab = tab;
-  }
-
-  setRating(rating: number): void {
-    this.rating = rating;
-  }
-
-  isRatingActive(index: number): boolean {
-    return index <= this.rating;
-  }
-
-  getRatingPercentage(stars: number): number {
-    if (!this.product || !this.product.reviews) return 0;
-    const totalReviews = this.product.reviews.length;
-    if (totalReviews === 0) return 0;
-    
-    const starsCount = this.product.reviews.filter(r => r.rating === stars).length;
-    return Math.round((starsCount / totalReviews) * 100);
-  }
-
-  submitReview(): void {
-    if (this.product && this.product.reviews) {
+  submitReview() {
+    if (this.review.userName && this.review.rating && this.review.comment && this.product) {
       const newReview: Review = {
-        id: this.product.reviews.length + 1,
         userName: this.review.userName,
         email: this.review.email,
-        rating: this.rating,
+        rating: this.review.rating,
         comment: this.review.comment,
         date: new Date()
       };
 
-      this.product.reviews.push(newReview);
+      if (!this.product.reviews) {
+        this.product.reviews = [];
+      }
 
+      this.product.reviews.unshift(newReview);
+      
       // Réinitialiser le formulaire
       this.review = {
         userName: '',
         email: '',
-        rating: 5,
+        rating: 0,
         comment: '',
         date: new Date()
       };
-      this.rating = 5;
+      this.selectedRating = 0;
     }
   }
 
-  loadRelatedProducts(currentProductId: string) {
-    // Filtrer les produits pour exclure le produit actuel et limiter à 4 produits
-    this.relatedProducts = earringsProducts
-      .filter(product => product.id !== currentProductId)
-      .slice(0, 4);
+  addToCart() {
+    if (this.product) {
+      console.log('Produit ajouté au panier:', {
+        product: this.product,
+        quantity: this.quantity
+      });
+    }
+  }
+
+  get averageRating(): number {
+    if (!this.product?.reviews?.length) {
+      return 0;
+    }
+    const sum = this.product.reviews.reduce((acc: number, review: Review) => acc + review.rating, 0);
+    return Math.round((sum / this.product.reviews.length) * 10) / 10;
+  }
+
+  getRatingPercentage(rating: number): number {
+    if (!this.product?.reviews?.length) {
+      return 0;
+    }
+    const ratingCount = this.product.reviews.filter((review: Review) => review.rating === rating).length;
+    return Math.round((ratingCount / this.product.reviews.length) * 100);
+  }
+
+  getDiscountPercentage(): number {
+    if (!this.product?.oldPrice || !this.product?.price) {
+      return 0;
+    }
+    return Math.round(((this.product.oldPrice - this.product.price) / this.product.oldPrice) * 100);
   }
 }

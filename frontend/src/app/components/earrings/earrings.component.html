@@ -7,12 +7,10 @@
 
   <div class="products-header">
     <p class="results-count">Affichage de {{ products.length }} résultats</p>
-    <select class="sort-select">
-      <option value="default">Tri par défaut</option>
-      <option value="price-asc">Prix croissant</option>
-      <option value="price-desc">Prix décroissant</option>
-      <option value="name-asc">Nom, A à Z</option>
-      <option value="name-desc">Nom, Z à A</option>
+    <select class="sort-select" [(ngModel)]="selectedSort" (change)="onSortChange($event)" name="sort">
+      <option *ngFor="let option of sortOptions" [value]="option.value">
+        {{ option.label }}
+      </option>
     </select>
   </div>
 
