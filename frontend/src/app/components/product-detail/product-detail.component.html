@@ -1,7 +1,7 @@
 <div class="product-detail" *ngIf="product">
   <div class="breadcrumb">
     <a routerLink="/">Accueil</a> /
-    <a [routerLink]="['/categories', product.category.toLowerCase()]">{{ product.category }}</a> /
+    <a [routerLink]="['/categories', product.category.toLowerCase()]">{{ product.frenchCategory }}</a> /
     <span>{{ product.name }}</span>
   </div>
 

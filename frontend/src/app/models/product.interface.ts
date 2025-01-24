@@ -15,6 +15,7 @@ export interface Product {
   description: string;
   detailDescription: string;
   category: string;
+  frenchCategory: string;
   image: string;
   images?: string[];
   inStock: boolean;
@@ -41,6 +42,7 @@ export const earringsProducts: Product[] = [
     description: 'Magnifiques boucles d\'oreilles en or blanc 18 carats serties de diamants naturels taille brillant. Un design élégant qui capture la lumière à chaque mouvement.',
     detailDescription: 'Diamants naturels taille brillant. Idéale pour une tenue sophistiquee. Élégant bracelet jonc en or blanc serti de diamants naturels taille brillant. Idéal pour une tenue sophistiquée.',
     category: 'Earrings',
+    frenchCategory: 'Boucles d\'Oreilles',
     image: '../../../assets/images/Boucles_Oreilles/boucle_oreille_1.jpg',
     images: [
       '../../../assets/images/Boucles_Oreilles/boucle_oreille_2.jpg',
@@ -85,6 +87,7 @@ export const earringsProducts: Product[] = [
     description: 'Créoles torsadées en or rose 18 carats. Un design contemporain qui allie élégance et modernité, parfait pour toutes les occasions.',
     detailDescription: 'Diamants naturels taille brillant. Idéale pour une tenue sophistiquee. Élégant bracelet jonc en or blanc serti de diamants naturels taille brillant. Idéal pour une tenue sophistiquée.',
     category: 'Earrings',
+    frenchCategory: 'Boucles d\'Oreilles',
     image: '../../../assets/images/Boucles_Oreilles/boucle_oreille_2.jpg',
     images: [
       '../../../assets/images/Boucles_Oreilles/boucle_oreille_1.jpg',
@@ -122,6 +125,7 @@ export const earringsProducts: Product[] = [
     description: 'Élégantes puces d\'oreilles ornées de véritables perles de Tahiti. La beauté naturelle des perles noires s\'harmonise parfaitement avec l\'or blanc.',
     detailDescription: 'Diamants naturels taille brillant. Idéale pour une tenue sophistiquee. Élégant bracelet jonc en or blanc serti de diamants naturels taille brillant. Idéal pour une tenue sophistiquée.',
     category: 'Earrings',
+    frenchCategory: 'Boucles d\'Oreilles',
     image: '../../../assets/images/Boucles_Oreilles/boucle_oreille_3.jpg',
     images: [
       '../../../assets/images/Boucles_Oreilles/boucle_oreille_1.jpg',
@@ -158,7 +162,13 @@ export const earringsProducts: Product[] = [
     description: 'Magnifiques pendants en or blanc sertis de saphirs bleus et de diamants. Une cascade étincelante qui illuminera votre visage.',
     detailDescription: 'Diamants naturels taille brillant. Idéale pour une tenue sophistiquee. Élégant bracelet jonc en or blanc serti de diamants naturels taille brillant. Idéal pour une tenue sophistiquée.',
     category: 'Earrings',
+    frenchCategory: 'Boucles d\'Oreilles',
     image: '../../../assets/images/Boucles_Oreilles/boucle_oreille_4.jpg',
+    images: [
+      '../../../assets/images/Boucles_Oreilles/boucle_oreille_1.jpg',
+      '../../../assets/images/Boucles_Oreilles/boucle_oreille_2.jpg',
+      '../../../assets/images/Boucles_Oreilles/boucle_oreille_3.jpg'
+    ],
     inStock: true,
     quantity: 2,
     rating: 4.9,
@@ -190,7 +200,13 @@ export const earringsProducts: Product[] = [
     description: 'Créoles serties de diamants sur toute la face externe, symbolisant l\'infini. Un bijou intemporel qui ne passera jamais de mode.',
     detailDescription: 'Diamants naturels taille brillant. Idéale pour une tenue sophistiquee. Élégant bracelet jonc en or blanc serti de diamants naturels taille brillant. Idéal pour une tenue sophistiquée.',
     category: 'Earrings',
+    frenchCategory: 'Boucles d\'Oreilles',
     image: '../../../assets/images/Boucles_Oreilles/boucle_oreille_5.jpg',
+    images: [
+      '../../../assets/images/Boucles_Oreilles/boucle_oreille_1.jpg',
+      '../../../assets/images/Boucles_Oreilles/boucle_oreille_2.jpg',
+      '../../../assets/images/Boucles_Oreilles/boucle_oreille_3.jpg'
+    ],
     inStock: true,
     quantity: 4,
     rating: 4.7,
@@ -225,10 +241,12 @@ export const braceletsProducts: Product[] = [
     description: 'Élégant bracelet jonc en or blanc serti de diamants naturels taille brillant. Idéal pour une tenue sophistiquée.',
     detailDescription: 'Diamants naturels taille brillant. Idéale pour une tenue sophistiquee. Élégant bracelet jonc en or blanc serti de diamants naturels taille brillant. Idéal pour une tenue sophistiquée.',
     category: 'Bracelets',
+    frenchCategory: 'Bracelets',
     image: '../../../assets/images/Bracelets/bracelet_1.jpg',
     images: [
-      '../../../assets/images/Bracelets/bracelet_1_1.jpg',
-      '../../../assets/images/Bracelets/bracelet_1_2.jpg'
+      '../../../assets/images/Bracelets/bracelet_4.jpg',
+      '../../../assets/images/Bracelets/bracelet_2.jpg',
+      '../../../assets/images/Bracelets/bracelet_3.jpg'
     ],
     inStock: true,
     quantity: 3,
@@ -260,7 +278,13 @@ export const braceletsProducts: Product[] = [
     description: 'Bracelet gourmette en or rose 18 carats avec gravure personnalisable. Un bijou chic et discret.',
     detailDescription: 'Diamants naturels taille brillant. Idéale pour une tenue sophistiquee. Élégant bracelet jonc en or blanc serti de diamants naturels taille brillant. Idéal pour une tenue sophistiquée.',
     category: 'Bracelets',
+    frenchCategory: 'Bracelets',
     image: '../../../assets/images/Bracelets/bracelet_2.jpg',
+    images: [
+      '../../../assets/images/Bracelets/bracelet_1.jpg',
+      '../../../assets/images/Bracelets/bracelet_4.jpg',
+      '../../../assets/images/Bracelets/bracelet_3.jpg'
+    ],
     inStock: true,
     quantity: 5,
     rating: 4.7,
@@ -291,10 +315,12 @@ export const braceletsProducts: Product[] = [
     description: 'Bracelet extensible orné de perles d\'eau douce et de charms plaqués or.',
     detailDescription: 'Diamants naturels taille brillant. Idéale pour une tenue sophistiquee. Élégant bracelet jonc en or blanc serti de diamants naturels taille brillant. Idéal pour une tenue sophistiquée.',
     category: 'Bracelets',
+    frenchCategory: 'Bracelets',
     image: '../../../assets/images/Bracelets/bracelet_3.jpg',
     images: [
-      '../../../assets/images/Bracelets/bracelet_3_1.jpg',
-      '../../../assets/images/Bracelets/bracelet_3_2.jpg'
+      '../../../assets/images/Bracelets/bracelet_1.jpg',
+      '../../../assets/images/Bracelets/bracelet_2.jpg',
+      '../../../assets/images/Bracelets/bracelet_4.jpg'
     ],
     inStock: true,
     quantity: 10,
@@ -326,7 +352,13 @@ export const braceletsProducts: Product[] = [
     description: 'Bracelet multi-rangs en cuir véritable avec fermoir magnétique en acier inoxydable.',
     detailDescription: 'Diamants naturels taille brillant. Idéale pour une tenue sophistiquee. Élégant bracelet multi-rangs en cuir véritable avec fermoir magnétique en acier inoxydable.',
     category: 'Bracelets',
+    frenchCategory: 'Bracelets',
     image: '../../../assets/images/Bracelets/bracelet_4.jpg',
+    images: [
+      '../../../assets/images/Bracelets/bracelet_1.jpg',
+      '../../../assets/images/Bracelets/bracelet_2.jpg',
+      '../../../assets/images/Bracelets/bracelet_3.jpg'
+    ],
     inStock: true,
     quantity: 15,
     rating: 4.6,
@@ -361,6 +393,7 @@ export const necklacesProducts: Product[] = [
     description: 'Collier en or blanc 18 carats avec un pendentif serti d\'un diamant taille brillant. Élégance et raffinement.',
     detailDescription: 'Diamants naturels taille brillant. Idéale pour une tenue sophistiquee. Collier en or blanc 18 carats avec un pendentif serti d\'un diamant taille brillant. Élégance et raffinement.',
     category: 'Necklaces',
+    frenchCategory: 'Colliers',
     image: '../../../assets/images/Colliers/collier_1.jpg',
     images: [
       '../../../assets/images/Colliers/collier_2.jpg',
@@ -397,6 +430,7 @@ export const necklacesProducts: Product[] = [
     description: 'Collier classique composé de perles de culture blanches, un bijou intemporel qui traverse les générations.',
     detailDescription: 'Perles de culture blanches. Idéale pour une tenue classique. Collier classique composé de perles de culture blanches, un bijou intemporel qui traverse les générations.',
     category: 'Necklaces',
+    frenchCategory: 'Colliers',
     image: '../../../assets/images/Colliers/collier_2.jpg',
     images: [
       '../../../assets/images/Colliers/collier_1.jpg',
@@ -433,6 +467,7 @@ export const necklacesProducts: Product[] = [
     description: 'Collier délicat en or rose avec un pendentif en forme de cœur, idéal pour un cadeau romantique.',
     detailDescription: 'Or rose 18 carats. Ideale pour un cadeau romantique. Collier délicat en or rose avec un pendentif en forme de cœur, idéal pour un cadeau romantique.',
     category: 'Necklaces',
+    frenchCategory: 'Colliers',
     image: '../../../assets/images/Colliers/collier_3.jpg',
     images: [
       '../../../assets/images/Colliers/collier_1.jpg',
@@ -469,6 +504,7 @@ export const necklacesProducts: Product[] = [
     description: 'Sautoir en argent sterling avec des pendentifs étoiles, parfait pour un look décontracté ou chic.',
     detailDescription: 'Argent sterling 925. Ideale pour un look décontracté ou chic. Sautoir en argent sterling avec des pendentifs étoiles, parfait pour un look décontracté ou chic.',
     category: 'Necklaces',
+    frenchCategory: 'Colliers',
     image: '../../../assets/images/Colliers/collier_4.jpg',
     images: [
       '../../../assets/images/Colliers/collier_1.jpg',
@@ -506,6 +542,7 @@ export const necklacesProducts: Product[] = [
     description: 'Collier luxueux en or blanc, serti de saphirs bleus et d\'émeraudes éclatants. Une pièce de collection.',
     detailDescription: 'Or blanc 18 carats, Saphirs, Émeraudes. Collier luxueux en or blanc, serti de saphirs bleus et d\'émeraudes éclatants. Une pièce de collection.',
     category: 'Necklaces',
+    frenchCategory: 'Colliers',
     image: '../../../assets/images/Colliers/collier_5.jpg',
     images: [
       '../../../assets/images/Colliers/collier_1.jpg',
@@ -546,6 +583,7 @@ export const ringsProducts: Product[] = [
     description: 'Bague solitaire en or blanc 18 carats, sertie d\'un diamant taille brillant. Une pièce classique et intemporelle.',
     detailDescription: 'Or blanc 18 carats, Diamant naturel. Bague solitaire en or blanc 18 carats, sertie d\'un diamant taille brillant. Une pièce classique et intemporelle.',
     category: 'Rings',
+    frenchCategory: 'Bagues',
     image: '../../../assets/images/Bagues/bague_1.jpg',
     images: [
       '../../../assets/images/Bagues/bague_2.jpg',
@@ -582,6 +620,7 @@ export const ringsProducts: Product[] = [
     description: 'Alliance simple et élégante en or jaune 18 carats. Un symbole éternel d\'amour et d\'engagement.',
     detailDescription: 'Or jaune 18 carats, Alliance simple et élégante. Alliance simple et élégante en or jaune 18 carats, Un symbole éternel d\'amour et d\'engagement.',
     category: 'Rings',
+    frenchCategory: 'Bagues',
     image: '../../../assets/images/Bagues/bague_2.jpg',
     images: [
       '../../../assets/images/Bagues/bague_1.jpg',
@@ -619,6 +658,7 @@ export const ringsProducts: Product[] = [
     description: 'Superbe bague en or blanc sertie d\'une émeraude centrale entourée de diamants éclatants.',
     detailDescription: 'Or blanc 18 carats, Émeraude, Diamants. Superbe bague en or blanc sertie d\'une émeraude centrale entourée de diamants éclatants.',
     category: 'Rings',
+    frenchCategory: 'Bagues',
     image: '../../../assets/images/Bagues/bague_3.jpg',
     images: [
       '../../../assets/images/Bagues/bague_1.jpg',
@@ -655,6 +695,7 @@ export const ringsProducts: Product[] = [
     description: 'Chevalière élégante en argent sterling, personnalisable avec une gravure au choix.',
     detailDescription: 'Argent sterling 925, Chevalière élégante en argent sterling, personnalisable avec une gravure au choix.',
     category: 'Rings',
+    frenchCategory: 'Bagues',
     image: '../../../assets/images/Bagues/bague_4.jpg',
     images: [
       '../../../assets/images/Bagues/bague_1.jpg',
@@ -692,6 +733,7 @@ export const ringsProducts: Product[] = [
     description: 'Bague somptueuse en or rose ornée d\'un rubis central entouré de diamants éclatants.',
     detailDescription: 'Or rose 18 carats, Rubis, Diamants. Bague somptueuse en or rose ornée d\'un rubis central entouré de diamants éclatants.',
     category: 'Rings',
+    frenchCategory: 'Bagues',
     image: '../../../assets/images/Bagues/bague_5.jpg',
     images: [
       '../../../assets/images/Bagues/bague_1.jpg',

@@ -6,19 +6,21 @@
   .breadcrumb {
     margin-bottom: 2rem;
     font-size: 0.9rem;
-    color: #666;
+    color: var(--text-color);
 
     a {
-      color: #333;
+      color: var(--text-color);
       text-decoration: none;
-      
+      cursor: pointer;
+  
       &:hover {
-        color: #000;
+        color: var(--secondary-color);
       }
     }
 
     span {
-      color: #999;
+      color: var(--secondary-color);
+      cursor: pointer;
     }
   }
 
@@ -128,7 +130,7 @@
         border: 1px solid #eee;
 
         button {
-          padding: 0.8rem 1.2rem;
+          padding: 1.1rem 1.2rem;
           border: none;
           background: none;
           cursor: pointer;
@@ -270,15 +272,16 @@
         .characteristics {
           display: grid;
           grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-          gap: 2rem;
+          gap: 1rem;
 
           .characteristic-item {
-            padding: 2rem;
+            padding: 1rem;
+            text-align: center;
             background: #f9f9f9;
 
             h4 {
               font-size: 1.1rem;
-              margin-bottom: 1rem;
+              margin-bottom: 0.5rem;
               font-weight: 400;
             }
 
