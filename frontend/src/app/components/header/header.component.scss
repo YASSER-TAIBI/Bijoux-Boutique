@@ -95,10 +95,13 @@ $mobile-width: 768px;
         text-decoration: none;
         font-weight: 700;
         letter-spacing: 1px;
+        cursor: pointer;
+
 
         @media (max-width: $mobile-width) {
           img {
             height: 50px;
+            cursor: pointer;
           }
         }
       }

@@ -14,50 +14,68 @@
     <div class="feature">
       <i class="fas fa-truck"></i>
       <div class="feature-text">
-        <h4>Free Shipping</h4>
-        <p>Above $5 Only</p>
+        <h4>Livraison gratuite</h4>
+        <p>Au-dessus de 5€ seulement</p>
       </div>
     </div>
     
     <div class="feature">
       <i class="fas fa-certificate"></i>
       <div class="feature-text">
-        <h4>Certified Organic</h4>
-        <p>100% Guarantee</p>
+        <h4>Certifié Biologique</h4>
+        <p>Garantie à 100%</p>
       </div>
     </div>
     
     <div class="feature">
       <i class="fas fa-tag"></i>
       <div class="feature-text">
-        <h4>Huge Savings</h4>
-        <p>At Lowest Price</p>
+        <h4>Des économies énormes</h4>
+        <p>Au prix le plus bas</p>
       </div>
     </div>
     
     <div class="feature">
       <i class="fas fa-undo"></i>
       <div class="feature-text">
-        <h4>Easy Returns</h4>
-        <p>No Questions Asked</p>
+        <h4>Retours faciles</h4>
+        <p>Aucune question posée</p>
       </div>
     </div>
   </section>
 
   <!-- Featured Products -->
   <section class="featured-products">
-    <div class="container">
-      <h2>Nos Créations Phares</h2>
+    <div class="section-header">
+      <p class="subtitle">Produits populaires</p>
+      <h2>Tendance actuelle</h2>
       <div class="divider"></div>
-      <div class="products-grid">
-        <div class="product-card" *ngFor="let product of featuredProducts">
-          <div class="product-image">
-            <img [src]="product.image" [alt]="product.name">
+    </div>
+
+    <div class="products-grid">
+      <div class="product-card" *ngFor="let product of featuredProducts" (click)="navigateToProduct(product.id)">
+        <div class="product-image">
+          <img [src]="product.images && product.images.length > 0 ? product.image : product.image" [alt]="product.name">
+          <span class="sale-badge" *ngIf="product?.discountPrice">Sale!</span>
+          <div class="product-actions">
+            <button class="action-btn" title="Quick view">
+              <i class="fas fa-eye"></i>
+            </button>
+            <button class="action-btn" title="Add to cart">
+              <i class="fas fa-bag-shopping"></i>
+            </button>
           </div>
-          <div class="product-info">
-            <h3>{{ product.name }}</h3>
-            <p class="price">{{ product.price | currency:'EUR':'symbol':'1.2-2' }}</p>
-            <button class="btn btn-secondary">Voir le produit</button>
+        </div>
+        <div class="product-info">
+          <h3>{{ product.name }}</h3>
+          <div class="price-container">
+            <ng-container *ngIf="product.discountPrice; else regularPrice">
+              <span class="old-price">{{ product.price | currency:'EUR' }}</span>
+              <span class="current-price">{{ product.discountPrice | currency:'EUR' }}</span>
+            </ng-container>
+            <ng-template #regularPrice>
+              <span class="current-price">{{ product.price | currency:'EUR' }}</span>
+            </ng-template>
           </div>
         </div>
       </div>
@@ -105,17 +123,18 @@
         <div class="testimonial-cards">
           <div class="testimonial-card" *ngFor="let testimonial of testimonials">
             <div class="testimonial-content">
-              <div class="quote-icon">❝</div>
               <p class="testimonial-text">{{ testimonial.text }}</p>
-              <div class="testimonial-rating">
-                <span class="star" *ngFor="let star of [].constructor(testimonial.rating)">★</span>
+              <div class="testimonial-author">
+                <span class="author-name">{{ testimonial.author }}</span>
+                <span class="author-role">{{ testimonial.role }}</span>
               </div>
-              <p class="testimonial-author">{{ testimonial.author }}</p>
             </div>
           </div>
         </div>
-        <button class="carousel-btn prev" (click)="previousTestimonial()">&lt;</button>
-        <button class="carousel-btn next" (click)="nextTestimonial()">&gt;</button>
+        <div class="testimonial-controls">
+          <button class="carousel-btn prev" (click)="prevTestimonial()">&lt;</button>
+          <button class="carousel-btn next" (click)="nextTestimonial()">&gt;</button>
+        </div>
       </div>
     </div>
   </section>

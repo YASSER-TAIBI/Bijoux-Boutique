@@ -2,7 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { Product, Review, braceletsProducts, ringsProducts, necklacesProducts, earringsProducts } from '../../models/product.interface';
+import { Product, Review } from '../../models/product.interface';
+import { ProductService } from '../../services/product.service';
+import { ViewportScroller } from '@angular/common';
 
 @Component({
   selector: 'app-product-detail',
@@ -26,21 +28,22 @@ export class ProductDetailComponent implements OnInit {
   relatedProducts: Product[] = [];
   selectedImage: string = '';
 
-  constructor(private route: ActivatedRoute) {}
+  constructor(private route: ActivatedRoute, private productService: ProductService, private viewportScroller: ViewportScroller) {}
 
   ngOnInit() {
+ 
     this.route.params.subscribe(params => {
       const id = +params['id'];
       this.findProduct(id);
     });
+
+    // Remonter en haut de la page après navigation
+    this.viewportScroller.scrollToPosition([0, 0]);
   }
 
   findProduct(id: number) {
     const allProducts = [
-      ...braceletsProducts,
-      ...ringsProducts,
-      ...necklacesProducts,
-      ...earringsProducts
+      ...this.productService.Products
     ];
     
     const foundProduct = allProducts.find(p => p.id === id);
@@ -55,10 +58,7 @@ export class ProductDetailComponent implements OnInit {
     if (!this.product) return;
 
     const allProducts = [
-      ...braceletsProducts,
-      ...ringsProducts,
-      ...necklacesProducts,
-      ...earringsProducts
+      ...this.productService.Products
     ];
 
     this.relatedProducts = allProducts

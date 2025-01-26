@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { earringsProducts } from '../../models/product.interface';
+import { Product } from '../../models/product.interface';
+import { ProductService } from '../../services/product.service';
 
 @Component({
   selector: 'app-earrings',
@@ -11,8 +12,8 @@ import { earringsProducts } from '../../models/product.interface';
   templateUrl: './earrings.component.html',
   styleUrls: ['./earrings.component.scss']
 })
-export class EarringsComponent {
-  products = earringsProducts;
+export class EarringsComponent implements OnInit {
+  earrings: Product[] = [];
   sortOptions = [
     { value: 'default', label: 'Tri par défaut' },
     { value: 'price-asc', label: 'Prix croissant' },
@@ -23,6 +24,18 @@ export class EarringsComponent {
 
   selectedSort = 'default';
 
+
+constructor(private productService: ProductService) {}
+
+  ngOnInit() {
+    this.getEarrings();
+  }
+
+  getEarrings() {
+    const allProducts = [...this.productService.Products];
+    this.earrings = allProducts.filter(product => product.category === 'Earrings');
+  }
+
   onSortChange(event: Event): void {
     const select = event.target as HTMLSelectElement;
     this.selectedSort = select.value;
@@ -32,20 +45,20 @@ export class EarringsComponent {
   sortProducts(): void {
     switch (this.selectedSort) {
       case 'price-asc':
-        this.products.sort((a, b) => a.price - b.price);
+        this.earrings.sort((a, b) => a.price - b.price);
         break;
       case 'price-desc':
-        this.products.sort((a, b) => b.price - a.price);
+        this.earrings.sort((a, b) => b.price - a.price);
         break;
       case 'name-asc':
-        this.products.sort((a, b) => a.name.localeCompare(b.name));
+        this.earrings.sort((a, b) => a.name.localeCompare(b.name));
         break;
       case 'name-desc':
-        this.products.sort((a, b) => b.name.localeCompare(a.name));
+        this.earrings.sort((a, b) => b.name.localeCompare(a.name));
         break;
       default:
         // Restaurer l'ordre par défaut
-        this.products = [...earringsProducts];
+        this.earrings = [...this.earrings];
     }
   }
 }

@@ -6,7 +6,7 @@
   </div>
 
   <div class="products-header">
-    <p class="results-count">Affichage de {{ products.length }} résultats</p>
+    <p class="results-count">Affichage de {{ earrings.length }} résultats</p>
     <select class="sort-select" [(ngModel)]="selectedSort" (change)="onSortChange($event)" name="sort">
       <option *ngFor="let option of sortOptions" [value]="option.value">
         {{ option.label }}
@@ -15,7 +15,7 @@
   </div>
 
   <div class="products-grid">
-    <div class="product-card" *ngFor="let product of products" [routerLink]="['/product', product.id]">
+    <div class="product-card" *ngFor="let product of earrings" [routerLink]="['/product', product.id]">
       <div class="product-image">
         <img [src]="product.image" [alt]="product.name">
       </div>
