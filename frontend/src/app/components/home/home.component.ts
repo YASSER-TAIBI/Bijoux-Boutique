@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { QuickViewModalComponent } from '../shared/quick-view-modal/quick-view-modal.component';
 import { Product } from '../../models/product.interface';
 import { ProductService } from '../../services/product.service';
 import { Router } from '@angular/router';
@@ -8,13 +9,15 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, QuickViewModalComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
   currentTestimonialIndex = 0;
   featuredProducts: Product[] = [];
+  selectedProduct: any = null;
+  isQuickViewOpen = false;
 
   testimonials = [
     {
@@ -97,5 +100,21 @@ export class HomeComponent implements OnInit {
       ? this.testimonials.length - 1 
       : this.currentTestimonialIndex - 1;
     testimonialCards.style.transform = `translateX(-${this.currentTestimonialIndex * 100}%)`;
+  }
+
+  openQuickView(product: any): void {
+    this.selectedProduct = product;
+    this.isQuickViewOpen = true;
+  }
+
+  closeQuickView(): void {
+    this.isQuickViewOpen = false;
+    this.selectedProduct = null;
+  }
+
+  handleAddToCart(event: {product: any, quantity: number}): void {
+    // TODO: Implémenter l'ajout au panier
+    console.log('Adding to cart:', event);
+    this.closeQuickView();
   }
 }

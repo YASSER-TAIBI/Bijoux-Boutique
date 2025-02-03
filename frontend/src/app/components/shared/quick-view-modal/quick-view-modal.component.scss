@@ -1,0 +1,219 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal-content {
+  background-color: white;
+  max-width: 1000px;
+  width: 90%;
+  position: relative;
+  border-radius: 4px;
+  display: flex;
+  overflow: hidden;
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #333;
+  cursor: pointer;
+  z-index: 10;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  
+  &:hover {
+    background-color: #f5f5f5;
+  }
+}
+
+.modal-body {
+  display: flex;
+  width: 100%;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+}
+
+.product-image-container {
+  flex: 1;
+  position: relative;
+  background-color: #f8f8f8;
+  // min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// .product-image {
+//   max-width: 100%;
+//   max-height: 400px;
+//   object-fit: contain;
+// }
+
+.nav-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: white;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  
+  &.prev {
+    left: 20px;
+  }
+  
+  &.next {
+    right: 20px;
+  }
+  
+  &:hover {
+    background: #f5f5f5;
+  }
+}
+
+.product-info {
+  flex: 1;
+  padding: 40px;
+  background-color: white;
+}
+
+.category {
+  color: #666;
+  font-size: 14px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.product-name {
+  font-size: 28px;
+  color: #333;
+  margin: 0 0 20px;
+}
+
+.price-container {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  
+  .old-price {
+    color: #999;
+    text-decoration: line-through;
+    font-size: 18px;
+  }
+  
+  .current-price {
+    color: #333;
+    font-size: 24px;
+    font-weight: bold;
+  }
+  
+  .shipping {
+    color: #666;
+    font-size: 14px;
+    &::before {
+      content: "& ";
+    }
+  }
+}
+
+.product-description {
+  color: #666;
+  line-height: 1.8;
+  margin: 30px 0;
+}
+
+.quantity-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.quantity-btn {
+  width: 36px;
+  height: 36px;
+  border: 1px solid #ddd;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 18px;
+  
+  &:hover {
+    background: #f5f5f5;
+  }
+}
+
+.quantity-input {
+  width: 60px;
+  height: 36px;
+  border: 1px solid #ddd;
+  text-align: center;
+  font-size: 16px;
+}
+
+.add-to-cart-btn {
+  width: 100%;
+  padding: 15px 30px;
+  background-color: #333;
+  color: white;
+  border: none;
+  font-size: 16px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  
+  &:hover {
+    background-color: #000;
+  }
+}
+
+// Style pour les indicateurs de slide
+.slide-indicators {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+  
+  .indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #ddd;
+    cursor: pointer;
+    
+    &.active {
+      background-color: #333;
+    }
+  }
+}

@@ -53,6 +53,7 @@
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 1.5rem;
+      width: 28rem;
       align-items: stretch;
 
       .thumbnail {

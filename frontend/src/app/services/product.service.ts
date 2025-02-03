@@ -20,6 +20,7 @@ export class ProductService {
       frenchCategory: 'Boucles d\'Oreilles',
       image: '../../../assets/images/Boucles_Oreilles/boucle_oreille_1.jpg',
       images: [
+        '../../../assets/images/Boucles_Oreilles/boucle_oreille_1.jpg',
         '../../../assets/images/Boucles_Oreilles/boucle_oreille_2.jpg',
         '../../../assets/images/Boucles_Oreilles/boucle_oreille_3.jpg',
         '../../../assets/images/Boucles_Oreilles/boucle_oreille_4.jpg'
@@ -65,6 +66,7 @@ export class ProductService {
       frenchCategory: 'Boucles d\'Oreilles',
       image: '../../../assets/images/Boucles_Oreilles/boucle_oreille_2.jpg',
       images: [
+        '../../../assets/images/Boucles_Oreilles/boucle_oreille_2.jpg',
         '../../../assets/images/Boucles_Oreilles/boucle_oreille_1.jpg',
         '../../../assets/images/Boucles_Oreilles/boucle_oreille_3.jpg',
         '../../../assets/images/Boucles_Oreilles/boucle_oreille_4.jpg'
@@ -103,6 +105,7 @@ export class ProductService {
       frenchCategory: 'Boucles d\'Oreilles',
       image: '../../../assets/images/Boucles_Oreilles/boucle_oreille_3.jpg',
       images: [
+        '../../../assets/images/Boucles_Oreilles/boucle_oreille_3.jpg',
         '../../../assets/images/Boucles_Oreilles/boucle_oreille_1.jpg',
         '../../../assets/images/Boucles_Oreilles/boucle_oreille_2.jpg',
         '../../../assets/images/Boucles_Oreilles/boucle_oreille_4.jpg'
@@ -140,6 +143,7 @@ export class ProductService {
       frenchCategory: 'Boucles d\'Oreilles',
       image: '../../../assets/images/Boucles_Oreilles/boucle_oreille_4.jpg',
       images: [
+        '../../../assets/images/Boucles_Oreilles/boucle_oreille_4.jpg',
         '../../../assets/images/Boucles_Oreilles/boucle_oreille_1.jpg',
         '../../../assets/images/Boucles_Oreilles/boucle_oreille_2.jpg',
         '../../../assets/images/Boucles_Oreilles/boucle_oreille_3.jpg'
@@ -178,6 +182,7 @@ export class ProductService {
       frenchCategory: 'Boucles d\'Oreilles',
       image: '../../../assets/images/Boucles_Oreilles/boucle_oreille_5.jpg',
       images: [
+        '../../../assets/images/Boucles_Oreilles/boucle_oreille_5.jpg',
         '../../../assets/images/Boucles_Oreilles/boucle_oreille_1.jpg',
         '../../../assets/images/Boucles_Oreilles/boucle_oreille_2.jpg',
         '../../../assets/images/Boucles_Oreilles/boucle_oreille_3.jpg'
@@ -216,6 +221,7 @@ export class ProductService {
       frenchCategory: 'Bracelets',
       image: '../../../assets/images/Bracelets/bracelet_1.jpg',
       images: [
+        '../../../assets/images/Bracelets/bracelet_1.jpg',
         '../../../assets/images/Bracelets/bracelet_4.jpg',
         '../../../assets/images/Bracelets/bracelet_2.jpg',
         '../../../assets/images/Bracelets/bracelet_3.jpg'
@@ -253,6 +259,7 @@ export class ProductService {
       frenchCategory: 'Bracelets',
       image: '../../../assets/images/Bracelets/bracelet_2.jpg',
       images: [
+        '../../../assets/images/Bracelets/bracelet_2.jpg',
         '../../../assets/images/Bracelets/bracelet_1.jpg',
         '../../../assets/images/Bracelets/bracelet_4.jpg',
         '../../../assets/images/Bracelets/bracelet_3.jpg'
@@ -290,6 +297,7 @@ export class ProductService {
       frenchCategory: 'Bracelets',
       image: '../../../assets/images/Bracelets/bracelet_3.jpg',
       images: [
+        '../../../assets/images/Bracelets/bracelet_3.jpg',
         '../../../assets/images/Bracelets/bracelet_1.jpg',
         '../../../assets/images/Bracelets/bracelet_2.jpg',
         '../../../assets/images/Bracelets/bracelet_4.jpg'
@@ -327,6 +335,7 @@ export class ProductService {
       frenchCategory: 'Bracelets',
       image: '../../../assets/images/Bracelets/bracelet_4.jpg',
       images: [
+        '../../../assets/images/Bracelets/bracelet_4.jpg',
         '../../../assets/images/Bracelets/bracelet_1.jpg',
         '../../../assets/images/Bracelets/bracelet_2.jpg',
         '../../../assets/images/Bracelets/bracelet_3.jpg'
@@ -365,6 +374,7 @@ export class ProductService {
       frenchCategory: 'Colliers',
       image: '../../../assets/images/Colliers/collier_1.jpg',
       images: [
+        '../../../assets/images/Colliers/collier_1.jpg',
         '../../../assets/images/Colliers/collier_2.jpg',
         '../../../assets/images/Colliers/collier_3.jpg',
         '../../../assets/images/Colliers/collier_4.jpg'
@@ -402,6 +412,7 @@ export class ProductService {
       frenchCategory: 'Colliers',
       image: '../../../assets/images/Colliers/collier_2.jpg',
       images: [
+        '../../../assets/images/Colliers/collier_2.jpg',
         '../../../assets/images/Colliers/collier_1.jpg',
         '../../../assets/images/Colliers/collier_3.jpg',
         '../../../assets/images/Colliers/collier_4.jpg'
@@ -439,6 +450,7 @@ export class ProductService {
       frenchCategory: 'Colliers',
       image: '../../../assets/images/Colliers/collier_3.jpg',
       images: [
+        '../../../assets/images/Colliers/collier_3.jpg',
         '../../../assets/images/Colliers/collier_1.jpg',
         '../../../assets/images/Colliers/collier_2.jpg',
         '../../../assets/images/Colliers/collier_4.jpg'
@@ -476,6 +488,7 @@ export class ProductService {
       frenchCategory: 'Colliers',
       image: '../../../assets/images/Colliers/collier_4.jpg',
       images: [
+        '../../../assets/images/Colliers/collier_4.jpg',
         '../../../assets/images/Colliers/collier_1.jpg',
         '../../../assets/images/Colliers/collier_2.jpg',
         '../../../assets/images/Colliers/collier_3.jpg'
@@ -514,6 +527,7 @@ export class ProductService {
       frenchCategory: 'Colliers',
       image: '../../../assets/images/Colliers/collier_5.jpg',
       images: [
+        '../../../assets/images/Colliers/collier_5.jpg',
         '../../../assets/images/Colliers/collier_1.jpg',
         '../../../assets/images/Colliers/collier_2.jpg',
         '../../../assets/images/Colliers/collier_4.jpg'
@@ -552,6 +566,7 @@ export class ProductService {
       frenchCategory: 'Bagues',
       image: '../../../assets/images/Bagues/bague_1.jpg',
       images: [
+        '../../../assets/images/Bagues/bague_1.jpg',
         '../../../assets/images/Bagues/bague_2.jpg',
         '../../../assets/images/Bagues/bague_3.jpg',
         '../../../assets/images/Bagues/bague_4.jpg'
@@ -589,6 +604,7 @@ export class ProductService {
       frenchCategory: 'Bagues',
       image: '../../../assets/images/Bagues/bague_2.jpg',
       images: [
+        '../../../assets/images/Bagues/bague_2.jpg',
         '../../../assets/images/Bagues/bague_1.jpg',
         '../../../assets/images/Bagues/bague_3.jpg',
         '../../../assets/images/Bagues/bague_4.jpg'
@@ -627,6 +643,7 @@ export class ProductService {
       frenchCategory: 'Bagues',
       image: '../../../assets/images/Bagues/bague_3.jpg',
       images: [
+        '../../../assets/images/Bagues/bague_3.jpg',
         '../../../assets/images/Bagues/bague_1.jpg',
         '../../../assets/images/Bagues/bague_2.jpg',
         '../../../assets/images/Bagues/bague_4.jpg'
@@ -664,6 +681,7 @@ export class ProductService {
       frenchCategory: 'Bagues',
       image: '../../../assets/images/Bagues/bague_4.jpg',
       images: [
+        '../../../assets/images/Bagues/bague_4.jpg',
         '../../../assets/images/Bagues/bague_1.jpg',
         '../../../assets/images/Bagues/bague_2.jpg',
         '../../../assets/images/Bagues/bague_3.jpg'
@@ -702,6 +720,7 @@ export class ProductService {
       frenchCategory: 'Bagues',
       image: '../../../assets/images/Bagues/bague_5.jpg',
       images: [
+        '../../../assets/images/Bagues/bague_5.jpg',
         '../../../assets/images/Bagues/bague_1.jpg',
         '../../../assets/images/Bagues/bague_2.jpg',
         '../../../assets/images/Bagues/bague_3.jpg'

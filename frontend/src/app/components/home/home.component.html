@@ -53,20 +53,23 @@
     </div>
 
     <div class="products-grid">
-      <div class="product-card" *ngFor="let product of featuredProducts" (click)="navigateToProduct(product.id)">
+      <div class="product-card" *ngFor="let product of featuredProducts">
         <div class="product-image">
           <img [src]="product.images && product.images.length > 0 ? product.image : product.image" [alt]="product.name">
           <span class="sale-badge" *ngIf="product?.discountPrice">Sale!</span>
           <div class="product-actions">
-            <button class="action-btn" title="Quick view">
+            <button class="action-btn" title="Aperçu rapide" (click)="openQuickView(product)">
               <i class="fas fa-eye"></i>
             </button>
-            <button class="action-btn" title="Add to cart">
+            <button class="action-btn" title="Ajouter au panier">
               <i class="fas fa-bag-shopping"></i>
             </button>
           </div>
+          <!-- <div class="product-overlay">
+            <button class="quick-view-btn" (click)="openQuickView(product)">Aperçu rapide</button>
+          </div> -->
         </div>
-        <div class="product-info">
+        <div class="product-info" (click)="navigateToProduct(product.id)">
           <h3>{{ product.name }}</h3>
           <div class="price-container">
             <ng-container *ngIf="product.discountPrice; else regularPrice">
@@ -152,4 +155,11 @@
       </div>
     </div>
   </section>
+
+  <app-quick-view-modal
+    [product]="selectedProduct"
+    [isOpen]="isQuickViewOpen"
+    (close)="closeQuickView()"
+    (addToCart)="handleAddToCart($event)">
+  </app-quick-view-modal>
 </main>

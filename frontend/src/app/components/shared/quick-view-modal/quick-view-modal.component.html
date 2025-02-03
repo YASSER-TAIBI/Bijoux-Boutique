@@ -1,0 +1,38 @@
+<div class="modal-overlay" *ngIf="isOpen" (click)="closeModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <button class="close-button" (click)="closeModal()">×</button>
+    
+    <div class="modal-body">
+      <div class="product-image-container">
+        <button class="nav-button prev" (click)="previousImage()">&lt;</button>
+        <img [src]="product?.images?.[currentImageIndex]" [alt]="product?.name" class="product-image">
+        <button class="nav-button next" (click)="nextImage()">&gt;</button>
+      </div>
+
+      <div class="product-info">
+        <div class="category">{{ product?.category }}</div>
+        <h2 class="product-name">{{ product?.name }}</h2>
+        
+        <div class="price-container">
+          <span class="price" *ngIf="product?.oldPrice">
+            <span class="old-price">${{ product?.oldPrice.toFixed(2) }}</span>
+          </span>
+          <span class="current-price">${{ product?.price.toFixed(2) }}</span>
+          <span class="shipping">&amp; Free Shipping</span>
+        </div>
+
+        <div class="product-description">
+          {{ product?.description }}
+        </div>
+
+        <div class="quantity-container">
+          <button class="quantity-btn" (click)="decrementQuantity()">-</button>
+          <input type="number" [value]="quantity" readonly class="quantity-input">
+          <button class="quantity-btn" (click)="incrementQuantity()">+</button>
+        </div>
+
+        <button class="add-to-cart-btn" (click)="addToCartHandler()">ADD TO CART</button>
+      </div>
+    </div>
+  </div>
+</div>
