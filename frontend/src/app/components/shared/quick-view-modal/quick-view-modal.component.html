@@ -10,28 +10,35 @@
       </div>
 
       <div class="product-info">
-        <div class="category">{{ product?.category }}</div>
-        <h2 class="product-name">{{ product?.name }}</h2>
+        <span class="category">{{ product.frenchCategory }}</span>
+        <h1 class="product-name">{{ product.name }}</h1>
         
         <div class="price-container">
-          <span class="price" *ngIf="product?.oldPrice">
-            <span class="old-price">${{ product?.oldPrice.toFixed(2) }}</span>
-          </span>
-          <span class="current-price">${{ product?.price.toFixed(2) }}</span>
-          <span class="shipping">Free Shipping</span>
+          <ng-container *ngIf="product.discountPrice; else regularPrice">
+            <span class="current-price">{{ product.discountPrice | currency:'EUR' }}</span>
+            <span class="old-price">{{ product.price | currency:'EUR' }}</span>
+          </ng-container>
+          <ng-template #regularPrice>
+            <span class="current-price">{{ product.price | currency:'EUR' }}</span>
+          </ng-template>
+          <span class="shipping">Livraison gratuite</span>
         </div>
 
         <div class="product-description">
-          {{ product?.description }}
+          {{ product.description }}
         </div>
 
         <div class="quantity-container">
-          <button class="quantity-btn" (click)="decrementQuantity()">-</button>
-          <input type="text" [value]="quantity" readonly class="quantity-input">
-          <button class="quantity-btn" (click)="incrementQuantity()">+</button>
+          <div class="quantity-selector">
+            <button class="quantity-btn" (click)="decrementQuantity()">-</button>
+            <input type="number" class="quantity-input" [(ngModel)]="quantity" min="1">
+            <button class="quantity-btn" (click)="incrementQuantity()">+</button>
+          </div>
+          <button class="add-to-cart-btn">
+            <i class="fas fa-shopping-cart"></i>
+            Ajouter au panier
+          </button>
         </div>
-
-        <button class="add-to-cart-btn" (click)="addToCartHandler()">ADD TO CART</button>
       </div>
     </div>
   </div>
