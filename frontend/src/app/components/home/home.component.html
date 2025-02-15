@@ -9,7 +9,6 @@
     </div>
   </section>
 
-
   <section class="features-banner">
     <div class="feature">
       <i class="fas fa-truck"></i>
@@ -82,59 +81,23 @@
     </div>
   </section>
 
-  <!-- Categories -->
-  <section class="categories">
-    <div class="container">
-      <h2>Nos Collections</h2>
-      <div class="divider"></div>
-      <div class="category-grid">
-        <div class="category-card">
-          <img src="" alt="Bagues">
-          <div class="category-content">
-            <h3>Bagues</h3>
-            <a routerLink="/rings" class="btn btn-primary">Découvrir</a>
-          </div>
-        </div>
-        <div class="category-card">
-          <img src="" alt="Colliers">
-          <div class="category-content">
-            <h3>Colliers</h3>
-            <a routerLink="/necklaces" class="btn btn-primary">Découvrir</a>
-          </div>
-        </div>
-        <div class="category-card">
-          <img src="" alt="Boucles d'oreilles">
-          <div class="category-content">
-            <h3>Boucles d'oreilles</h3>
-            <a routerLink="/earrings" class="btn btn-primary">Découvrir</a>
-          </div>
-        </div>
-      </div>
+  <!-- Trend Section -->
+  <section class="trend-section">
+    <div class="trend-content">
+      <span class="unique-pieces">Pièces uniques</span>
+      <h2>SOIS<br>TOUJOURS<br>À LA<br>MODE</h2>
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.</p>
+      <button class="shop-now">ACHÈTE MAINTENANT</button>
     </div>
-  </section>
-
-  <!-- Testimonials Section -->
-  <section class="testimonials">
-    <div class="container">
-      <h2>Nos clients parlent pour nous</h2>
-      <div class="divider"></div>
-      
-      <div class="testimonials-carousel">
-        <div class="testimonial-cards">
-          <div class="testimonial-card" *ngFor="let testimonial of testimonials">
-            <div class="testimonial-content">
-              <p class="testimonial-text">{{ testimonial.text }}</p>
-              <div class="testimonial-author">
-                <span class="author-name">{{ testimonial.author }}</span>
-                <span class="author-role">{{ testimonial.role }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="testimonial-controls">
-          <button class="carousel-btn prev" (click)="prevTestimonial()">&lt;</button>
-          <button class="carousel-btn next" (click)="nextTestimonial()">&gt;</button>
-        </div>
+    <div class="trend-images">
+      <div class="image-container primary">
+        <img src="../../../assets/images/woman-01.jpg" alt="Collection Bijoux" class="rings-image">
+      </div>
+      <div class="image-container secondary">
+        <img src="../../../assets/images/woman-02.jpg" alt="Collection Bijoux" class="model-image">
+      </div>
+      <div class="image-container tertiary">
+        <img src="../../../assets/images/woman-03.jpg" alt="Collection Bijoux" class="luxury-image">
       </div>
     </div>
   </section>
@@ -143,16 +106,17 @@
   <section class="newsletter">
     <div class="container">
       <div class="newsletter-content">
-      <h2>Restez informé</h2>
+        <h2>Restez informé</h2>
         <p>Inscrivez-vous à notre newsletter pour recevoir nos dernières nouveautés et offres exclusives</p>
-      <form class="newsletter-form">
+        <form class="newsletter-form">
           <input type="email" placeholder="Votre adresse email" required>
-        <button type="submit" class="btn btn-primary">S'inscrire</button>
-      </form>
+          <button type="submit" class="btn btn-primary">S'inscrire</button>
+        </form>
       </div>
     </div>
   </section>
 
+  <!-- Quick View Modal -->
   <app-quick-view-modal
     [product]="selectedProduct"
     [isOpen]="isQuickViewOpen"

@@ -156,57 +156,57 @@
 }
 
 // Categories Section
-.categories {
-  padding: 60px 0;
-  background-color: #f9f9f9;
+// .categories {
+//   padding: 60px 0;
+//   background-color: #f9f9f9;
 
-  h2 {
-    text-align: center;
-    margin-bottom: 40px;
-    font-size: 2.5rem;
-  }
+//   h2 {
+//     text-align: center;
+//     margin-bottom: 40px;
+//     font-size: 2.5rem;
+//   }
 
-  .category-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 30px;
-    padding: 0 20px;
-  }
+//   .category-grid {
+//     display: grid;
+//     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+//     gap: 30px;
+//     padding: 0 20px;
+//   }
 
-  .category-card {
-    position: relative;
-    overflow: hidden;
-    border-radius: 8px;
-    box-shadow: var(--box-shadow);
+//   .category-card {
+//     position: relative;
+//     overflow: hidden;
+//     border-radius: 8px;
+//     box-shadow: var(--box-shadow);
     
-    img {
-      width: 100%;
-      height: 400px;
-      object-fit: cover;
-      transition: transform 0.3s ease;
-    }
+//     img {
+//       width: 100%;
+//       height: 400px;
+//       object-fit: cover;
+//       transition: transform 0.3s ease;
+//     }
 
-    &:hover img {
-      transform: scale(1.05);
-    }
+//     &:hover img {
+//       transform: scale(1.05);
+//     }
 
-    .category-content {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      padding: 20px;
-      background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
-      color: white;
-      text-align: center;
+//     .category-content {
+//       position: absolute;
+//       bottom: 0;
+//       left: 0;
+//       right: 0;
+//       padding: 20px;
+//       background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+//       color: white;
+//       text-align: center;
 
-      h3 {
-        color: white;
-        margin-bottom: 15px;
-      }
-    }
-  }
-}
+//       h3 {
+//         color: white;
+//         margin-bottom: 15px;
+//       }
+//     }
+//   }
+// }
 
 // Featured Products Section
 .featured-products {
@@ -658,5 +658,133 @@
 @media (max-width: 576px) {
   .hero .hero-content h1 {
     font-size: 2rem;
+  }
+}
+
+// Trend Section
+.trend-section {
+  display: flex;
+  align-items: center;
+  padding: 4rem 7rem;
+  gap: 1rem;
+  background: #f9f9f9;
+
+  .trend-content {
+    flex: 1;
+    padding-right: 2rem;
+
+    h2 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      font-weight: 300;
+    }
+
+    p {
+      line-height: 1.6;
+      color: #666;
+      margin-bottom: 2rem;
+    }
+
+    .shop-now {
+      background: #000;
+      color: white;
+      border: none;
+      padding: 0.8rem 2rem;
+      font-size: 0.9rem;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.8rem;
+      text-transform: uppercase;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: #333;
+        transform: translateY(-1px);
+      }
+
+      i {
+        font-size: 1rem;
+      }
+    }
+  }
+
+  .trend-images {
+    flex: 2;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    position: relative;
+
+    .image-container {
+      position: relative;
+      overflow: hidden;
+      border-radius: 10px;
+      box-shadow: 0 10px 20px rgba(0,0,0,.1);
+      transition: .5s cubic-bezier(.4,0,.2,1);
+      height: 550px;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: .5s ease;
+      }
+
+      &:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0,0,0,.2);
+        img { transform: scale(1.1); }
+      }
+
+      &.primary img {
+        object-position: 85% center;
+        filter: contrast(1.1);
+      }
+
+      &.secondary {
+        margin-top: 50px;
+        img {
+          object-position: 65% center;
+          filter: brightness(1.1);
+        }
+      }
+
+      &.tertiary {
+        margin-top: 100px;
+        img {
+          object-position: 40% center;
+          filter: saturate(1.1);
+        }
+      }
+    }
+  }
+
+  @media (max-width: 1200px) {
+    padding: 3rem;
+    flex-direction: column;
+    .trend-content { padding-right: 0; }
+    .trend-images {
+      width: 100%;
+      gap: .5rem;
+      .image-container {
+        height: 400px;
+        &.secondary { margin-top: 25px; }
+        &.tertiary { margin-top: 50px; }
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    padding: 2rem;
+    .trend-images {
+      grid-template-columns: 1fr;
+      .image-container {
+        height: 300px;
+        margin-top: 0 !important;
+      }
+    }
   }
 }
