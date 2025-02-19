@@ -31,8 +31,9 @@ constructor(private productService: ProductService) {}
   }
 
   getBracelets() {
-    const allProducts = [...this.productService.Products];
-    this.bracelets = allProducts.filter(product => product.category === 'Bracelets');
+    this.productService.getProducts().subscribe(products => {
+      this.bracelets = products.filter(product => product.category === 'Bracelets');
+    });
   }
 
   onSortChange(event: Event): void {

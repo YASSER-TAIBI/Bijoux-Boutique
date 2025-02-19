@@ -31,8 +31,9 @@ export class RingsComponent implements OnInit {
   }
 
   getRings() {
-    const allProducts = [...this.productService.Products];
-    this.rings = allProducts.filter(product => product.category === 'Rings');
+    this.productService.getProducts().subscribe(products => {
+      this.rings = products.filter(product => product.category === 'Rings');
+    });
   }
 
   onSortChange(event: Event): void {

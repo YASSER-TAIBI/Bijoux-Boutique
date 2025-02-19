@@ -42,28 +42,23 @@ export class ProductDetailComponent implements OnInit {
   }
 
   findProduct(id: number) {
-    const allProducts = [
-      ...this.productService.Products
-    ];
-    
-    const foundProduct = allProducts.find(p => p.id === id);
-    if (foundProduct) {
-      this.product = foundProduct;
-      this.selectedImage = foundProduct.image;
-      this.findRelatedProducts();
-    }
+    this.productService.getProduct(id).subscribe(product => {
+      if (product) {
+        this.product = product;
+        this.selectedImage = product.image;
+        this.findRelatedProducts();
+      }
+    });
   }
 
   findRelatedProducts() {
     if (!this.product) return;
 
-    const allProducts = [
-      ...this.productService.Products
-    ];
-
-    this.relatedProducts = allProducts
-      .filter(p => p.category === this.product?.category && p.id !== this.product?.id)
-      .slice(0, 4);
+    this.productService.getProducts().subscribe(products => {
+      this.relatedProducts = products
+        .filter(p => p.category === this.product?.category && p.id !== this.product?.id)
+        .slice(0, 4);
+    });
   }
 
   changeTab(tab: string) {

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -12,7 +12,7 @@ import { ProductService } from '../../services/product.service';
   templateUrl: './necklaces.component.html',
   styleUrls: ['./necklaces.component.scss']
 })
-export class NecklacesComponent {
+export class NecklacesComponent implements OnInit {
   necklaces: Product[] = [];
   sortOptions = [
     { value: 'default', label: 'Tri par défaut' },
@@ -26,13 +26,14 @@ export class NecklacesComponent {
 
   constructor(private productService: ProductService) {}
   
-  ngOnInit() {
+  ngOnInit(): void {
     this.getNecklaces();
   }
 
   getNecklaces() {
-    const allProducts = [...this.productService.Products];
-    this.necklaces = allProducts.filter(product => product.category === 'Necklaces');
+    this.productService.getProducts().subscribe(products => {
+      this.necklaces = products.filter(product => product.category === 'Necklaces');
+    });
   }
 
   onSortChange(event: Event): void {

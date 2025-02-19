@@ -32,8 +32,9 @@ constructor(private productService: ProductService) {}
   }
 
   getEarrings() {
-    const allProducts = [...this.productService.Products];
-    this.earrings = allProducts.filter(product => product.category === 'Earrings');
+    this.productService.getProducts().subscribe(products => {
+      this.earrings = products.filter(product => product.category === 'Earrings');
+    });
   }
 
   onSortChange(event: Event): void {
