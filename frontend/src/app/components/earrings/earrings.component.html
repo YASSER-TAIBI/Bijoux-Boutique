@@ -27,8 +27,8 @@
         </div>
         <div class="product-rating" *ngIf="product.rating">
           <span class="rating">{{ product.rating }}/5</span>
-          <span class="stock-status" [class.in-stock]="product.inStock" [class.out-of-stock]="!product.inStock">
-            {{ product.inStock ? 'En stock' : 'Rupture de stock' }}
+          <span class="stock-status" [class.in-stock]="product.quantity && product.quantity > 0" [class.out-of-stock]="!product.quantity || product.quantity === 0">
+            {{ product.quantity && product.quantity > 0 ? 'En stock' : 'Rupture de stock' }}
           </span>
         </div>
       </div>

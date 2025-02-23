@@ -76,6 +76,9 @@
               <span class="current-price">{{ product.price | currency:'EUR' }}</span>
             </ng-template>
           </div>
+          <div class="stock-status" [class.in-stock]="product.quantity && product.quantity > 0" [class.out-of-stock]="!product.quantity || product.quantity === 0">
+            {{ product.quantity && product.quantity > 0 ? 'En stock' : 'Rupture de stock' }}
+          </div>
         </div>
       </div>
     </div>

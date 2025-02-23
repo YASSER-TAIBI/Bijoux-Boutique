@@ -31,6 +31,9 @@
             -{{ getDiscountPercentage() }}%
           </span>
         </div>
+        <div class="stock-status" [class.in-stock]="product.quantity && product.quantity > 0" [class.out-of-stock]="!product.quantity || product.quantity === 0">
+          {{ product.quantity && product.quantity > 0 ? 'En stock' : 'Rupture de stock' }}
+        </div>
       </div>
 
       <div class="description">
@@ -223,9 +226,9 @@
               {{ relatedProduct.oldPrice | currency:'EUR':'symbol' }}
             </span>
           </div>
-          <div class="stock-status" [class.in-stock]="relatedProduct.inStock" [class.out-of-stock]="!relatedProduct.inStock">
-            <i class="fas" [class.fa-check]="relatedProduct.inStock" [class.fa-times]="!relatedProduct.inStock"></i>
-            {{ relatedProduct.inStock ? 'En stock' : 'Rupture de stock' }}
+          <div class="stock-status" [class.in-stock]="relatedProduct.quantity && relatedProduct.quantity > 0" [class.out-of-stock]="!relatedProduct.quantity || relatedProduct.quantity === 0">
+            <i class="fas" [class.fa-check]="relatedProduct.quantity && relatedProduct.quantity > 0" [class.fa-times]="!relatedProduct.quantity || relatedProduct.quantity === 0"></i>
+            {{ relatedProduct.quantity && relatedProduct.quantity > 0 ? 'En stock' : 'Rupture de stock' }}
           </div>
         </div>
       </div>

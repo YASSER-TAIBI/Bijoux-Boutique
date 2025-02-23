@@ -20,7 +20,6 @@ export interface Product {
   image: string;
   images?: string[];
   quantity?: number;
-  inStock?: boolean;
   rating?: number;
   reviewCount?: number;
   material?: string;
