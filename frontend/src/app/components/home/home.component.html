@@ -65,7 +65,7 @@
             </button>
           </div>
         </div>
-        <div class="product-info" (click)="navigateToProduct(product.id)">
+        <div class="product-info" (click)="navigateToProduct(product._id)">
           <h3>{{ product.name }}</h3>
           <div class="price-container">
             <ng-container *ngIf="product.discountPrice; else regularPrice">

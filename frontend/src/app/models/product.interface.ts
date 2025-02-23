@@ -1,5 +1,5 @@
 export interface Review {
-  id?: number;
+  _id?: string;
   userName: string;
   email: string;
   rating: number;
@@ -8,7 +8,7 @@ export interface Review {
 }
 
 export interface Product {
-  id: number;
+  _id: string;
   name: string;
   price: number;
   oldPrice?: number;
@@ -19,8 +19,8 @@ export interface Product {
   frenchCategory: string;
   image: string;
   images?: string[];
-  inStock: boolean;
   quantity?: number;
+  inStock?: boolean;
   rating?: number;
   reviewCount?: number;
   material?: string;

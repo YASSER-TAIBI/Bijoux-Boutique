@@ -15,7 +15,7 @@
   </div>
 
   <div class="products-grid">
-    <div class="product-card" *ngFor="let product of rings" [routerLink]="['/product', product.id]">
+    <div class="product-card" *ngFor="let product of rings" [routerLink]="['/product', product._id]">
       <div class="product-image">
         <img [src]="product.image" [alt]="product.name">
       </div>

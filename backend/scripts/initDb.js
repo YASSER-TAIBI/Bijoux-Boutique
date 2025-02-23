@@ -4,7 +4,7 @@ const Product = require('../models/product.model');
 
 const products = [
     {
-        id: 1,
+        _id: new mongoose.Types.ObjectId(),
         name: 'Boucles d\'Oreilles Diamant Étoilé',
         price: 299.99,
         oldPrice: 349.99,
@@ -19,7 +19,7 @@ const products = [
             '../../../assets/images/Boucles_Oreilles/boucle_oreille_3.jpg',
             '../../../assets/images/Boucles_Oreilles/boucle_oreille_4.jpg'
         ],
-        inStock: true,
+
         quantity: 5,
         rating: 4.8,
         reviewCount: 10,
@@ -33,15 +33,15 @@ const products = [
         careInstructions: 'Nettoyer avec un chiffon doux. Éviter le contact avec l\'eau et les produits chimiques.',
         reviews: [
             {
-                id: 1,
+                _id: new mongoose.Types.ObjectId(),
                 userName: 'Sophie L.',
                 email: 'sophie@example.com',
                 rating: 5,
-                comment: 'Des boucles d\'oreilles absolument magnifiques ! Elles capturent la lumière de manière incroyable.',
+                comment: 'Des boucles d\'oreilles absolument magnifiques ! Elles capturent la lumière de manera incroyable.',
                 date: new Date('2024-11-15')
             },
             {
-                id: 2,
+                _id: new mongoose.Types.ObjectId(),
                 userName: 'Emma R.',
                 email: 'emma@example.com',
                 rating: 4,
@@ -51,7 +51,7 @@ const products = [
         ]
     },
     {
-        id: 2,
+        _id: new mongoose.Types.ObjectId(),
         name: 'Créoles Torsadées Or Rose',
         price: 199.99,
         description: 'Créoles torsadées en or rose 18 carats. Un design contemporain qui allie élégance et modernité, parfait pour toutes les occasions.',
@@ -65,7 +65,7 @@ const products = [
             '../../../assets/images/Boucles_Oreilles/boucle_oreille_3.jpg',
             '../../../assets/images/Boucles_Oreilles/boucle_oreille_4.jpg'
         ],
-        inStock: true,
+
         quantity: 8,
         rating: 4.6,
         reviewCount: 5,
@@ -79,7 +79,7 @@ const products = [
         careInstructions: 'Nettoyer avec un chiffon doux. Éviter le contact avec l\'eau et les produits chimiques.',
         reviews: [
             {
-                id: 3,
+                _id: new mongoose.Types.ObjectId(),
                 userName: 'Aurélie M.',
                 email: 'aurelie@example.com',
                 rating: 4,
@@ -89,7 +89,7 @@ const products = [
         ]
     },
     {
-      id: 3,
+      _id: new mongoose.Types.ObjectId(),
       name: 'Puces Perles de Tahiti',
       price: 449.99,
       oldPrice: 499.99,
@@ -104,7 +104,7 @@ const products = [
         '../../../assets/images/Boucles_Oreilles/boucle_oreille_2.jpg',
         '../../../assets/images/Boucles_Oreilles/boucle_oreille_4.jpg'
       ],
-      inStock: true,
+      
       quantity: 3,
       rating: 5.0,
       reviewCount: 2,
@@ -118,7 +118,7 @@ const products = [
       careInstructions: 'Nettoyer avec un chiffon doux. Éviter le contact avec l\'eau et les produits chimiques.',
       reviews: [
         {
-          id: 4,
+          _id: new mongoose.Types.ObjectId(),
           userName: 'Léa G.',
           email: 'lea@example.com',
           rating: 5,
@@ -128,7 +128,7 @@ const products = [
       ]
     },
     {
-      id: 4,
+      _id: new mongoose.Types.ObjectId(),
       name: 'Pendants Cascade Saphir',
       price: 599.99,
       description: 'Magnifiques pendants en or blanc sertis de saphirs bleus et de diamants. Une cascade étincelante qui illuminera votre visage.',
@@ -142,7 +142,7 @@ const products = [
         '../../../assets/images/Boucles_Oreilles/boucle_oreille_2.jpg',
         '../../../assets/images/Boucles_Oreilles/boucle_oreille_3.jpg'
       ],
-      inStock: true,
+      
       quantity: 2,
       rating: 4.9,
       reviewCount: 1,
@@ -156,7 +156,7 @@ const products = [
       careInstructions: 'Nettoyer avec un chiffon doux. Éviter le contact avec l\'eau et les produits chimiques.',
       reviews: [
         {
-          id: 5,
+          _id: new mongoose.Types.ObjectId(),
           userName: 'Anaïs D.',
           email: 'anais@example.com',
           rating: 5,
@@ -166,7 +166,7 @@ const products = [
       ]
     },
     {
-      id: 5,
+      _id: new mongoose.Types.ObjectId(),
       name: 'Créoles Diamants Infini',
       price: 799.99,
       oldPrice: 899.99,
@@ -181,7 +181,7 @@ const products = [
         '../../../assets/images/Boucles_Oreilles/boucle_oreille_2.jpg',
         '../../../assets/images/Boucles_Oreilles/boucle_oreille_3.jpg'
       ],
-      inStock: true,
+      
       quantity: 4,
       rating: 4.7,
       reviewCount: 3,
@@ -195,7 +195,7 @@ const products = [
       careInstructions: 'Nettoyer avec un chiffon doux. Éviter le contact avec l\'eau et les produits chimiques.',
       reviews: [
         {
-          id: 6,
+          _id: new mongoose.Types.ObjectId(),
           userName: 'Charlotte B.',
           email: 'charlotte@example.com',
           rating: 4,
@@ -205,7 +205,7 @@ const products = [
       ]
     },
     {
-      id: 6,
+      _id: new mongoose.Types.ObjectId(),
       name: 'Bracelet Jonc Diamanté',
       price: 499.99,
       oldPrice: 599.99,
@@ -220,7 +220,7 @@ const products = [
         '../../../assets/images/Bracelets/bracelet_2.jpg',
         '../../../assets/images/Bracelets/bracelet_3.jpg'
       ],
-      inStock: true,
+      
       quantity: 3,
       rating: 4.9,
       reviewCount: 8,
@@ -234,7 +234,7 @@ const products = [
       careInstructions: 'Nettoyer délicatement avec un chiffon doux.',
       reviews: [
         {
-          id: 1,
+          _id: new mongoose.Types.ObjectId(),
           userName: 'Pauline F.',
           email: 'pauline@example.com',
           rating: 5,
@@ -244,7 +244,7 @@ const products = [
       ]
     },
     {
-      id: 7,
+      _id: new mongoose.Types.ObjectId(),
       name: 'Bracelet Gourmette Or Rose',
       price: 249.99,
       description: 'Bracelet gourmette en or rose 18 carats avec gravure personnalisable. Un bijou chic et discret.',
@@ -258,7 +258,7 @@ const products = [
         '../../../assets/images/Bracelets/bracelet_4.jpg',
         '../../../assets/images/Bracelets/bracelet_3.jpg'
       ],
-      inStock: true,
+      
       quantity: 5,
       rating: 4.7,
       reviewCount: 4,
@@ -272,7 +272,7 @@ const products = [
       careInstructions: 'Éviter l\'exposition prolongée à l\'eau et aux produits chimiques.',
       reviews: [
         {
-          id: 2,
+          _id: new mongoose.Types.ObjectId(),
           userName: 'Julien T.',
           email: 'julien@example.com',
           rating: 4,
@@ -282,7 +282,7 @@ const products = [
       ]
     },
     {
-      id: 8,
+      _id: new mongoose.Types.ObjectId(),
       name: 'Bracelet Charms Perles',
       price: 159.99,
       description: 'Bracelet extensible orné de perles d\'eau douce et de charms plaqués or.',
@@ -296,7 +296,7 @@ const products = [
         '../../../assets/images/Bracelets/bracelet_2.jpg',
         '../../../assets/images/Bracelets/bracelet_4.jpg'
       ],
-      inStock: true,
+      
       quantity: 10,
       rating: 4.5,
       reviewCount: 7,
@@ -310,7 +310,7 @@ const products = [
       careInstructions: 'Essuyer avec un chiffon doux après usage.',
       reviews: [
         {
-          id: 3,
+          _id: new mongoose.Types.ObjectId(),
           userName: 'Elise R.',
           email: 'elise@example.com',
           rating: 5,
@@ -320,7 +320,7 @@ const products = [
       ]
     },
     {
-      id: 9,
+      _id: new mongoose.Types.ObjectId(),
       name: 'Bracelet Multi-Rangs Cuir',
       price: 89.99,
       description: 'Bracelet multi-rangs en cuir véritable avec fermoir magnétique en acier inoxydable.',
@@ -334,7 +334,7 @@ const products = [
         '../../../assets/images/Bracelets/bracelet_2.jpg',
         '../../../assets/images/Bracelets/bracelet_3.jpg'
       ],
-      inStock: true,
+      
       quantity: 15,
       rating: 4.6,
       reviewCount: 6,
@@ -348,7 +348,7 @@ const products = [
       careInstructions: 'Éviter l\'exposition prolongée à l\'humidité.',
       reviews: [
         {
-          id: 4,
+          _id: new mongoose.Types.ObjectId(),
           userName: 'Mathieu G.',
           email: 'mathieu@example.com',
           rating: 4,
@@ -358,7 +358,7 @@ const products = [
       ]
     },
     {
-      id: 10,
+      _id: new mongoose.Types.ObjectId(),
       name: 'Collier Pendentif Diamant',
       price: 799.99,
       oldPrice: 899.99,
@@ -373,7 +373,7 @@ const products = [
         '../../../assets/images/Colliers/collier_3.jpg',
         '../../../assets/images/Colliers/collier_4.jpg'
       ],
-      inStock: true,
+      
       quantity: 3,
       rating: 5.0,
       reviewCount: 6,
@@ -387,7 +387,7 @@ const products = [
       careInstructions: 'Nettoyer avec un chiffon doux. Éviter le contact avec des produits chimiques.',
       reviews: [
         {
-          id: 1,
+          _id: new mongoose.Types.ObjectId(),
           userName: 'Claire M.',
           email: 'claire@example.com',
           rating: 5,
@@ -397,7 +397,7 @@ const products = [
       ]
     },
     {
-      id: 11,
+      _id: new mongoose.Types.ObjectId(),
       name: 'Collier Perles de Culture',
       price: 399.99,
       description: 'Collier classique composé de perles de culture blanches, un bijou intemporel qui traverse les générations.',
@@ -411,7 +411,7 @@ const products = [
         '../../../assets/images/Colliers/collier_3.jpg',
         '../../../assets/images/Colliers/collier_4.jpg'
       ],
-      inStock: true,
+      
       quantity: 5,
       rating: 4.8,
       reviewCount: 4,
@@ -425,7 +425,7 @@ const products = [
       careInstructions: 'Nettoyer doucement avec un chiffon humide. Ranger à l\'abri de l\'humidité.',
       reviews: [
         {
-          id: 2,
+          _id: new mongoose.Types.ObjectId(),
           userName: 'Aline D.',
           email: 'aline@example.com',
           rating: 5,
@@ -435,7 +435,7 @@ const products = [
       ]
     },
     {
-      id: 12,
+      _id: new mongoose.Types.ObjectId(),
       name: 'Collier Coeur Or Rose',
       price: 249.99,
       description: 'Collier délicat en or rose avec un pendentif en forme de cœur, idéal pour un cadeau romantique.',
@@ -449,7 +449,7 @@ const products = [
         '../../../assets/images/Colliers/collier_2.jpg',
         '../../../assets/images/Colliers/collier_4.jpg'
       ],
-      inStock: true,
+      
       quantity: 10,
       rating: 4.7,
       reviewCount: 7,
@@ -463,7 +463,7 @@ const products = [
       careInstructions: 'Éviter l\'exposition prolongée à l\'eau et aux produits chimiques.',
       reviews: [
         {
-          id: 3,
+          _id: new mongoose.Types.ObjectId(),
           userName: 'Juliette P.',
           email: 'juliette@example.com',
           rating: 4,
@@ -473,7 +473,7 @@ const products = [
       ]
     },
     {
-      id: 13,
+      _id: new mongoose.Types.ObjectId(),
       name: 'Sautoir Étoiles Argent',
       price: 179.99,
       description: 'Sautoir en argent sterling avec des pendentifs étoiles, parfait pour un look décontracté ou chic.',
@@ -487,7 +487,7 @@ const products = [
         '../../../assets/images/Colliers/collier_2.jpg',
         '../../../assets/images/Colliers/collier_3.jpg'
       ],
-      inStock: true,
+      
       quantity: 15,
       rating: 4.6,
       reviewCount: 5,
@@ -501,7 +501,7 @@ const products = [
       careInstructions: 'Ranger dans une boîte à bijoux pour éviter les rayures.',
       reviews: [
         {
-          id: 4,
+          _id: new mongoose.Types.ObjectId(),
           userName: 'Sophie L.',
           email: 'sophie@example.com',
           rating: 4,
@@ -511,7 +511,7 @@ const products = [
       ]
     },
     {
-      id: 14,
+      _id: new mongoose.Types.ObjectId(),
       name: 'Collier Saphirs et Émeraudes',
       price: 1299.99,
       oldPrice: 1499.99,
@@ -526,7 +526,7 @@ const products = [
         '../../../assets/images/Colliers/collier_2.jpg',
         '../../../assets/images/Colliers/collier_4.jpg'
       ],
-      inStock: true,
+      
       quantity: 2,
       rating: 5.0,
       reviewCount: 3,
@@ -540,7 +540,7 @@ const products = [
       careInstructions: 'Nettoyer avec un chiffon doux et ranger dans un écrin.',
       reviews: [
         {
-          id: 5,
+          _id: new mongoose.Types.ObjectId(),
           userName: 'Margot V.',
           email: 'margot@example.com',
           rating: 5,
@@ -550,7 +550,7 @@ const products = [
       ]
     },
     {
-      id: 15,
+      _id: new mongoose.Types.ObjectId(),
       name: 'Bague Solitaire Diamant',
       price: 999.99,
       oldPrice: 1199.99,
@@ -565,7 +565,7 @@ const products = [
         '../../../assets/images/Bagues/bague_3.jpg',
         '../../../assets/images/Bagues/bague_4.jpg'
       ],
-      inStock: true,
+      
       quantity: 3,
       rating: 5.0,
       reviewCount: 8,
@@ -579,7 +579,7 @@ const products = [
       careInstructions: 'Nettoyer avec un chiffon doux. Éviter les produits chimiques.',
       reviews: [
         {
-          id: 1,
+          _id: new mongoose.Types.ObjectId(),
           userName: 'Amélie R.',
           email: 'amelie@example.com',
           rating: 5,
@@ -589,7 +589,7 @@ const products = [
       ]
     },
     {
-      id: 16,
+      _id: new mongoose.Types.ObjectId(),
       name: 'Alliance Or Jaune',
       price: 499.99,
       description: 'Alliance simple et élégante en or jaune 18 carats. Un symbole éternel d\'amour et d\'engagement.',
@@ -603,7 +603,7 @@ const products = [
         '../../../assets/images/Bagues/bague_3.jpg',
         '../../../assets/images/Bagues/bague_4.jpg'
       ],
-      inStock: true,
+      
       quantity: 10,
       rating: 4.8,
       reviewCount: 6,
@@ -617,7 +617,7 @@ const products = [
       careInstructions: 'Polir régulièrement pour conserver l\'éclat.',
       reviews: [
         {
-          id: 2,
+          _id: new mongoose.Types.ObjectId(),
           userName: 'Julien P.',
           email: 'julien@example.com',
           rating: 5,
@@ -627,7 +627,7 @@ const products = [
       ]
     },
     {
-      id: 17,
+      _id: new mongoose.Types.ObjectId(),
       name: 'Bague Émeraude et Diamants',
       price: 1299.99,
       oldPrice: 1499.99,
@@ -642,7 +642,7 @@ const products = [
         '../../../assets/images/Bagues/bague_2.jpg',
         '../../../assets/images/Bagues/bague_4.jpg'
       ],
-      inStock: true,
+      
       quantity: 2,
       rating: 5.0,
       reviewCount: 4,
@@ -656,7 +656,7 @@ const products = [
       careInstructions: 'Nettoyer avec un produit spécifique aux pierres précieuses.',
       reviews: [
         {
-          id: 3,
+          _id: new mongoose.Types.ObjectId(),
           userName: 'Camille L.',
           email: 'camille@example.com',
           rating: 5,
@@ -666,7 +666,7 @@ const products = [
       ]
     },
     {
-      id: 18,
+      _id: new mongoose.Types.ObjectId(),
       name: 'Chevalière Argent Gravée',
       price: 349.99,
       description: 'Chevalière élégante en argent sterling, personnalisable avec une gravure au choix.',
@@ -680,7 +680,6 @@ const products = [
         '../../../assets/images/Bagues/bague_2.jpg',
         '../../../assets/images/Bagues/bague_3.jpg'
       ],
-      inStock: true,
       quantity: 7,
       rating: 4.7,
       reviewCount: 3,
@@ -694,7 +693,7 @@ const products = [
       careInstructions: 'Éviter l\'humidité pour prévenir l\'oxydation.',
       reviews: [
         {
-          id: 4,
+          _id: new mongoose.Types.ObjectId(),
           userName: 'Lucas G.',
           email: 'lucas@example.com',
           rating: 4,
@@ -704,7 +703,7 @@ const products = [
       ]
     },
     {
-      id: 19,
+      _id: new mongoose.Types.ObjectId(),
       name: 'Bague Rubis et Diamants',
       price: 1599.99,
       oldPrice: 1799.99,
@@ -719,7 +718,6 @@ const products = [
         '../../../assets/images/Bagues/bague_2.jpg',
         '../../../assets/images/Bagues/bague_3.jpg'
       ],
-      inStock: true,
       quantity: 1,
       rating: 5.0,
       reviewCount: 2,
@@ -733,7 +731,7 @@ const products = [
       careInstructions: 'Nettoyer avec un chiffon doux et éviter les chocs.',
       reviews: [
         {
-          id: 5,
+          _id: new mongoose.Types.ObjectId(),
           userName: 'Élise T.',
           email: 'elise@example.com',
           rating: 5,

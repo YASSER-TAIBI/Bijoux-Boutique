@@ -85,7 +85,7 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  navigateToProduct(productId: number) {
+  navigateToProduct(productId: string) {
     this.router.navigate(['/product', productId]);
   }
 

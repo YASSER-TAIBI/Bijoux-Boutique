@@ -33,7 +33,7 @@ export class ProductDetailComponent implements OnInit {
   ngOnInit() {
  
     this.route.params.subscribe(params => {
-      const id = +params['id'];
+      const id = params['id'];
       this.findProduct(id);
     });
 
@@ -41,7 +41,7 @@ export class ProductDetailComponent implements OnInit {
     this.viewportScroller.scrollToPosition([0, 0]);
   }
 
-  findProduct(id: number) {
+  findProduct(id: string) {
     this.productService.getProduct(id).subscribe(product => {
       if (product) {
         this.product = product;
@@ -56,7 +56,7 @@ export class ProductDetailComponent implements OnInit {
 
     this.productService.getProducts().subscribe(products => {
       this.relatedProducts = products
-        .filter(p => p.category === this.product?.category && p.id !== this.product?.id)
+        .filter(p => p.category === this.product?.category && p._id !== this.product?._id)
         .slice(0, 4);
     });
   }
