@@ -5,6 +5,7 @@ import { QuickViewModalComponent } from '../shared/quick-view-modal/quick-view-m
 import { Product } from '../../models/product.interface';
 import { ProductService } from '../../services/product.service';
 import { Router } from '@angular/router';
+import { CartService } from '../../services/cart.service';
 
 @Component({
   selector: 'app-home',
@@ -18,7 +19,6 @@ export class HomeComponent implements OnInit {
   featuredProducts: Product[] = [];
   selectedProduct: any = null;
   isQuickViewOpen = false;
-
   testimonials = [
     {
       text: "Des bijoux magnifiques et un service client exceptionnel !",
@@ -37,51 +37,60 @@ export class HomeComponent implements OnInit {
     }
   ];
 
-  constructor(private productService: ProductService, private router: Router) {}
+  constructor(
+    private productService: ProductService,
+    private router: Router,
+    private cartService: CartService
+  ) {}
 
   ngOnInit() {
     this.loadFeaturedProducts();
   }
 
   private loadFeaturedProducts() {
-    this.productService.getProducts().subscribe(products => {
-      console.log("Produits:", products);
-      // Sélectionner des produits variés (1 de chaque catégorie)
-      const categories = ['Earrings', 'Necklaces', 'Bracelets', 'Rings'];
-      
-      // Créer un tableau temporaire pour stocker les produits sélectionnés
-      let selectedProducts: Product[] = [];
-
-      // Sélectionner un produit aléatoire pour chaque catégorie
-      categories.forEach(category => {
-        console.log("Recherche de la catégorie:", category);
-        const categoryProducts = products.filter(p => p.category === category);
-        console.log("Produits trouvés pour", category, ":", categoryProducts);
+    this.productService.getProducts().subscribe({
+      next: (products) => {
+        console.log("Produits:", products);
+        // Sélectionner des produits variés (1 de chaque catégorie)
+        const categories = ['Earrings', 'Necklaces', 'Bracelets', 'Rings'];
         
-        if (categoryProducts.length > 0) {
-          const randomProduct = categoryProducts[Math.floor(Math.random() * categoryProducts.length)];
-          console.log("Produit sélectionné pour", category, ":", randomProduct);
-          
-          // Vérifier et s'assurer que le produit a toutes les propriétés nécessaires
-          if (randomProduct) {
-            // Créer une copie du produit avec les propriétés requises
-            const processedProduct: Product = {
-              ...randomProduct,
-              images: randomProduct.images || ['/assets/images/placeholder.jpg'],
-              price: randomProduct.price || 0,
-              discountPrice: Math.random() > 0.7 ? 
-                +(randomProduct.price * 0.8).toFixed(2) : // 20% de réduction
-                null
-            };
-            
-            selectedProducts.push(processedProduct);
-          }
-        }
-      });
+        // Créer un tableau temporaire pour stocker les produits sélectionnés
+        let selectedProducts: Product[] = [];
 
-      console.log("Produits sélectionnés:", selectedProducts);
-      // Mettre à jour featuredProducts avec les produits sélectionnés
-      this.featuredProducts = selectedProducts;
+        // Sélectionner un produit aléatoire pour chaque catégorie
+        categories.forEach(category => {
+          console.log("Recherche de la catégorie:", category);
+          const categoryProducts = products.filter(p => p.category === category);
+          console.log("Produits trouvés pour", category, ":", categoryProducts);
+          
+          if (categoryProducts.length > 0) {
+            const randomProduct = categoryProducts[Math.floor(Math.random() * categoryProducts.length)];
+            console.log("Produit sélectionné pour", category, ":", randomProduct);
+            
+            // Vérifier et s'assurer que le produit a toutes les propriétés nécessaires
+            if (randomProduct) {
+              // Créer une copie du produit avec les propriétés requises
+              const processedProduct: Product = {
+                ...randomProduct,
+                images: randomProduct.images || ['/assets/images/placeholder.jpg'],
+                price: randomProduct.price || 0,
+                discountPrice: Math.random() > 0.7 ? 
+                  +(randomProduct.price * 0.8).toFixed(2) : // 20% de réduction
+                  null
+              };
+              
+              selectedProducts.push(processedProduct);
+            }
+          }
+        });
+
+        console.log("Produits sélectionnés:", selectedProducts);
+        // Mettre à jour featuredProducts avec les produits sélectionnés
+        this.featuredProducts = selectedProducts;
+      },
+      error: (error) => {
+        console.error('Error loading products:', error);
+      }
     });
   }
 
@@ -113,9 +122,7 @@ export class HomeComponent implements OnInit {
     this.selectedProduct = null;
   }
 
-  handleAddToCart(event: {product: any, quantity: number}): void {
-    // TODO: Implémenter l'ajout au panier
-    console.log('Adding to cart:', event);
-    this.closeQuickView();
+  handleAddToCart(event: {product: Product, quantity: number}): void {
+    this.cartService.addToCart(event.product, event.quantity);
   }
 }
