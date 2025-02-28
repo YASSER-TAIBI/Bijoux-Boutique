@@ -1,0 +1,118 @@
+<div class="checkout-page">
+  <h1>Paiement</h1>
+  
+  <div class="checkout-steps">
+    <span class="step" (click)="viewCart()">1 CHARIOTS DE COURSES</span>
+    <span class="step-separator">></span>
+    <span class="step active">2 DÉTAILS DE LA CAISSE</span>
+    <span class="step-separator">></span>
+    <span class="step-non-hover">3 COMMANDE COMPLÈTE</span>
+  </div>
+
+  <div class="checkout-content">
+    <div class="customer-details">
+      <div class="customer-information">
+        <h2>Information client</h2>
+        <div class="form-group">
+          <input type="text" placeholder="Nom d'utilisateur ou adresse e-mail *" [(ngModel)]="customerInfo.email" required>
+        </div>
+      </div>
+
+      <div class="billing-details">
+        <h2>Détails de facturation</h2>
+        <div class="form-row">
+          <div class="form-group half">
+            <input type="text" placeholder="Prénom *" [(ngModel)]="customerInfo.firstName" required>
+          </div>
+          <div class="form-group half">
+            <input type="text" placeholder="Nom *" [(ngModel)]="customerInfo.lastName" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <input type="text" placeholder="Nom de l'entreprise" [(ngModel)]="customerInfo.companyName">
+        </div>
+        <div class="form-group">
+          <select [(ngModel)]="customerInfo.country" required>
+            <option value="">Pays / Région *</option>
+            <option value="FR">France</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <input type="text" placeholder="Adresse *" [(ngModel)]="customerInfo.streetAddress" required>
+        </div>
+        <div class="form-group">
+          <input type="text" placeholder="Appartement, suite, unité, etc. (facultatif)" [(ngModel)]="customerInfo.apartment">
+        </div>
+        <div class="form-row">
+          <div class="form-group half">
+            <input type="text" placeholder="Code postal *" [(ngModel)]="customerInfo.postcode" required>
+          </div>
+          <div class="form-group half">
+            <input type="text" placeholder="Ville *" [(ngModel)]="customerInfo.city" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <input type="tel" placeholder="Téléphone *" [(ngModel)]="customerInfo.phone" required>
+        </div>
+      </div>
+
+      <div class="additional-information">
+        <h2>Informations complémentaires</h2>
+        <div class="form-group">
+          <textarea placeholder="Notes sur votre commande, par exemple notes spéciales pour la livraison" [(ngModel)]="customerInfo.notes"></textarea>
+        </div>
+      </div>
+
+      <div class="coupon-section">
+        <p>Avoir un coupon ?</p>
+      </div>
+
+      <div class="payment-section">
+        <h2>Paiement</h2>
+        <div class="payment-methods">
+          <div class="payment-method">
+            <input type="radio" id="bank-transfer" name="payment" value="bank-transfer" [(ngModel)]="customerInfo.paymentMethod">
+            <label for="bank-transfer">Virement bancaire direct</label>
+          </div>
+          <div class="payment-method">
+            <input type="radio" id="cash-delivery" name="payment" value="cash-delivery" [(ngModel)]="customerInfo.paymentMethod">
+            <label for="cash-delivery">Paiement à la livraison</label>
+            <p class="payment-description" *ngIf="customerInfo.paymentMethod === 'cash-delivery'">
+              Payer en espèces à la livraison.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="order-summary">
+      <h2>Votre commande</h2>
+      <div class="order-content">
+        <div class="order-items">
+          <div class="order-item" *ngFor="let item of cartItems">
+            <div class="product-info">
+              <img [src]="item.image" [alt]="item.name">
+              <span class="product-name">{{ item.name }} × {{ item.quantity }}</span>
+            </div>
+            <span class="product-total">{{ item.price * item.quantity | currency:'EUR':'symbol':'1.2-2' }}</span>
+          </div>
+        </div>
+
+        <div class="order-totals">
+          <div class="subtotal-row">
+            <span>Sous-total</span>
+            <span>{{ getSubtotal() | currency:'EUR':'symbol':'1.2-2' }}</span>
+          </div>
+          <div class="total-row">
+            <span>Total</span>
+            <span>{{ getSubtotal() | currency:'EUR':'symbol':'1.2-2' }}</span>
+          </div>
+        </div>
+
+        <button class="place-order-btn" (click)="placeOrder()">
+          COMMANDER {{ getSubtotal() | currency:'EUR':'symbol':'1.2-2' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

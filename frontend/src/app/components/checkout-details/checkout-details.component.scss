@@ -1,0 +1,238 @@
+.checkout-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px 40px 20px;
+
+  h1 {
+    text-align: center;
+    margin: 2rem 0;
+    font-size: 2rem;
+    font-weight: 500;
+    color: var(--text-color);
+  }
+}
+
+.checkout-steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 14px;
+  margin: 50px 0 80px 0;
+
+  .step-non-hover,
+  .step {
+    color: #999;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+
+    &.active {
+      color: var(--secondary-color);
+    }
+  }
+
+  .step{
+    cursor: pointer;
+  }
+
+  .step-non-hover {
+    cursor: default;
+  }
+
+  .step:hover {
+    color: var(--secondary-color);
+  }
+
+  .step-separator {
+    color: #999;
+  }
+}
+
+.checkout-content {
+  display: flex;
+  gap: 30px;
+  margin-bottom: 50px;
+}
+
+.customer-details {
+  flex: 1;
+
+  h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 20px;
+  }
+
+  .form-row {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+
+    .form-group.half {
+      flex: 1;
+    }
+  }
+
+  .form-group {
+    margin-bottom: 15px;
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px 15px;
+      border: 1px solid #e5e5e5;
+      font-size: 14px;
+      color: var(--text-color);
+      background: white;
+
+      &:focus {
+        outline: none;
+        border-color: var(--secondary-color);
+      }
+
+      &::placeholder {
+        color: #999;
+      }
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+  }
+}
+
+.payment-section {
+  margin-top: 30px;
+
+  .payment-methods {
+    .payment-method {
+      margin-bottom: 15px;
+      
+      input[type="radio"] {
+        margin-right: 10px;
+      }
+
+      label {
+        font-size: 14px;
+        color: var(--text-color);
+      }
+
+      .payment-description {
+        margin-left: 25px;
+        font-size: 14px;
+        color: #666;
+        margin-top: 5px;
+      }
+    }
+  }
+}
+
+.order-summary {
+  width: 400px;
+
+  h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 600;
+    text-align: center;
+    color: var(--primary-color);
+    margin-bottom: 12px;
+  }
+
+  .order-content {
+    background: #f9f9f9;
+    padding: 0 20px 20px;
+    border: 1px dotted #000;
+
+    .order-items {
+      .order-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 0;
+        border-bottom: 1px solid #e5e5e5;
+
+        .product-info {
+          display: flex;
+          align-items: center;
+          gap: 15px;
+
+          img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+          }
+
+          .product-name {
+            font-size: 14px;
+            color: var(--text-color);
+          }
+        }
+
+        .product-total {
+          font-weight: 600;
+          color: var(--primary-color);
+        }
+      }
+    }
+
+    .order-totals {
+      .subtotal-row,
+      .total-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 15px 0;
+        font-size: 14px;
+
+        span:first-child {
+          color: #666;
+        }
+
+        span:last-child {
+          font-weight: 600;
+          color: var(--primary-color);
+        }
+      }
+
+      .subtotal-row {
+        border-bottom: 1px solid #e5e5e5;
+      }
+    }
+
+    .place-order-btn {
+      width: 100%;
+      padding: 15px;
+      margin-top: 5px;
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+
+      &:hover {
+        background: var(--secondary-color);
+      }
+    }
+  }
+}
+
+.coupon-section {
+  margin: 20px 0;
+  
+  p {
+    color: #666;
+    font-size: 14px;
+    margin: 0;
+    cursor: pointer;
+
+    &:hover {
+      color: var(--secondary-color);
+    }
+  }
+}

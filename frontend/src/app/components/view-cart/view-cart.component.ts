@@ -26,25 +26,16 @@ export class ViewCartComponent implements OnInit {
     });
   }
 
-  decrementQuantity(item: any): void {
-    if (item.quantity > 1) {
-      this.cartService.updateQuantity(item, item.quantity - 1);
+  updateQuantity(productId: string, quantity: number): void {
+    if (quantity <= 0) {
+      this.cartService.removeFromCart(productId);
+    } else {
+      this.cartService.updateQuantity(productId, quantity);
     }
   }
 
-  incrementQuantity(item: any): void {
-    this.cartService.updateQuantity(item, item.quantity + 1);
-  }
-
-  updateQuantity(event: any, item: any): void {
-    const newQuantity = parseInt(event.target.value);
-    if (newQuantity > 0) {
-      this.cartService.updateQuantity(item, newQuantity);
-    }
-  }
-
-  removeItem(item: any): void {
-    this.cartService.removeFromCart(item);
+  removeItem(productId: string): void {
+    this.cartService.removeFromCart(productId);
   }
 
   getSubtotal(): number {

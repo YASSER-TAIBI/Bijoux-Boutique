@@ -9,6 +9,7 @@ import { NewArrivalsComponent } from './components/new-arrivals/new-arrivals.com
 import { SalesComponent } from './components/sales/sales.component';
 import { ProductDetailComponent } from './components/product-detail/product-detail.component';
 import { ViewCartComponent } from './components/view-cart/view-cart.component';
+import { CheckoutDetailsComponent } from './components/checkout-details/checkout-details.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -19,7 +20,8 @@ export const routes: Routes = [
   { path: 'new-arrivals', component: NewArrivalsComponent },
   { path: 'sales', component: SalesComponent },
   { path: 'product/:id', component: ProductDetailComponent },
-  { path: 'cart', component: ViewCartComponent }
+  { path: 'cart', component: ViewCartComponent },
+  { path: 'checkout', component: CheckoutDetailsComponent }
 ];
 
 @NgModule({
