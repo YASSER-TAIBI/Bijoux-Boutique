@@ -61,4 +61,9 @@ export class CartService {
   getCartCount(): number {
     return this.cartItemsSubject.value.reduce((total, item) => total + item.quantity, 0);
   }
+
+  clearCart(): void {
+    localStorage.removeItem('cart');
+    this.cartItemsSubject.next([]);
+  }
 }

@@ -1,0 +1,97 @@
+<div class="order-complete-page" @fadeIn>
+  <h1>Paiement</h1>
+
+  <div class="checkout-steps">
+    <span class="step-done">1 CHARIOTS DE COURSES</span>
+    <span class="step-separator">></span>
+    <span class="step-done">2 DÉTAILS DE LA CAISSE</span>
+    <span class="step-separator">></span>
+    <span class="step active">3 COMMANDE COMPLÈTE</span>
+  </div>
+
+  <div class="order-confirmation" @slideIn>
+    <h2>Merci. Votre commande a été reçue.</h2>
+
+    <div class="order-info">
+      <div class="info-item">
+        <span class="label">Numéro de commande:</span>
+        <span class="value">{{ orderDetails.orderNumber }}</span>
+      </div>
+      <div class="info-item">
+        <span class="label">Date:</span>
+        <span class="value">{{ orderDetails.date }}</span>
+      </div>
+      <div class="info-item">
+        <span class="label">Total:</span>
+        <span class="value">{{ orderDetails.total | currency:'EUR':'symbol':'1.2-2' }}</span>
+      </div>
+      <div class="info-item">
+        <span class="label">Mode de paiement:</span>
+        <span class="value">Paiement à la livraison</span>
+      </div>
+    </div>
+
+    <div class="payment-note">
+      Payer en espèces à la livraison
+    </div>
+
+    <div class="order-details-section">
+      <h3>Détails de la commande</h3>
+      
+      <table class="order-items">
+        <thead>
+          <tr>
+            <th>Produit</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of orderDetails.items">
+            <td>{{ item.name }} × {{ item.quantity }}</td>
+            <td>{{ item.price | currency:'EUR':'symbol':'1.2-2' }}</td>
+          </tr>
+          <tr class="subtotal">
+            <td>Sous-total:</td>
+            <td>{{ getSubtotal() | currency:'EUR':'symbol':'1.2-2' }}</td>
+          </tr>
+          <tr class="payment-method">
+            <td>Mode de paiement:</td>
+            <td>Paiement à la livraison</td>
+          </tr>
+          <tr class="total">
+            <td>Total:</td>
+            <td>{{ orderDetails.total | currency:'EUR':'symbol':'1.2-2' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="billing-address">
+      <h3>Adresse de facturation</h3>
+      <p>{{ orderDetails.customerInfo.firstName }} {{ orderDetails.customerInfo.lastName }}</p>
+      <p>{{ orderDetails.customerInfo.address }}</p>
+      <p>{{ orderDetails.customerInfo.postcode }} {{ orderDetails.customerInfo.city }}</p>
+      <p>{{ orderDetails.customerInfo.country }}</p>
+      <p>
+        <span class="icon">📱</span> {{ orderDetails.customerInfo.phone }}
+      </p>
+      <p>
+        <span class="icon">✉️</span> {{ orderDetails.customerInfo.email }}
+      </p>
+    </div>
+
+    <div class="action-buttons">
+      <button class="primary-button" (click)="downloadInvoice()">
+        <span class="icon">📥</span> Télécharger la facture
+      </button>
+      <button class="secondary-button" (click)="returnToHome()">
+        <span class="icon">🏠</span> Retour à l'accueil
+      </button>
+    </div>
+  </div>
+
+  <div class="confetti" *ngIf="showConfetti">
+    <!-- Les éléments de confetti seront animés via CSS -->
+    <div class="confetti-piece" *ngFor="let i of [1,2,3,4,5,6,7,8,9,10]"></div>
+  </div>
+</div>

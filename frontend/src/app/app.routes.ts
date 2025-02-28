@@ -10,6 +10,7 @@ import { SalesComponent } from './components/sales/sales.component';
 import { ProductDetailComponent } from './components/product-detail/product-detail.component';
 import { ViewCartComponent } from './components/view-cart/view-cart.component';
 import { CheckoutDetailsComponent } from './components/checkout-details/checkout-details.component';
+import { OrderDetailsComponent } from './components/order-details/order-details.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -21,7 +22,9 @@ export const routes: Routes = [
   { path: 'sales', component: SalesComponent },
   { path: 'product/:id', component: ProductDetailComponent },
   { path: 'cart', component: ViewCartComponent },
-  { path: 'checkout', component: CheckoutDetailsComponent }
+  { path: 'checkout', component: CheckoutDetailsComponent },
+  { path: 'order', component: OrderDetailsComponent }
+
 ];
 
 @NgModule({

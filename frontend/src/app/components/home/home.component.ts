@@ -50,7 +50,6 @@ export class HomeComponent implements OnInit {
   private loadFeaturedProducts() {
     this.productService.getProducts().subscribe({
       next: (products) => {
-        console.log("Produits:", products);
         // Sélectionner des produits variés (1 de chaque catégorie)
         const categories = ['Earrings', 'Necklaces', 'Bracelets', 'Rings'];
         
@@ -59,13 +58,11 @@ export class HomeComponent implements OnInit {
 
         // Sélectionner un produit aléatoire pour chaque catégorie
         categories.forEach(category => {
-          console.log("Recherche de la catégorie:", category);
+
           const categoryProducts = products.filter(p => p.category === category);
-          console.log("Produits trouvés pour", category, ":", categoryProducts);
           
           if (categoryProducts.length > 0) {
             const randomProduct = categoryProducts[Math.floor(Math.random() * categoryProducts.length)];
-            console.log("Produit sélectionné pour", category, ":", randomProduct);
             
             // Vérifier et s'assurer que le produit a toutes les propriétés nécessaires
             if (randomProduct) {
@@ -84,7 +81,6 @@ export class HomeComponent implements OnInit {
           }
         });
 
-        console.log("Produits sélectionnés:", selectedProducts);
         // Mettre à jour featuredProducts avec les produits sélectionnés
         this.featuredProducts = selectedProducts;
       },

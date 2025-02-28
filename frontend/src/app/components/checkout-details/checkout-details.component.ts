@@ -63,19 +63,26 @@ export class CheckoutDetailsComponent implements OnInit {
 
   placeOrder(): void {
     if (this.validateForm()) {
-      // Ici, vous pouvez ajouter la logique pour envoyer la commande au backend
-      console.log('Commande passée:', {
+      // Sauvegarder les informations de la commande
+      const orderDetails = {
         customerInfo: this.customerInfo,
         items: this.cartItems,
         sousTotal: this.getSubtotal(),
-        total: this.getSubtotal()
-      });
+        total: this.getSubtotal(),
+        dateCommande: new Date().toISOString()
+      };
       
-      // Vider le panier
-      // this.cartService.clearCart();
+      // Enregistrer la commande (à implémenter avec le backend)
+      console.log('Commande passée:', orderDetails);
       
-      // Rediriger vers la page de confirmation
-      // this.router.navigate(['/order-complete']);
+      // Vider le panier et le localStorage
+      this.cartService.clearCart();
+      
+      // Afficher un message de confirmation
+      alert('Votre commande a été passée avec succès!');
+      
+      // Rediriger vers la page d'accueil
+      this.router.navigate(['/order']);
     }
   }
 
