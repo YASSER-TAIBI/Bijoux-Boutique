@@ -8,6 +8,7 @@ import { EarringsComponent } from './components/earrings/earrings.component';
 import { NewArrivalsComponent } from './components/new-arrivals/new-arrivals.component';
 import { SalesComponent } from './components/sales/sales.component';
 import { ProductDetailComponent } from './components/product-detail/product-detail.component';
+import { ViewCartComponent } from './components/view-cart/view-cart.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -17,7 +18,8 @@ export const routes: Routes = [
   { path: 'categories/earrings', component: EarringsComponent },
   { path: 'new-arrivals', component: NewArrivalsComponent },
   { path: 'sales', component: SalesComponent },
-  { path: 'product/:id', component: ProductDetailComponent }
+  { path: 'product/:id', component: ProductDetailComponent },
+  { path: 'cart', component: ViewCartComponent }
 ];
 
 @NgModule({

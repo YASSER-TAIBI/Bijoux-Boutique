@@ -1,0 +1,64 @@
+<div class="cart-page">
+  <div class="cart-header">
+    <h1>Panier</h1>
+    <div class="cart-steps">
+      <span class="step active">1 CHARIOTS DE COURSES</span>
+      <span class="step-separator">></span>
+      <span class="step">2 DÉTAILS DE LA CAISSE</span>
+      <span class="step-separator">></span>
+      <span class="step">3 COMMANDE COMPLÈTE</span>
+    </div>
+  </div>
+
+  <div class="cart-content">
+    <table class="cart-table">
+      <thead>
+        <tr>
+          <th>Produit</th>
+          <th>Prix</th>
+          <th>Quantité</th>
+          <th>Sous-total</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of cartItems">
+          <td class="product-cell">
+            <img [src]="item.image" [alt]="item.name">
+            <span class="product-name">{{ item.name }}</span>
+          </td>
+          <td>{{ item.price | currency:'EUR':'symbol':'1.2-2' }}</td>
+          <td>
+            <div class="quantity-controls">
+              <button (click)="decrementQuantity(item)">-</button>
+              <input type="texte" [value]="item.quantity" (change)="updateQuantity($event, item)" min="1">
+              <button (click)="incrementQuantity(item)">+</button>
+            </div>
+          </td>
+          <td>{{ item.price * item.quantity | currency:'EUR':'symbol':'1.2-2' }}</td>
+          <td>
+            <button class="remove-btn" (click)="removeItem(item)">×</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="cart-totals">
+      <h2>Totaux du panier</h2>
+      <div class="totals-content">
+        <div class="subtotal-row">
+          <span>Sous-total</span>
+          <span>{{ getSubtotal() | currency:'EUR':'symbol':'1.2-2' }}</span>
+        </div>
+        <div class="total-row">
+          <span>Total</span>
+          <span>{{ getSubtotal() | currency:'EUR':'symbol':'1.2-2' }}</span>
+        </div>
+        <div class="coupon-section">
+          <p>Avoir un coupon ?</p>
+        </div>
+        <button class="proceed-btn" (click)="proceedToCheckout()">PASSER À LA CAISSE</button>
+      </div>
+    </div>
+  </div>
+</div>

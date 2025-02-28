@@ -83,7 +83,7 @@ h1, h2, h3, h4, h5, h6 {
 /* Styles globaux pour gérer l'espacement du contenu et les styles des catégories */
 .main-content {
   padding-top: var(--header-height);
-  min-height: 100vh;
+  min-height: 100%;
 }
 
 .category-title {

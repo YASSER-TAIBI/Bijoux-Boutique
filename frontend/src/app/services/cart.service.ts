@@ -42,6 +42,22 @@ export class CartService {
     }
   }
 
+  removeFromCart(productId: string): void {
+    const currentItems = this.cartItemsSubject.value;
+    const updatedItems = currentItems.filter(item => item._id !== productId);
+    this.saveCartToStorage(updatedItems);
+  }
+
+  updateQuantity(productId: string, quantity: number): void {
+    const currentItems = this.cartItemsSubject.value;
+    const itemToUpdate = currentItems.find(item => item._id === productId);
+    
+    if (itemToUpdate) {
+      itemToUpdate.quantity = quantity;
+      this.saveCartToStorage([...currentItems]);
+    }
+  }
+
   getCartCount(): number {
     return this.cartItemsSubject.value.reduce((total, item) => total + item.quantity, 0);
   }

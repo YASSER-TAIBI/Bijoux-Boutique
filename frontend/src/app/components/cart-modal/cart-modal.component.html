@@ -1,15 +1,42 @@
 <div class="cart-modal" [class.open]="isOpen">
   <div class="cart-header">
-    <h2>Panier</h2>
+    <h2>Panier d'achat</h2>
     <button class="close-btn" (click)="onClose()">×</button>
   </div>
-  
   <div class="cart-content">
-    <div class="empty-cart">
+    <div *ngIf="cartItems.length === 0" class="empty-cart">
       <p>Aucun produit dans le panier.</p>
       <button class="continue-shopping" (click)="onClose()">CONTINUER MES ACHATS</button>
     </div>
+    <div *ngIf="cartItems.length > 0" class="cart-items">
+      <div class="cart-item" *ngFor="let item of cartItems">
+        <div class="item-image">
+          <img [src]="item.image" [alt]="item.name">
+        </div>
+        <div class="item-details">
+          <div class="item-header">
+            <h3>{{ item.name }}</h3>
+            <button class="remove-btn" (click)="removeItem(item._id)">×</button>
+          </div>
+          <div class="item-footer">
+            <div class="quantity-controls">
+              <button (click)="updateQuantity(item._id, item.quantity - 1)">-</button>
+              <input type="text" [value]="item.quantity" readonly>
+              <button (click)="updateQuantity(item._id, item.quantity + 1)">+</button>
+            </div>
+            <span class="price">{{ item.price * item.quantity | currency:'EUR':'symbol':'1.2-2' }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="cart-summary">
+        <div class="subtotal">
+          <span>Sous-total:</span>
+          <span>{{ getTotal() | currency:'EUR':'symbol':'1.2-2' }}</span>
+        </div>
+        <button class="view-cart" (click)="viewCart()">VOIR LE PANIER</button>
+        <button class="checkout" (click)="checkout()">PASSER À LA CAISSE</button>
+      </div>
+    </div>
   </div>
 </div>
-
 <div class="overlay" [class.open]="isOpen" (click)="onClose()"></div>
