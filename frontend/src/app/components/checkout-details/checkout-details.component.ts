@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CartService } from '../../services/cart.service';
+import { OrderService } from '../../services/order.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -45,6 +46,7 @@ export class CheckoutDetailsComponent implements OnInit {
 
   constructor(
     private cartService: CartService,
+    private orderService: OrderService,
     private router: Router
   ) {}
 
@@ -63,25 +65,35 @@ export class CheckoutDetailsComponent implements OnInit {
 
   placeOrder(): void {
     if (this.validateForm()) {
-      // Sauvegarder les informations de la commande
       const orderDetails = {
-        customerInfo: this.customerInfo,
-        items: this.cartItems,
-        sousTotal: this.getSubtotal(),
+        orderNumber: this.orderService.generateOrderNumber(),
+        date: this.orderService.formatDate(new Date()),
         total: this.getSubtotal(),
-        dateCommande: new Date().toISOString()
+        paymentMethod: this.customerInfo.paymentMethod === 'cash-delivery' ? 'Paiement à la livraison' : 'Virement bancaire',
+        customerInfo: {
+          firstName: this.customerInfo.firstName,
+          lastName: this.customerInfo.lastName,
+          address: `${this.customerInfo.streetAddress}${this.customerInfo.apartment ? ', ' + this.customerInfo.apartment : ''}`,
+          city: this.customerInfo.city,
+          postcode: this.customerInfo.postcode,
+          country: this.customerInfo.country === 'FR' ? 'France' : this.customerInfo.country,
+          phone: this.customerInfo.phone,
+          email: this.customerInfo.email
+        },
+        items: this.cartItems.map(item => ({
+          name: item.name,
+          quantity: item.quantity,
+          price: item.price
+        }))
       };
       
-      // Enregistrer la commande (à implémenter avec le backend)
-      console.log('Commande passée:', orderDetails);
+      // Enregistrer les détails de la commande dans le service
+      this.orderService.setCurrentOrder(orderDetails);
       
-      // Vider le panier et le localStorage
+      // Vider le panier
       this.cartService.clearCart();
       
-      // Afficher un message de confirmation
-      alert('Votre commande a été passée avec succès!');
-      
-      // Rediriger vers la page d'accueil
+      // Rediriger vers la page de confirmation de commande
       this.router.navigate(['/order']);
     }
   }
@@ -99,42 +111,21 @@ export class CheckoutDetailsComponent implements OnInit {
     ];
 
     const fieldTranslations: { [key: string]: string } = {
-      email: "l'adresse e-mail",
-      firstName: 'le prénom',
-      lastName: 'le nom',
-      country: 'le pays',
-      streetAddress: "l'adresse",
-      postcode: 'le code postal',
-      city: 'la ville',
-      phone: 'le numéro de téléphone'
+      email: 'Email',
+      firstName: 'Prénom',
+      lastName: 'Nom',
+      country: 'Pays',
+      streetAddress: 'Adresse',
+      postcode: 'Code postal',
+      city: 'Ville',
+      phone: 'Téléphone'
     };
 
     for (const field of requiredFields) {
       if (!this.customerInfo[field]) {
-        alert(`Veuillez remplir ${fieldTranslations[field]}`);
+        alert(`Le champ "${fieldTranslations[field]}" est requis.`);
         return false;
       }
-    }
-
-    // Validation de l'email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(this.customerInfo.email)) {
-      alert("Veuillez entrer une adresse e-mail valide");
-      return false;
-    }
-
-    // Validation du numéro de téléphone (format français)
-    const phoneRegex = /^(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}$/;
-    if (!phoneRegex.test(this.customerInfo.phone)) {
-      alert("Veuillez entrer un numéro de téléphone valide");
-      return false;
-    }
-
-    // Validation du code postal français
-    const postcodeRegex = /^[0-9]{5}$/;
-    if (!postcodeRegex.test(this.customerInfo.postcode)) {
-      alert("Veuillez entrer un code postal valide (5 chiffres)");
-      return false;
     }
 
     return true;

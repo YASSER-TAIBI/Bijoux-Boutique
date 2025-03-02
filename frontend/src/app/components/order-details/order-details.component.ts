@@ -1,29 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { trigger, transition, style, animate } from '@angular/animations';
-
-interface OrderDetails {
-  orderNumber: string;
-  date: string;
-  total: number;
-  paymentMethod: string;
-  customerInfo: {
-    firstName: string;
-    lastName: string;
-    address: string;
-    city: string;
-    postcode: string;
-    country: string;
-    phone: string;
-    email: string;
-  };
-  items: {
-    name: string;
-    quantity: number;
-    price: number;
-  }[];
-}
+import { OrderService, OrderDetails } from '../../services/order.service';
 
 @Component({
   selector: 'app-order-details',
@@ -47,81 +26,72 @@ interface OrderDetails {
   ]
 })
 export class OrderDetailsComponent implements OnInit {
-  orderDetails: OrderDetails = {
-    orderNumber: '1216',
-    date: '28 Février 2025',
-    total: 3750.00,
-    paymentMethod: 'Paiement à la livraison',
-    customerInfo: {
-      firstName: 'Yasser',
-      lastName: 'TAIBI',
-      address: '131 rue antoine charial',
-      city: 'LYON',
-      postcode: '69003',
-      country: 'France',
-      phone: '+33768132016',
-      email: 'yasser.taibi.19@gmail.com'
-    },
-    items: [
-      {
-        name: 'Product Name 10',
-        quantity: 2,
-        price: 3400.00
-      },
-      {
-        name: 'Product Name 12',
-        quantity: 1,
-        price: 350.00
-      }
-    ]
-  };
-
+  orderDetails: OrderDetails | null = null;
   showConfetti: boolean = false;
 
   constructor(
-    private route: ActivatedRoute,
+    private orderService: OrderService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
+    // Récupérer les détails de la commande depuis le service
+    this.orderDetails = this.orderService.getCurrentOrder();
+
     // Si aucune donnée de commande n'est disponible, rediriger vers la page d'accueil
     if (!this.orderDetails) {
       this.router.navigate(['/']);
-    } else {
-      // Déclencher l'animation de confetti
-      this.showConfetti = true;
-      
-      // Sauvegarder la commande dans l'historique
-      this.saveOrderToHistory();
+      return;
     }
+
+    // Déclencher l'animation de confetti
+    setTimeout(() => {
+      this.showConfetti = true;
+    }, 500);
+    
+    // Sauvegarder la commande dans l'historique
+    this.saveOrderToHistory();
   }
 
   getSubtotal(): number {
+    if (!this.orderDetails?.items) return 0;
     return this.orderDetails.items.reduce((total, item) => total + (item.price * item.quantity), 0);
   }
 
   returnToHome(): void {
+    this.orderService.clearCurrentOrder();
     this.router.navigate(['/']);
   }
 
   downloadInvoice(): void {
-    // Simulation du téléchargement de la facture
+    if (!this.orderDetails) return;
+
+    // Création du contenu de la facture
     const invoiceContent = `
-Facture N° ${this.orderDetails.orderNumber}
+FACTURE
+
+Numéro de commande: ${this.orderDetails.orderNumber}
 Date: ${this.orderDetails.date}
-------------------------------------------
-Client: ${this.orderDetails.customerInfo.firstName} ${this.orderDetails.customerInfo.lastName}
-Adresse: ${this.orderDetails.customerInfo.address}
-         ${this.orderDetails.customerInfo.postcode} ${this.orderDetails.customerInfo.city}
-         ${this.orderDetails.customerInfo.country}
-------------------------------------------
+
+INFORMATIONS CLIENT
+${this.orderDetails.customerInfo.firstName} ${this.orderDetails.customerInfo.lastName}
+${this.orderDetails.customerInfo.address}
+${this.orderDetails.customerInfo.postcode} ${this.orderDetails.customerInfo.city}
+${this.orderDetails.customerInfo.country}
+Tél: ${this.orderDetails.customerInfo.phone}
+Email: ${this.orderDetails.customerInfo.email}
+
+DÉTAILS DE LA COMMANDE
 ${this.orderDetails.items.map(item => 
-  `${item.name} x${item.quantity}: ${item.price.toFixed(2)}€`
+  `${item.name} × ${item.quantity} : ${item.price.toFixed(2)}€`
 ).join('\n')}
-------------------------------------------
-Total: ${this.orderDetails.total.toFixed(2)}€
+
+Sous-total: ${this.getSubtotal().toFixed(2)}€
+Mode de paiement: ${this.orderDetails.paymentMethod}
+TOTAL: ${this.orderDetails.total.toFixed(2)}€
     `;
 
+    // Création et téléchargement du fichier
     const blob = new Blob([invoiceContent], { type: 'text/plain' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -134,6 +104,8 @@ Total: ${this.orderDetails.total.toFixed(2)}€
   }
 
   private saveOrderToHistory(): void {
+    if (!this.orderDetails) return;
+
     // Récupérer l'historique existant
     const orderHistory = JSON.parse(localStorage.getItem('orderHistory') || '[]');
     
