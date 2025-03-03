@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { CartModalComponent } from '../cart-modal/cart-modal.component';
 import { CartService } from '../../services/cart.service';
+import { CartModalComponent } from '../cart-modal/cart-modal.component';
 
 @Component({
   selector: 'app-header',
@@ -16,7 +16,7 @@ export class HeaderComponent {
   isMenuOpen = false;
   cartCount = 0;
 
-  constructor(private cartService: CartService) {
+  constructor(public cartService: CartService) {
     this.cartService.cartItems$.subscribe(() => {
       this.cartCount = this.cartService.getCartCount();
     });

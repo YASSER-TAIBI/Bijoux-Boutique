@@ -34,9 +34,16 @@
         <button class="icon-btn search-btn">
           <i class="fas fa-search"></i>
         </button>
-        <button class="icon-btn account-btn">
-          <i class="fas fa-user"></i>
-        </button>
+        <div class="icon-btn dropdown">
+          <a class="nav-link" (click)="toggleDropdown($event)">
+            <i class="fas fa-user"></i>
+          </a>
+          <div class="dropdown-content">
+            <a routerLink="/account" (click)="closeMenu()">Mon compte</a>
+            <a routerLink="" (click)="closeMenu()">Mes commandes</a>
+            <a routerLink="" (click)="closeMenu()">Se déconnecter</a>
+          </div>
+        </div>
         <button class="icon-btn cart-btn" (click)="toggleCart()">
           <i class="fas fa-shopping-bag"></i>
           <span class="cart-count">{{ cartCount }}</span>

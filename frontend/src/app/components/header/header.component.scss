@@ -163,6 +163,7 @@ $mobile-width: 768px;
 
         &:hover {
           color: var(--secondary-color);
+          cursor: pointer;
         }
 
         &.active {
@@ -171,7 +172,7 @@ $mobile-width: 768px;
 
         .fa-chevron-down {
           margin-left: 5px;
-          font-size: 12px;
+          font-size: 0;
 
           @media (max-width: $mobile-width) {
             float: right;
@@ -211,9 +212,9 @@ $mobile-width: 768px;
           display: none;
           position: absolute;
           top: 100%;
-          left: 0;
+          left: -30px;
           background: white;
-          min-width: 200px;
+          min-width: 150px;
           box-shadow: var(--box-shadow);
           border-radius: var(--border-radius);
           padding: 10px 0;
@@ -221,7 +222,7 @@ $mobile-width: 768px;
 
           a {
             display: block;
-            padding: 10px 20px;
+            padding: 5px 10px;
             color: var(--text-color);
             text-decoration: none;
             font-size: 14px;
@@ -273,6 +274,67 @@ $mobile-width: 768px;
 
           @media (max-width: $mobile-width) {
             font-size: 18px;
+          }
+        }
+      }
+
+      .dropdown {
+        position: relative;
+
+        @media (max-width: $mobile-width) {
+          width: 100%;
+
+          .dropdown-content {
+            position: static;
+            display: none;
+            box-shadow: none;
+            background: #f9f9f9;
+            padding: 0;
+
+            &.show {
+              display: block;
+            }
+
+            a {
+              padding-left: 40px;
+            }
+          }
+
+          &.active .dropdown-content {
+            display: block;
+          }
+        }
+
+        .dropdown-content {
+          display: none;
+          position: absolute;
+          top: 100%;
+          left: -57px;
+          background: white;
+          min-width: 150px;
+          box-shadow: var(--box-shadow);
+          border-radius: var(--border-radius);
+          padding: 10px 0;
+          z-index: 1001;
+
+          a {
+            display: block;
+            padding: 5px 10px;
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+
+            &:hover {
+              background-color: rgba(196, 166, 97, 0.1);
+              color: var(--secondary-color);
+            }
+          }
+        }
+
+        &:hover .dropdown-content {
+          @media (min-width: $mobile-width) {
+            display: block;
           }
         }
       }

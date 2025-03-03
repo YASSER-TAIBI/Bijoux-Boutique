@@ -130,8 +130,4 @@ export class CheckoutDetailsComponent implements OnInit {
 
     return true;
   }
-
-  viewCart(): void {
-    this.router.navigate(['/cart']);
-  }
 }
