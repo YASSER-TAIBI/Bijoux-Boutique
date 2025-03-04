@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/database');
 const productRoutes = require('./routes/product.routes');
+const userRoutes = require('./routes/user.routes');
 const { errorHandler, notFound } = require('./middleware/error.middleware');
 
 const app = express();
@@ -20,13 +21,17 @@ app.get('/', (req, res) => {
         message: 'Bienvenue sur l\'API de Bijoux Boutique',
         endpoints: {
             getAllProducts: '/api/products',
-            getProductById: '/api/products/:id'
+            getProductById: '/api/products/:id',
+            register: '/api/users/register',
+            login: '/api/users/login',
+            profile: '/api/users/profile'
         }
     });
 });
 
 // Routes
 app.use('/api/products', productRoutes);
+app.use('/api/users', userRoutes);
 
 // Middleware d'erreur
 app.use(notFound);

@@ -39,9 +39,15 @@
             <i class="fas fa-user"></i>
           </a>
           <div class="dropdown-content">
-            <a routerLink="/account" (click)="closeMenu()">Mon compte</a>
-            <a routerLink="" (click)="closeMenu()">Mes commandes</a>
-            <a routerLink="" (click)="closeMenu()">Se déconnecter</a>
+            <ng-container *ngIf="currentUser; else notLoggedIn">
+              <a class="dropdown-item-account">Bonjour {{ currentUser.name }}</a>
+              <a class="dropdown-item" routerLink="/account" (click)="closeMenu()">Mon compte</a>
+              <a class="dropdown-item" routerLink="/orders" (click)="closeMenu()">Mes commandes</a>
+              <a class="dropdown-item" (click)="logout(); closeMenu()">Se déconnecter</a>
+            </ng-container>
+            <ng-template #notLoggedIn>
+              <a class="dropdown-item" routerLink="/account" (click)="closeMenu()">Mon compte</a>
+            </ng-template>
           </div>
         </div>
         <button class="icon-btn cart-btn" (click)="toggleCart()">
