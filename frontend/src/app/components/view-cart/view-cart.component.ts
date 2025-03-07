@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CartService } from '../../services/cart.service';
+import { AuthService } from '../../services/auth.service';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -17,6 +18,7 @@ export class ViewCartComponent implements OnInit {
 
   constructor(
     private cartService: CartService,
+    private authService: AuthService,
     private router: Router
   ) {}
 
@@ -43,6 +45,15 @@ export class ViewCartComponent implements OnInit {
   }
 
   proceedToCheckout(): void {
-    this.router.navigate(['/checkout']);
+    console.log('Vérification de l\'authentification...');
+    if (this.authService.isLoggedIn()) {
+      console.log('Utilisateur connecté, redirection vers checkout');
+      this.router.navigate(['/checkout']);
+    } else {
+      console.log('Utilisateur non connecté, redirection vers la page de connexion');
+      // Stocker l'URL de redirection pour après la connexion
+      localStorage.setItem('redirectAfterLogin', '/checkout');
+      this.router.navigate(['/account']);
+    }
   }
 }

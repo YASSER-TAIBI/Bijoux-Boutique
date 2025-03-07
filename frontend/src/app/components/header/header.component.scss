@@ -232,6 +232,50 @@ $mobile-width: 768px;
               background-color: rgba(196, 166, 97, 0.1);
               color: var(--secondary-color);
             }
+
+            i {
+              margin-right: 8px;
+              width: 16px;
+              text-align: center;
+            }
+          }
+
+          .dropdown-item-account {
+            color: var(--secondary-color);
+            display: flex;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: "Playfair Display", serif;
+            letter-spacing: 0.6px;
+            align-items: center;
+            justify-content: center;
+
+            i {
+              margin-right: 8px;
+              width: 16px;
+              text-align: center;
+              color: #007bff;
+            }
+          }
+
+          .dropdown-item {
+            display: block;
+            padding: 5px 10px;
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+
+            &:hover {
+              background-color: rgba(196, 166, 97, 0.1);
+              color: var(--secondary-color);
+            }
+
+            i {
+              margin-right: 8px;
+              width: 16px;
+              text-align: center;
+            }
           }
         }
 
@@ -278,6 +322,22 @@ $mobile-width: 768px;
         }
       }
 
+      .user-icon {
+        position: relative;
+        cursor: pointer;
+
+        .connection-indicator {
+          position: absolute;
+          top: -8px;
+          right: -5px;
+          width: 11px;
+          height: 11px;
+          background-color: var(--secondary-color);
+          border-radius: 50%;
+          border: 1px solid white;
+        }
+      }
+
       .dropdown {
         position: relative;
 
@@ -308,7 +368,7 @@ $mobile-width: 768px;
         .dropdown-content {
           display: none;
           position: absolute;
-          top: 100%;
+          top: 85%;
           left: -57px;
           background: white;
           min-width: 150px;
@@ -319,9 +379,20 @@ $mobile-width: 768px;
 
           .dropdown-item-account {
             color: var(--secondary-color);
-            padding: 0 10px;
-            font-size: 14px;
-            font-weight: bold;
+            display: flex;
+            font-size: 16px;
+            font-weight: 600;
+            padding-bottom: 6px;
+            font-family: "Playfair Display", serif;
+            letter-spacing: 0.6px;
+            align-items: center;
+            justify-content: center;
+
+            i {
+              margin-right: 8px;
+              width: 16px;
+              text-align: center;
+            }
           }
 
           .dropdown-item {
@@ -329,12 +400,19 @@ $mobile-width: 768px;
             padding: 5px 10px;
             color: var(--text-color);
             text-decoration: none;
-            font-size: 14px;
+            font-size: 12.5px;
             transition: background-color 0.3s ease;
 
             &:hover {
               background-color: rgba(196, 166, 97, 0.1);
               color: var(--secondary-color);
+            }
+
+            i {
+              margin-right: 8px;
+              width: 16px;
+              text-align: center;
+              font-size: 15px;
             }
           }
         }

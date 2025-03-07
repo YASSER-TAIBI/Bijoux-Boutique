@@ -16,8 +16,6 @@ import { AuthService } from '../../services/auth.service';
 export class AccountComponent {
   loginForm: FormGroup;
   registerForm: FormGroup;
-  errorMessage: string = '';
-  successMessage: string = '';
 
   constructor(
     private fb: FormBuilder,
@@ -50,23 +48,21 @@ export class AccountComponent {
         next: (response) => {
           console.log('Réponse de connexion:', response);
           if (response && response.token) {
-            this.successMessage = 'Connexion réussie !';
-            // Charger le profil après la connexion
-            this.authService.getUserProfile().subscribe({
-              next: (user) => {
-                console.log('Profil chargé avec succès:', user);
-                window.location.reload(); // Pour forcer la mise à jour du header
-              },
-              error: (error) => {
-                console.error('Erreur lors du chargement du profil:', error);
-              }
-            });
+            // Vérifier s'il y a une redirection en attente
+            const redirectUrl = localStorage.getItem('redirectAfterLogin');
+            if (redirectUrl) {
+              localStorage.removeItem('redirectAfterLogin');
+              // Attendre 2secondes pour que le profil soit chargé
+              setTimeout(() => {
+                this.router.navigate([redirectUrl]);
+              }, 2000);
+            } else {
+              this.router.navigate(['/']);
+            }
           }
         },
         error: (error) => {
-          console.error('Erreur de connexion:', error);
-          this.errorMessage = error.error?.message || 'Erreur lors de la connexion';
-        }
+          console.error('Erreur de connexion:', error);        }
       });
     }
   }
@@ -92,12 +88,18 @@ export class AccountComponent {
         next: (response) => {
           console.log('Réponse d\'inscription:', response);
           if (response && response.token) {
-            this.successMessage = 'Inscription réussie !';
             // Charger le profil après l'inscription
             this.authService.getUserProfile().subscribe({
               next: (user) => {
                 console.log('Profil chargé avec succès:', user);
-                window.location.reload(); // Pour forcer la mise à jour du header
+                // Vérifier s'il y a une redirection en attente
+                const redirectUrl = localStorage.getItem('redirectAfterLogin');
+                if (redirectUrl) {
+                  localStorage.removeItem('redirectAfterLogin');
+                  this.router.navigate([redirectUrl]);
+                } else {
+                  window.location.reload(); // Pour forcer la mise à jour du header
+                }
               },
               error: (error) => {
                 console.error('Erreur lors du chargement du profil:', error);
@@ -107,7 +109,6 @@ export class AccountComponent {
         },
         error: (error) => {
           console.error('Erreur d\'inscription:', error);
-          this.errorMessage = error.error?.message || 'Erreur lors de l\'inscription';
         }
       });
     }

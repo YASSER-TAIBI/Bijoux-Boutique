@@ -13,7 +13,9 @@
     <span class="step-non-hover">4 COMMANDE COMPLÈTE</span>
   </div>
 
-  <div class="account-content">
+    <p class="account-message">Si vous avez déjà effectué des achats chez nous, veuillez saisir vos coordonnées. Si vous êtes un nouveau client, veuillez vous inscrire pour sauvegarder votre panier, voir vos bons d'achat et vos listes d'envoi.</p>
+  
+    <div class="account-content">
     <div class="login-section">
       <h3>Se connecter</h3>
       <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
@@ -42,12 +44,6 @@
 
     <div class="register-section">
       <h3>S'inscrire</h3>
-      <div *ngIf="errorMessage" class="error-message">
-        {{ errorMessage }}
-      </div>
-      <div *ngIf="successMessage" class="success-message">
-        {{ successMessage }}
-      </div>
       <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
         <div class="form-group">
           <label>Nom<span class="required">*</span></label>

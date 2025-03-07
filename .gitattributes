@@ -1,0 +1,14 @@
+# Appliquer auto pour tous les fichiers
+* text=auto
+
+# Forcer LF (Unix-style) pour les fichiers TypeScript, HTML et SCSS
+*.ts text eol=lf
+*.html text eol=lf
+*.scss text eol=lf
+
+# Forcer LF pour les fichiers JavaScript et JSON
+*.js text eol=lf
+*.json text eol=lf
+
+# Forcer LF pour les fichiers de configuration
+.env text eol=lf

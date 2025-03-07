@@ -5,6 +5,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
 import { CartService } from '../../services/cart.service';
 import { CartModalComponent } from '../cart-modal/cart-modal.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -18,49 +19,37 @@ export class HeaderComponent implements OnInit {
   isMenuOpen = false;
   cartCount = 0;
   currentUser: any = null;
+  isDropdownOpen = false;
 
-  constructor(private authService: AuthService, public cartService: CartService) {}
+  constructor(
+    private authService: AuthService,
+    public cartService: CartService,
+    private router: Router
+  ) {
+    // S'abonner aux changements d'état de l'utilisateur
+    this.authService.currentUser$.subscribe(user => {
+      console.log('User state changed:', user);
+      this.currentUser = user;
+    });
+  }
 
   ngOnInit() {
     console.log('Header Component Initialized');
     console.log('Is Logged In:', this.authService.isLoggedIn());
     console.log('Token:', this.authService.getToken());
-    // Vérifier si un utilisateur est connecté au chargement du composant
-    this.updateUserStatus();
+    // Charger l'utilisateur au démarrage
+    this.authService.getUserProfile().subscribe({
+      next: (user) => {
+        console.log('Profile loaded in header:', user);
+        this.currentUser = user;
+      },
+      error: (error) => {
+        console.error('Error loading profile in header:', error);
+      }
+    });
     this.cartService.cartItems$.subscribe(() => {
       this.cartCount = this.cartService.getCartCount();
     });
-  }
-
-  updateUserStatus() {
-    console.log('Updating user status...');
-    if (this.authService.isLoggedIn()) {
-      console.log('User is logged in');
-      // Récupérer les informations de l'utilisateur depuis le localStorage
-      const token = this.authService.getToken();
-      if (token) {
-        try {
-          const tokenData = JSON.parse(atob(token.split('.')[1]));
-          // Récupérer les informations complètes de l'utilisateur
-          this.authService.getUserProfile().subscribe({
-            next: (user) => {
-              console.log('User profile received:', user);
-              this.currentUser = user;
-            },
-            error: (error) => {
-              console.error('Error getting user profile:', error);
-              this.logout();
-            }
-          });
-        } catch (error) {
-          console.error('Erreur lors du décodage du token:', error);
-          this.logout();
-        }
-      }
-    } else {
-      console.log('User is not logged in');
-      this.currentUser = null;
-    }
   }
 
   toggleCart() {
@@ -82,25 +71,18 @@ export class HeaderComponent implements OnInit {
   }
 
   toggleDropdown(event: Event) {
-    if (window.innerWidth <= 768) {
-      event.preventDefault();
-      const dropdownContent = (event.target as HTMLElement).nextElementSibling as HTMLElement;
-      const dropdown = (event.target as HTMLElement).parentElement;
-      
-      if (dropdown) {
-        dropdown.classList.toggle('active');
-      }
-      
-      if (dropdownContent) {
-        dropdownContent.classList.toggle('show');
-      }
-    }
+    event.preventDefault();
+    this.isDropdownOpen = !this.isDropdownOpen;
+  }
+
+  closeDropdown() {
+    this.isDropdownOpen = false;
   }
 
   logout() {
     console.log('Logging out...');
     this.authService.logout();
     this.currentUser = null;
-    window.location.reload(); // Recharger la page pour réinitialiser l'état
+    this.router.navigate(['/']);
   }
 }
