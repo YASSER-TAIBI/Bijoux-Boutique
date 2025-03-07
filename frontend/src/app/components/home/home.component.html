@@ -63,6 +63,9 @@
             <button class="action-btn" title="Aperçu rapide" (click)="openQuickView(product)">
               <i class="fas fa-eye"></i>
             </button>
+            <button class="action-btn" title="Ajouter aux favoris" (click)="toggleFavorite(product._id)">
+              <i class="fa-heart" [ngClass]="{'far': !isFavorite(product._id), 'fas': isFavorite(product._id)}"></i>
+            </button>
           </div>
         </div>
         <div class="product-info" (click)="navigateToProduct(product._id)">

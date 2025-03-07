@@ -19,6 +19,7 @@ export class HomeComponent implements OnInit {
   featuredProducts: Product[] = [];
   selectedProduct: any = null;
   isQuickViewOpen = false;
+  favoriteProducts: Set<string> = new Set();
   testimonials = [
     {
       text: "Des bijoux magnifiques et un service client exceptionnel !",
@@ -120,5 +121,17 @@ export class HomeComponent implements OnInit {
 
   handleAddToCart(event: {product: Product, quantity: number}): void {
     this.cartService.addToCart(event.product, event.quantity);
+  }
+
+  toggleFavorite(productId: string) {
+    if (this.favoriteProducts.has(productId)) {
+      this.favoriteProducts.delete(productId);
+    } else {
+      this.favoriteProducts.add(productId);
+    }
+  }
+
+  isFavorite(productId: string): boolean {
+    return this.favoriteProducts.has(productId);
   }
 }
