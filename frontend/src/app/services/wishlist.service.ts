@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { AuthService } from './auth.service';
 
 @Injectable({
@@ -15,12 +15,10 @@ export class WishlistService {
     private http: HttpClient,
     private authService: AuthService
   ) {
-    // Charger les favoris si l'utilisateur est connecté
     if (this.authService.isLoggedIn()) {
       this.loadWishlist();
     }
 
-    // S'abonner aux changements d'état de connexion
     this.authService.currentUser$.subscribe(user => {
       if (user) {
         this.loadWishlist();
@@ -33,24 +31,38 @@ export class WishlistService {
   loadWishlist() {
     this.http.get<string[]>(this.apiUrl).subscribe({
       next: (items) => {
-        this.wishlistItems.next(items);
+        console.log('Wishlist chargée:', items);
+        this.wishlistItems.next(items || []);
       },
       error: (error) => {
         console.error('Erreur lors du chargement des favoris:', error);
+        this.wishlistItems.next([]);
       }
     });
   }
 
-  addToWishlist(productId: string): Observable<any> {
-    return this.http.post(this.apiUrl, { productId });
+  addToWishlist(productId: string): Observable<string[]> {
+    return this.http.post<string[]>(this.apiUrl, { productId }).pipe(
+      tap(wishlist => {
+        console.log('Wishlist après ajout:', wishlist);
+        this.wishlistItems.next(wishlist);
+      })
+    );
   }
 
-  removeFromWishlist(productId: string): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${productId}`);
+  removeFromWishlist(productId: string): Observable<string[]> {
+    return this.http.delete<string[]>(`${this.apiUrl}/${productId}`).pipe(
+      tap(wishlist => {
+        console.log('Wishlist après suppression:', wishlist);
+        this.wishlistItems.next(wishlist);
+      })
+    );
   }
 
   isInWishlist(productId: string): boolean {
-    const isInWishlist = this.wishlistItems.value.includes(productId);
-    return isInWishlist;
+    const currentWishlist = this.wishlistItems.value;
+    const isInList = currentWishlist.includes(productId);
+    console.log('Vérification wishlist pour', productId, ':', isInList, 'Liste actuelle:', currentWishlist);
+    return isInList;
   }
 }

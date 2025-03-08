@@ -3,9 +3,7 @@ const Product = require('../models/product.model');
 // Obtenir tous les produits
 const getAllProducts = async (req, res) => {
     try {
-        console.log('Récupération de tous les produits...');
         const products = await Product.find();
-        console.log(`${products.length} produits trouvés`);
         res.json(products);
     } catch (error) {
         console.error('Erreur lors de la récupération des produits:', error);

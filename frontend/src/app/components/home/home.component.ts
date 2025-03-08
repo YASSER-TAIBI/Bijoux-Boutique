@@ -133,14 +133,16 @@ export class HomeComponent implements OnInit {
     }
 
     const isCurrentlyInWishlist = this.wishlistService.isInWishlist(productId);
+    const heartIcon = document.querySelector(`[data-product-id="${productId}"] .fa-heart`);
     
     if (isCurrentlyInWishlist) {
+      // Supprimer des favoris
       this.wishlistService.removeFromWishlist(productId).subscribe({
-        next: () => {
-          this.wishlistService.loadWishlist();
-          // Feedback visuel
-          const heartIcon = document.querySelector(`[data-product-id="${productId}"] .fa-heart`);
+        next: (updatedWishlist) => {
+          // Ne pas appeler loadWishlist car tap dans le service met déjà à jour l'état
           if (heartIcon) {
+            heartIcon.classList.remove('fas');
+            heartIcon.classList.add('far');
             heartIcon.classList.add('wishlist-animation');
             setTimeout(() => heartIcon.classList.remove('wishlist-animation'), 500);
           }
@@ -150,12 +152,13 @@ export class HomeComponent implements OnInit {
         }
       });
     } else {
+      // Ajouter aux favoris
       this.wishlistService.addToWishlist(productId).subscribe({
-        next: () => {
-          this.wishlistService.loadWishlist();
-          // Feedback visuel
-          const heartIcon = document.querySelector(`[data-product-id="${productId}"] .fa-heart`);
+        next: (updatedWishlist) => {
+          // Ne pas appeler loadWishlist car tap dans le service met déjà à jour l'état
           if (heartIcon) {
+            heartIcon.classList.remove('far');
+            heartIcon.classList.add('fas');
             heartIcon.classList.add('wishlist-animation');
             setTimeout(() => heartIcon.classList.remove('wishlist-animation'), 500);
           }

@@ -288,9 +288,9 @@
 
         .sale-badge {
           position: absolute;
-          top: 1rem;
-          left: 1rem;
-          background-color: white;
+          top: 0.67rem;
+          left: 0.67rem;
+          background-color: #f9f9f9;
           color: var(--primary-color);
           padding: 0.2rem 0.6rem;
           border-radius: 25px;
@@ -314,7 +314,7 @@
             width: 1.7rem;
             height: 1.7rem;
             border-radius: 50%;
-            background-color: white;
+            background-color: #f9f9f9;
             border: none;
             display: flex;
             align-items: center;
@@ -325,7 +325,7 @@
 
             i {
               color: var(--text-color);
-              font-size: 0.93rem;
+              font-size: 1rem;
             }
 
             &:hover {
@@ -338,7 +338,7 @@
 
             .fa-heart {
               transition: transform 0.3s ease;
-              
+
               &.wishlist-animation {
                 animation: heartBeat 0.5s ease-in-out;
               }
@@ -372,7 +372,7 @@
           .current-price {
             font-size: 1.2rem;
             color: #c4a661;
-            font-weight: 700;
+            font-weight: 500;
 
             &.discounted {
               color: #dc3545;
@@ -383,7 +383,7 @@
             color: #999;
             text-decoration: line-through;
             font-size: 0.9rem;
-            font-weight: 700;
+            font-weight: 500;
           }
         }
       }

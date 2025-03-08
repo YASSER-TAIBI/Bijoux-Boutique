@@ -120,7 +120,6 @@ exports.getProfile = async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        console.log('Profil récupéré pour:', user._id);
         res.json({
             id: user._id,
             name: user.name,
@@ -182,12 +181,13 @@ exports.getWishlist = async (req, res) => {
         const user = await User.findById(req.user.userId);
         
         if (!user) {
-            return res.status(404).json({ message: 'User not found' });
+            return res.status(404).json({ message: 'Utilisateur non trouvé' });
         }
-        res.json(user.wishlist || []);
+
+        res.json(user.wishlist.map(id => id.toString()) || []);
     } catch (error) {
         console.error('Erreur lors de la récupération de la wishlist:', error);
-        res.status(500).json({ message: 'Error fetching wishlist', error: error.message });
+        res.status(500).json({ message: 'Erreur serveur' });
     }
 };
 
@@ -195,25 +195,34 @@ exports.getWishlist = async (req, res) => {
 exports.addToWishlist = async (req, res) => {
     try {
         const { productId } = req.body;
+        console.log('Tentative d\'ajout du produit:', productId);
 
         const user = await User.findById(req.user.userId);
         if (!user) {
-            return res.status(404).json({ message: 'User not found' });
+            return res.status(404).json({ message: 'Utilisateur non trouvé' });
         }
 
         if (!user.wishlist) {
             user.wishlist = [];
         }
 
-        if (!user.wishlist.includes(productId)) {
+        // Vérifier si le produit est déjà dans la wishlist
+        const exists = user.wishlist.some(id => id.toString() === productId);
+        
+        if (!exists) {
             user.wishlist.push(productId);
             await user.save();
+            console.log('Produit ajouté avec succès');
+        } else {
+            console.log('Produit déjà dans la wishlist');
         }
 
-        res.json(user.wishlist);
+        // Retourner la wishlist mise à jour
+        const updatedUser = await User.findById(req.user.userId);
+        res.json(updatedUser.wishlist.map(id => id.toString()));
     } catch (error) {
-        console.error('Erreur lors de l\'ajout à la wishlist:', error);
-        res.status(500).json({ message: 'Error adding to wishlist', error: error.message });
+        console.error('Erreur lors de l\'ajout aux favoris:', error);
+        res.status(500).json({ message: 'Erreur serveur' });
     }
 };
 
@@ -221,25 +230,28 @@ exports.addToWishlist = async (req, res) => {
 exports.removeFromWishlist = async (req, res) => {
     try {
         const productId = req.params.productId;
-        console.log('Suppression de la wishlist:', { userId: req.user.userId, productId });
 
         const user = await User.findById(req.user.userId);
         if (!user) {
-            console.log('Utilisateur non trouvé pour la suppression de la wishlist:', req.user.userId);
-            return res.status(404).json({ message: 'User not found' });
+            return res.status(404).json({ message: 'Utilisateur non trouvé' });
         }
 
-        if (!user.wishlist) {
-            user.wishlist = [];
+        // Vérifier si le produit est dans la wishlist
+        const productIndex = user.wishlist.findIndex(id => id.toString() === productId);
+
+        if (productIndex !== -1) {
+            // Supprimer le produit de la wishlist en utilisant splice
+            user.wishlist.splice(productIndex, 1);
+            await user.save();
+        } else {
+            console.log('Produit non trouvé dans la wishlist');
         }
 
-        user.wishlist = user.wishlist.filter(id => id !== productId);
-        await user.save();
-        console.log('Produit supprimé de la wishlist:', productId);
-
-        res.json(user.wishlist);
+        // Retourner la wishlist mise à jour
+        const updatedUser = await User.findById(req.user.userId);
+        res.json(updatedUser.wishlist.map(id => id.toString()));
     } catch (error) {
-        console.error('Erreur lors de la suppression de la wishlist:', error);
-        res.status(500).json({ message: 'Error removing from wishlist', error: error.message });
+        console.error('Erreur lors de la suppression des favoris:', error);
+        res.status(500).json({ message: 'Erreur serveur' });
     }
 };
