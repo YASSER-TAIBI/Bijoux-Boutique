@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap, catchError, throwError } from 'rxjs';
-
-
+import { TokenService } from './token.service';
 
 @Injectable({
   providedIn: 'root'
@@ -12,9 +11,12 @@ export class AuthService {
   private currentUserSubject = new BehaviorSubject<any>(null);
   currentUser$ = this.currentUserSubject.asObservable();
 
-  constructor(private http: HttpClient) {
+  constructor(
+    private http: HttpClient,
+    private tokenService: TokenService
+  ) {
     // Vérifier s'il y a un token au démarrage
-    if (this.getToken()) {
+    if (this.tokenService.hasToken()) {
       this.getUserProfile().subscribe();
     }
   }
@@ -23,7 +25,7 @@ export class AuthService {
     return this.http.post(`${this.apiUrl}/login`, credentials).pipe(
       tap((response: any) => {
         if (response.token) {
-          localStorage.setItem('token', response.token);
+          this.tokenService.setToken(response.token);
           // Charger le profil immédiatement après la connexion
           this.getUserProfile().subscribe();
         }
@@ -39,7 +41,7 @@ export class AuthService {
     return this.http.post(`${this.apiUrl}/register`, userData).pipe(
       tap((response: any) => {
         if (response.token) {
-          localStorage.setItem('token', response.token);
+          this.tokenService.setToken(response.token);
           // Charger le profil immédiatement après l'inscription
           this.getUserProfile().subscribe();
         }
@@ -67,15 +69,11 @@ export class AuthService {
   }
 
   logout(): void {
-    localStorage.removeItem('token');
+    this.tokenService.removeToken();
     this.currentUserSubject.next(null);
   }
 
-  getToken(): string | null {
-    return localStorage.getItem('token');
-  }
-
   isLoggedIn(): boolean {
-    return !!this.getToken();
+    return this.tokenService.hasToken();
   }
 }
