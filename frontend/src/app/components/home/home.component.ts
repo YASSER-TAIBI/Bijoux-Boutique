@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
+import { ProductService } from '../../services/product.service';
+import { CartService } from '../../services/cart.service';
+import { AuthService } from '../../services/auth.service';
+import { WishlistService } from '../../services/wishlist.service';
 import { QuickViewModalComponent } from '../shared/quick-view-modal/quick-view-modal.component';
 import { Product } from '../../models/product.interface';
-import { ProductService } from '../../services/product.service';
-import { Router } from '@angular/router';
-import { CartService } from '../../services/cart.service';
 
 @Component({
   selector: 'app-home',
@@ -19,7 +20,6 @@ export class HomeComponent implements OnInit {
   featuredProducts: Product[] = [];
   selectedProduct: any = null;
   isQuickViewOpen = false;
-  favoriteProducts: Set<string> = new Set();
   testimonials = [
     {
       text: "Des bijoux magnifiques et un service client exceptionnel !",
@@ -40,8 +40,10 @@ export class HomeComponent implements OnInit {
 
   constructor(
     private productService: ProductService,
-    private router: Router,
-    private cartService: CartService
+    private cartService: CartService,
+    private authService: AuthService,
+    private wishlistService: WishlistService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -124,14 +126,48 @@ export class HomeComponent implements OnInit {
   }
 
   toggleFavorite(productId: string) {
-    if (this.favoriteProducts.has(productId)) {
-      this.favoriteProducts.delete(productId);
+    if (!this.authService.isLoggedIn()) {
+      localStorage.setItem('addToWishlistAfterLogin', productId);
+      this.router.navigate(['/account']);
+      return;
+    }
+
+    const isCurrentlyInWishlist = this.wishlistService.isInWishlist(productId);
+    
+    if (isCurrentlyInWishlist) {
+      this.wishlistService.removeFromWishlist(productId).subscribe({
+        next: () => {
+          this.wishlistService.loadWishlist();
+          // Feedback visuel
+          const heartIcon = document.querySelector(`[data-product-id="${productId}"] .fa-heart`);
+          if (heartIcon) {
+            heartIcon.classList.add('wishlist-animation');
+            setTimeout(() => heartIcon.classList.remove('wishlist-animation'), 500);
+          }
+        },
+        error: (error) => {
+          console.error('Erreur lors du retrait des favoris:', error);
+        }
+      });
     } else {
-      this.favoriteProducts.add(productId);
+      this.wishlistService.addToWishlist(productId).subscribe({
+        next: () => {
+          this.wishlistService.loadWishlist();
+          // Feedback visuel
+          const heartIcon = document.querySelector(`[data-product-id="${productId}"] .fa-heart`);
+          if (heartIcon) {
+            heartIcon.classList.add('wishlist-animation');
+            setTimeout(() => heartIcon.classList.remove('wishlist-animation'), 500);
+          }
+        },
+        error: (error) => {
+          console.error('Erreur lors de l\'ajout aux favoris:', error);
+        }
+      });
     }
   }
 
   isFavorite(productId: string): boolean {
-    return this.favoriteProducts.has(productId);
+    return this.wishlistService.isInWishlist(productId);
   }
 }

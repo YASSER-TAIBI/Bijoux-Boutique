@@ -24,7 +24,8 @@ app.get('/', (req, res) => {
             getProductById: '/api/products/:id',
             register: '/api/users/register',
             login: '/api/users/login',
-            profile: '/api/users/profile'
+            profile: '/api/users/profile',
+            wishlist: '/api/users/wishlist'
         }
     });
 });

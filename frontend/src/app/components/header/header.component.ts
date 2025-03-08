@@ -28,19 +28,14 @@ export class HeaderComponent implements OnInit {
   ) {
     // S'abonner aux changements d'état de l'utilisateur
     this.authService.currentUser$.subscribe(user => {
-      console.log('User state changed:', user);
       this.currentUser = user;
     });
   }
 
   ngOnInit() {
-    console.log('Header Component Initialized');
-    console.log('Is Logged In:', this.authService.isLoggedIn());
-    console.log('Token:', this.authService.getToken());
     // Charger l'utilisateur au démarrage
     this.authService.getUserProfile().subscribe({
       next: (user) => {
-        console.log('Profile loaded in header:', user);
         this.currentUser = user;
       },
       error: (error) => {
@@ -80,7 +75,6 @@ export class HeaderComponent implements OnInit {
   }
 
   logout() {
-    console.log('Logging out...');
     this.authService.logout();
     this.currentUser = null;
     this.router.navigate(['/']);

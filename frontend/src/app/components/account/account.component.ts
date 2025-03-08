@@ -5,6 +5,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { Router } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
+import { WishlistService } from '../../services/wishlist.service';
 
 @Component({
   selector: 'app-account',
@@ -20,7 +21,8 @@ export class AccountComponent {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private wishlistService: WishlistService
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -41,6 +43,32 @@ export class AccountComponent {
     });
   }
 
+  private handlePostLoginActions() {
+    // Vérifier s'il y a un produit à ajouter aux favoris
+    const productToAdd = localStorage.getItem('addToWishlistAfterLogin');
+    if (productToAdd) {
+      this.wishlistService.addToWishlist(productToAdd).subscribe({
+        next: () => {
+          console.log('Produit ajouté aux favoris après connexion');
+          localStorage.removeItem('addToWishlistAfterLogin');
+          this.wishlistService.loadWishlist();
+        },
+        error: (error) => {
+          console.error('Erreur lors de l\'ajout aux favoris après connexion:', error);
+        }
+      });
+    }
+
+    // Vérifier s'il y a une redirection en attente
+    const redirectUrl = localStorage.getItem('redirectAfterLogin');
+    if (redirectUrl) {
+      localStorage.removeItem('redirectAfterLogin');
+      this.router.navigate([redirectUrl]);
+    } else {
+      this.router.navigate(['/']);
+    }
+  }
+
   onLogin() {
     if (this.loginForm.valid) {
       console.log('Tentative de connexion avec:', this.loginForm.value);
@@ -48,21 +76,13 @@ export class AccountComponent {
         next: (response) => {
           console.log('Réponse de connexion:', response);
           if (response && response.token) {
-            // Vérifier s'il y a une redirection en attente
-            const redirectUrl = localStorage.getItem('redirectAfterLogin');
-            if (redirectUrl) {
-              localStorage.removeItem('redirectAfterLogin');
-              // Attendre 2secondes pour que le profil soit chargé
-              setTimeout(() => {
-                this.router.navigate([redirectUrl]);
-              }, 2000);
-            } else {
-              this.router.navigate(['/']);
-            }
+            console.log('Connexion réussie !');
+            this.handlePostLoginActions();
           }
         },
         error: (error) => {
-          console.error('Erreur de connexion:', error);        }
+          console.error('Erreur de connexion:', error);
+        }
       });
     }
   }
@@ -88,23 +108,8 @@ export class AccountComponent {
         next: (response) => {
           console.log('Réponse d\'inscription:', response);
           if (response && response.token) {
-            // Charger le profil après l'inscription
-            this.authService.getUserProfile().subscribe({
-              next: (user) => {
-                console.log('Profil chargé avec succès:', user);
-                // Vérifier s'il y a une redirection en attente
-                const redirectUrl = localStorage.getItem('redirectAfterLogin');
-                if (redirectUrl) {
-                  localStorage.removeItem('redirectAfterLogin');
-                  this.router.navigate([redirectUrl]);
-                } else {
-                  window.location.reload(); // Pour forcer la mise à jour du header
-                }
-              },
-              error: (error) => {
-                console.error('Erreur lors du chargement du profil:', error);
-              }
-            });
+            console.log('Inscription réussie !');
+            this.handlePostLoginActions();
           }
         },
         error: (error) => {

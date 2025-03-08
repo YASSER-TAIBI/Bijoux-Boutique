@@ -58,7 +58,6 @@ export class AuthService {
         this.currentUserSubject.next(user);
       }),
       catchError(error => {
-        console.error('Error loading profile:', error);
         if (error.status === 401) {
           this.logout();
         }
