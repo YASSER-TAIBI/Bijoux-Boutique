@@ -1,0 +1,76 @@
+<div class="wishlist-container">
+  <div class="container">
+    <!-- En-tête -->
+    <div class="wishlist-header">
+      <h1>Mes Favoris <span>({{ wishlistProducts.length }} articles)</span></h1>
+    </div>
+
+    <!-- Message d'erreur -->
+    <div *ngIf="error" class="alert-danger">
+      {{ error }}
+      <button class="btn-close" (click)="error = null">×</button>
+    </div>
+
+    <!-- Chargement -->
+    <div *ngIf="loading" class="text-center py-5">
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden">Chargement...</span>
+      </div>
+    </div>
+
+    <!-- Liste vide -->
+    <div *ngIf="!loading && wishlistProducts.length === 0" class="empty-wishlist">
+      <i class="fas fa-heart"></i>
+      <h3>Votre liste de favoris est vide</h3>
+      <p>Parcourez notre catalogue et ajoutez des produits à vos favoris</p>
+      <button class="btn-primary" routerLink="/">Découvrir nos produits</button>
+    </div>
+
+    <!-- Liste des produits -->
+    <div *ngIf="!loading && wishlistProducts.length > 0" class="wishlist-items">
+      <!-- Barre de sélection -->
+      <div class="select-all">
+        <label>
+          <input type="checkbox" [(ngModel)]="selectAll" (change)="toggleSelectAll()">
+          Tout sélectionner
+        </label>
+        <button class="btn-delete" [disabled]="!hasSelectedItems()" (click)="deleteSelected()">
+          <i class="fas fa-trash"></i>
+          Supprimer la sélection
+        </button>
+      </div>
+
+      <!-- Liste des produits -->
+      <div class="product-list">
+        <div *ngFor="let product of wishlistProducts" class="product-item">
+          <div class="checkbox">
+            <input type="checkbox" [(ngModel)]="product.selected">
+          </div>
+          
+          <div class="product-image" (click)="goToProduct(product._id)">
+            <img [src]="product.image" [alt]="product.name">
+          </div>
+          
+          <div class="product-info">
+            <h3 class="product-name" (click)="goToProduct(product._id)">{{ product.name }}</h3>
+            <div class="product-price">
+              <span class="current-price">{{ product.price | currency:'EUR':'symbol':'1.2-2':'fr' }}</span>
+              <span *ngIf="product.oldPrice" class="old-price">
+                {{ product.oldPrice | currency:'EUR':'symbol':'1.2-2':'fr' }}
+              </span>
+            </div>
+          </div>
+          
+          <div class="actions">
+            <button class="btn-cart" (click)="addToCart(product)" title="Ajouter au panier">
+              <i class="fas fa-shopping-cart"></i>
+            </button>
+            <button class="btn-delete" (click)="removeFromWishlist(product._id)" title="Retirer des favoris">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

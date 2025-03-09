@@ -14,14 +14,14 @@ import { Router } from '@angular/router';
 export class CartModalComponent implements OnInit {
   @Input() isOpen = false;
   @Output() closeCart = new EventEmitter<void>();
-  
+
   cartItems: CartItem[] = [];
-  
+
   constructor(private cartService: CartService, private router: Router) {}
 
   ngOnInit(): void {
     this.cartService.cartItems$.subscribe(items => {
-      this.cartItems = items;
+        this.cartItems = items;
     });
   }
 
@@ -34,7 +34,7 @@ export class CartModalComponent implements OnInit {
       this.cartService.removeFromCart(productId);
     } else {
       this.cartService.updateQuantity(productId, quantity);
-    }
+      }
   }
 
   removeItem(productId: string): void {

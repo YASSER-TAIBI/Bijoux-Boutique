@@ -12,6 +12,8 @@ import { ViewCartComponent } from './components/view-cart/view-cart.component';
 import { CheckoutDetailsComponent } from './components/checkout-details/checkout-details.component';
 import { OrderDetailsComponent } from './components/order-details/order-details.component';
 import { AccountComponent } from './components/account/account.component';
+import { WishlistComponent } from './components/wishlist/wishlist.component';
+import { AuthGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -25,7 +27,8 @@ export const routes: Routes = [
   { path: 'cart', component: ViewCartComponent },
   { path: 'checkout', component: CheckoutDetailsComponent },
   { path: 'order', component: OrderDetailsComponent },
-  { path: 'account', component: AccountComponent }
+  { path: 'account', component: AccountComponent },
+  { path: 'wishlist', component: WishlistComponent, canActivate: [AuthGuard] },
 ];
 
 @NgModule({

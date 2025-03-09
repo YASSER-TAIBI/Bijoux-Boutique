@@ -21,7 +21,7 @@ export class CartService {
     const savedCart = localStorage.getItem('cart');
     if (savedCart) {
       this.cartItemsSubject.next(JSON.parse(savedCart));
-    }
+  }
   }
 
   private saveCartToStorage(items: CartItem[]): void {
