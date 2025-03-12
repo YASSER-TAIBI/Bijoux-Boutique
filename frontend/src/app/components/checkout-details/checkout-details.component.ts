@@ -2,22 +2,15 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CartService } from '../../services/cart.service';
 import { OrderService } from '../../services/order.service';
+import { AuthService } from '../../services/auth.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { CustomerInfo } from '../../models/order.interface';
 
-interface CustomerInfo {
+interface User {
   email: string;
-  firstName: string;
-  lastName: string;
-  companyName: string;
-  country: string;
-  streetAddress: string;
-  apartment: string;
-  postcode: string;
-  city: string;
-  phone: string;
-  notes: string;
-  paymentMethod: 'bank-transfer' | 'cash-delivery';
+  name: string;
+  phone?: string;
 }
 
 @Component({
@@ -47,10 +40,39 @@ export class CheckoutDetailsComponent implements OnInit {
   constructor(
     private cartService: CartService,
     private orderService: OrderService,
+    private authService: AuthService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
+    // Vérifier si l'utilisateur est connecté
+    if (!this.authService.isLoggedIn()) {
+      // Sauvegarder l'URL de redirection
+      localStorage.setItem('redirectAfterLogin', '/checkout');
+      this.router.navigate(['/account']);
+      return;
+    }
+
+    // Récupérer les informations de l'utilisateur connecté
+    this.authService.currentUser$.subscribe((user: User | null) => {
+      if (user) {
+        // Diviser le nom complet en prénom et nom
+        const nameParts = user.name.trim().split(' ');
+        const firstName = nameParts[0];
+        const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
+
+        // Pré-remplir les informations de l'utilisateur
+        this.customerInfo = {
+          ...this.customerInfo,
+          email: user.email,
+          firstName: firstName,
+          lastName: lastName,
+          phone: user.phone || '',
+        };
+      }
+    });
+
+    // Vérifier le panier
     this.cartService.cartItems$.subscribe(items => {
       this.cartItems = items;
       if (items.length === 0) {

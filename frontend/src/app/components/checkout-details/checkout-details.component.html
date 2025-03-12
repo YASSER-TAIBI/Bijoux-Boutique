@@ -16,7 +16,7 @@
       <div class="customer-information">
         <h2>Information client</h2>
         <div class="form-group">
-          <input type="text" placeholder="Nom d'utilisateur ou adresse e-mail *" [(ngModel)]="customerInfo.email" required>
+          <input type="text" placeholder="Nom d'utilisateur ou adresse e-mail *" [(ngModel)]="customerInfo.email" required readonly>
         </div>
       </div>
 
@@ -24,10 +24,10 @@
         <h2>Détails de facturation</h2>
         <div class="form-row">
           <div class="form-group half">
-            <input type="text" placeholder="Prénom *" [(ngModel)]="customerInfo.firstName" required>
+            <input type="text" placeholder="Prénom *" [(ngModel)]="customerInfo.firstName" required readonly>
           </div>
           <div class="form-group half">
-            <input type="text" placeholder="Nom *" [(ngModel)]="customerInfo.lastName" required>
+            <input type="text" placeholder="Nom *" [(ngModel)]="customerInfo.lastName" required readonly>
           </div>
         </div>
         <div class="form-group">
@@ -54,7 +54,7 @@
           </div>
         </div>
         <div class="form-group">
-          <input type="tel" placeholder="Téléphone *" [(ngModel)]="customerInfo.phone" required>
+          <input type="tel" placeholder="Téléphone *" [(ngModel)]="customerInfo.phone" required readonly>
         </div>
       </div>
 
