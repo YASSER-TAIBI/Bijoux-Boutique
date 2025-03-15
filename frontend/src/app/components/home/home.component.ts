@@ -5,6 +5,7 @@ import { ProductService } from '../../services/product.service';
 import { CartService } from '../../services/cart.service';
 import { AuthService } from '../../services/auth.service';
 import { WishlistService } from '../../services/wishlist.service';
+import { ToastrService } from 'ngx-toastr';
 import { QuickViewModalComponent } from '../shared/quick-view-modal/quick-view-modal.component';
 import { Product } from '../../models/product.interface';
 
@@ -42,6 +43,7 @@ export class HomeComponent implements OnInit {
     private productService: ProductService,
     private cartService: CartService,
     private authService: AuthService,
+    private toastr: ToastrService,
     private wishlistService: WishlistService,
     private router: Router
   ) {}
@@ -123,12 +125,14 @@ export class HomeComponent implements OnInit {
 
   handleAddToCart(event: {product: Product, quantity: number}): void {
     this.cartService.addToCart(event.product, event.quantity);
+    this.toastr.success('Produit ajouté au panier');
   }
 
   toggleFavorite(productId: string) {
     if (!this.authService.isLoggedIn()) {
       localStorage.setItem('addToWishlistAfterLogin', productId);
       this.router.navigate(['/account']);
+      this.toastr.info('Veuillez vous connecter pour ajouter aux favoris');
       return;
     }
 

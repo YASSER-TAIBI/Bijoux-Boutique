@@ -1,4 +1,4 @@
-<div class="order-complete-page" @fadeIn *ngIf="orderDetails">
+<div class="order-complete-page" @fadeIn *ngIf="order">
   <h1>Paiement</h1>
 
   <div class="checkout-steps">
@@ -12,98 +12,105 @@
   </div>
 
   <div class="order-confirmation" @slideIn>
-    <h2>Merci. Votre commande a été reçue.</h2>
+    <h2>Merci pour votre commande !</h2>
 
     <div class="order-info">
       <div class="info-item">
-        <span class="label">Numéro de commande:</span>
-        <span class="value">{{ orderDetails.orderNumber }}</span>
+        <span class="label">Numéro de commande</span>
+        <span class="value">#{{ order.orderNumber }}</span>
       </div>
       <div class="info-item">
-        <span class="label">Date:</span>
-        <span class="value">{{ orderDetails.date }}</span>
+        <span class="label">Date</span>
+        <span class="value">{{ getFormattedDate(order.orderDate) }}</span>
       </div>
       <div class="info-item">
-        <span class="label">Total:</span>
-        <span class="value">{{ orderDetails.total | currency:'EUR':'symbol':'1.2-2' }}</span>
+        <span class="label">Statut</span>
+        <span class="value">{{ order.status }}</span>
       </div>
       <div class="info-item">
-        <span class="label">Mode de paiement:</span>
-        <span class="value">{{ orderDetails.paymentMethod }}</span>
+        <span class="label">Mode de paiement</span>
+        <span class="value">{{ order.paymentMethod }}</span>
       </div>
     </div>
 
-    <div class="payment-note">
-      Payer en espèces à la livraison
+    <div class="payment-note" *ngIf="order.paymentMethod === 'Paiement à la livraison'">
+      Vous avez choisi le paiement à la livraison. Veuillez préparer le montant exact en espèces lors de la livraison.
     </div>
 
     <div class="order-details-section">
       <h3>Détails de la commande</h3>
-      
-      <table class="order-items" *ngIf="orderDetails?.items">
+      <table class="order-items">
         <thead>
           <tr>
             <th>Produit</th>
             <th>Quantité</th>
-            <th>Sous-total</th>
+            <th>Prix unitaire</th>
             <th>Total</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let item of orderDetails.items">
+          <tr *ngFor="let item of order.items">
             <td class="item-name">{{ item.name }}</td>
             <td class="item-quantity">{{ item.quantity }}</td>
-            <td class="item-price">{{ item.price | number:'1.2-2' }}€</td>
-            <td class="item-total">{{ item.price * item.quantity | number:'1.2-2' }}€</td>
+            <td class="item-price">{{ item.price.toFixed(2) }}€</td>
+            <td class="item-total">{{ (item.price * item.quantity).toFixed(2) }}€</td>
           </tr>
         </tbody>
       </table>
     </div>
 
+    <div class="order-summary">
+      <div class="summary-row">
+        <span class="label">Sous-total</span>
+        <span class="value">{{ getSubtotal().toFixed(2) }}€</span>
+      </div>
+      <div class="summary-row">
+        <span class="label">Frais de livraison</span>
+        <span class="value">Gratuit</span>
+      </div>
+      <div class="summary-row">
+        <span class="label">Total</span>
+        <span class="value">{{ order.totalPrice.toFixed(2) }}€</span>
+      </div>
+    </div>
+
     <div class="facture-details-section">
-    <h3>Informations de facturation</h3>
-    <div class="billing-address" *ngIf="orderDetails?.customerInfo">
-      <div class="address-details">
-        <div class="personal-info">
-          <div class="info-group">
-            <label>Nom complet</label>
-            <span>{{ orderDetails.customerInfo.firstName }} {{ orderDetails.customerInfo.lastName }}</span>
+      <h3>Détails de facturation</h3>
+      <div class="billing-address">
+        <div class="address-details">
+          <div class="detail-item">
+            <div class="label">Nom</div>
+            <div class="value">{{ userName }}</div>
           </div>
-          <div class="info-group">
-            <label>Adresse</label>
-            <span>{{ orderDetails.customerInfo.address }}</span>
+          <div class="detail-item">
+            <div class="label">Adresse</div>
+            <div class="value">{{ order.shippingAddress.street }}</div>
           </div>
-          <div class="info-group">
-            <label>Ville</label>
-            <span>{{ orderDetails.customerInfo.postcode }} {{ orderDetails.customerInfo.city }}</span>
+          <div class="detail-item">
+            <div class="label">Ville</div>
+            <div class="value">{{ order.shippingAddress.city }}</div>
           </div>
-          <div class="info-group-fin">
-            <label>Pays</label>
-            <span>{{ orderDetails.customerInfo.country }}</span>
+          <div class="detail-item">
+            <div class="label">Code postal</div>
+            <div class="value">{{ order.shippingAddress.zip }}</div>
           </div>
-        </div>
-        <div class="contact-info">
-          <div class="info-group">
-            <label>Contact</label>
-            <div class="email">
-              <i class="fas fa-envelope"></i>
-              <span>{{ orderDetails.customerInfo.email }}</span>
-            </div>
-            <div class="phone">
-              <i class="fas fa-phone"></i>
-              <span>{{ orderDetails.customerInfo.phone }}</span>
-            </div>
+          <div class="detail-item">
+            <div class="label">Pays</div>
+            <div class="value">{{ order.shippingAddress.country }}</div>
+          </div>
+          <div class="detail-item" *ngIf="userPhone">
+            <div class="label">Téléphone</div>
+            <div class="value">{{ userPhone }}</div>
           </div>
         </div>
       </div>
     </div>
-  </div>
 
     <div class="action-buttons">
-      <button class="primary-button" (click)="downloadInvoice()">
+      <button class="print-button" (click)="downloadInvoice()">
         <span class="icon">📥</span> Télécharger la facture
       </button>
-      <button class="secondary-button" (click)="returnToHome()">
+      <button class="back-button" (click)="returnToHome()">
         <span class="icon">🏠</span> Retour à l'accueil
       </button>
     </div>

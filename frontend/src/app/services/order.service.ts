@@ -1,36 +1,18 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-
-export interface OrderDetails {
-  orderNumber: string;
-  date: string;
-  total: number;
-  paymentMethod: string;
-  customerInfo: {
-    firstName: string;
-    lastName: string;
-    address: string;
-    city: string;
-    postcode: string;
-    country: string;
-    phone: string;
-    email: string;
-  };
-  items: {
-    name: string;
-    quantity: number;
-    price: number;
-  }[];
-}
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { OrderDetails } from '../models/order.interface';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class OrderService {
+  private apiUrl = `${environment.apiUrl}/orders`;
   private currentOrderSubject = new BehaviorSubject<OrderDetails | null>(null);
   currentOrder$ = this.currentOrderSubject.asObservable();
 
-  constructor() {}
+  constructor(private http: HttpClient) {}
 
   setCurrentOrder(order: OrderDetails) {
     this.currentOrderSubject.next(order);
@@ -55,5 +37,26 @@ export class OrderService {
       day: 'numeric'
     };
     return date.toLocaleDateString('fr-FR', options);
+  }
+
+  // Nouvelles méthodes pour l'API
+  createOrder(orderDetails: OrderDetails): Observable<OrderDetails> {
+    return this.http.post<OrderDetails>(this.apiUrl, orderDetails).pipe(
+      tap(order => {
+        this.setCurrentOrder(order);
+      })
+    );
+  }
+
+  getUserOrders(userId: string): Observable<OrderDetails[]> {
+    return this.http.get<OrderDetails[]>(`${this.apiUrl}/user/${userId}`);
+  }
+
+  getOrderById(orderId: string): Observable<OrderDetails> {
+    return this.http.get<OrderDetails>(`${this.apiUrl}/${orderId}`);
+  }
+
+  updateOrderStatus(orderId: string, status: string): Observable<OrderDetails> {
+    return this.http.patch<OrderDetails>(`${this.apiUrl}/${orderId}/status`, { status });
   }
 }

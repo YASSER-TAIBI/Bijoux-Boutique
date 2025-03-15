@@ -2,13 +2,21 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap, catchError, throwError } from 'rxjs';
 import { TokenService } from './token.service';
+import { environment } from '../../environments/environment';
+
+interface User {
+  id?: string;
+  email: string;
+  name: string;
+  phone?: string;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:3000/api/users';
-  private currentUserSubject = new BehaviorSubject<any>(null);
+  private apiUrl = `${environment.apiUrl}/users`;
+  private currentUserSubject = new BehaviorSubject<User | null>(null);
   currentUser$ = this.currentUserSubject.asObservable();
 
   constructor(
@@ -24,6 +32,7 @@ export class AuthService {
   login(credentials: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/login`, credentials).pipe(
       tap((response: any) => {
+        console.log('Login response:', response); // Debug log
         if (response.token) {
           this.tokenService.setToken(response.token);
           // Charger le profil immédiatement après la connexion
@@ -40,6 +49,7 @@ export class AuthService {
   register(userData: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/register`, userData).pipe(
       tap((response: any) => {
+        console.log('Register response:', response); // Debug log
         if (response.token) {
           this.tokenService.setToken(response.token);
           // Charger le profil immédiatement après l'inscription
@@ -54,16 +64,14 @@ export class AuthService {
   }
 
   getUserProfile(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/profile`).pipe(
+    return this.http.get<User>(`${this.apiUrl}/profile`).pipe(
       tap(user => {
         console.log('Profile loaded:', user);
-        this.currentUserSubject.next(user);
-      }),
-      catchError(error => {
-        if (error.status === 401) {
-          this.logout();
+        // Vérifier que l'ID utilisateur est présent
+        if (!user.id) {
+          console.error('ID utilisateur manquant dans la réponse:', user);
         }
-        return throwError(() => error);
+        this.currentUserSubject.next(user);
       })
     );
   }
@@ -75,5 +83,20 @@ export class AuthService {
 
   isLoggedIn(): boolean {
     return this.tokenService.hasToken();
+  }
+
+  getCurrentUserId(): string | null {
+    const currentUser = this.currentUserSubject.getValue();
+    console.log('Current user:', currentUser); // Debug log
+    if (!currentUser?.id) {
+      console.error('ID utilisateur non disponible:', currentUser);
+      // Essayer de recharger le profil
+      this.getUserProfile().subscribe();
+    }
+    return currentUser?.id || null;
+  }
+
+  getCurrentUser(): User | null {
+    return this.currentUserSubject.getValue();
   }
 }

@@ -1,13 +1,16 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { CartService } from '../../services/cart.service';
-import { OrderService } from '../../services/order.service';
-import { AuthService } from '../../services/auth.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { CustomerInfo } from '../../models/order.interface';
+import { Router } from '@angular/router';
+import { CartService } from '../../services/cart.service';
+import { AuthService } from '../../services/auth.service';
+import { OrderService } from '../../services/order.service';
+import { ToastrService } from 'ngx-toastr';
+import { CustomerInfo, OrderDetails, OrderItem } from '../../models/order.interface';
+import { fadeSlideInAnimation } from '../../animations/shared.animations';
 
 interface User {
+  id?: string;
   email: string;
   name: string;
   phone?: string;
@@ -18,7 +21,8 @@ interface User {
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './checkout-details.component.html',
-  styleUrls: ['./checkout-details.component.scss']
+  styleUrls: ['./checkout-details.component.scss'],
+  animations: [fadeSlideInAnimation]
 })
 export class CheckoutDetailsComponent implements OnInit {
   cartItems: any[] = [];
@@ -41,13 +45,14 @@ export class CheckoutDetailsComponent implements OnInit {
     private cartService: CartService,
     private orderService: OrderService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit(): void {
     // Vérifier si l'utilisateur est connecté
     if (!this.authService.isLoggedIn()) {
-      // Sauvegarder l'URL de redirection
+      this.toastr.warning('Veuillez vous connecter pour accéder au checkout');
       localStorage.setItem('redirectAfterLogin', '/checkout');
       this.router.navigate(['/account']);
       return;
@@ -82,42 +87,58 @@ export class CheckoutDetailsComponent implements OnInit {
   }
 
   getSubtotal(): number {
-    return this.cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+    return this.cartItems.reduce((total: number, item: any) => total + (item.price * item.quantity), 0);
   }
 
   placeOrder(): void {
-    if (this.validateForm()) {
-      const orderDetails = {
-        orderNumber: this.orderService.generateOrderNumber(),
-        date: this.orderService.formatDate(new Date()),
-        total: this.getSubtotal(),
-        paymentMethod: this.customerInfo.paymentMethod === 'cash-delivery' ? 'Paiement à la livraison' : 'Virement bancaire',
-        customerInfo: {
-          firstName: this.customerInfo.firstName,
-          lastName: this.customerInfo.lastName,
-          address: `${this.customerInfo.streetAddress}${this.customerInfo.apartment ? ', ' + this.customerInfo.apartment : ''}`,
-          city: this.customerInfo.city,
-          postcode: this.customerInfo.postcode,
-          country: this.customerInfo.country === 'FR' ? 'France' : this.customerInfo.country,
-          phone: this.customerInfo.phone,
-          email: this.customerInfo.email
-        },
-        items: this.cartItems.map(item => ({
-          name: item.name,
-          quantity: item.quantity,
-          price: item.price
-        }))
-      };
-      
-      // Enregistrer les détails de la commande dans le service
-      this.orderService.setCurrentOrder(orderDetails);
-      
-      // Vider le panier
-      this.cartService.clearCart();
-      
-      // Rediriger vers la page de confirmation de commande
-      this.router.navigate(['/order']);
+    if (!this.validateForm()) {
+      return;
     }
+
+    const user = this.authService.getCurrentUser();
+    if (!user || !user.id) {
+      this.toastr.warning('Veuillez vous connecter pour continuer');
+      localStorage.setItem('redirectAfterLogin', '/checkout');
+      this.router.navigate(['/account']);
+      return;
+    }
+
+    const orderDetails: OrderDetails = {
+      orderNumber: this.orderService.generateOrderNumber(),
+      userId: user.id,
+      items: this.cartItems.map(item => ({
+        productId: item._id,
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity
+      })),
+      totalPrice: this.getSubtotal(),
+      status: 'En cours',
+      orderDate: new Date(),
+      deliveryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Date de livraison estimée à 7 jours
+      paymentMethod: this.customerInfo.paymentMethod === 'cash-delivery' ? 'Paiement à la livraison' : 'Virement bancaire',
+      shippingAddress: {
+        street: `${this.customerInfo.streetAddress}${this.customerInfo.apartment ? ', ' + this.customerInfo.apartment : ''}`,
+        city: this.customerInfo.city,
+        zip: this.customerInfo.postcode,
+        country: this.customerInfo.country === 'FR' ? 'France' : this.customerInfo.country
+      }
+    };
+
+    // Enregistrer la commande
+    this.orderService.createOrder(orderDetails).subscribe({
+      next: (savedOrder) => {
+        this.cartService.clearCart();
+        this.toastr.success('Votre commande a été créée avec succès !');
+        this.router.navigate(['/order'], {
+          queryParams: { orderId: savedOrder._id }
+        });
+      },
+      error: (error) => {
+        console.error('Erreur lors de la création de la commande:', error);
+        this.toastr.error('Une erreur est survenue lors de la création de la commande. Veuillez réessayer.');
+      }
+    });
   }
 
   private validateForm(): boolean {
@@ -145,7 +166,7 @@ export class CheckoutDetailsComponent implements OnInit {
 
     for (const field of requiredFields) {
       if (!this.customerInfo[field]) {
-        alert(`Le champ "${fieldTranslations[field]}" est requis.`);
+        this.toastr.warning(`Le champ "${fieldTranslations[field]}" est requis.`);
         return false;
       }
     }

@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { OrderService } from '../../services/order.service';
+import { AuthService } from '../../services/auth.service';
+import { OrderDetails, OrderItem } from '../../models/order.interface';
 import { trigger, transition, style, animate } from '@angular/animations';
-import { OrderService, OrderDetails } from '../../services/order.service';
 
 @Component({
   selector: 'app-order-details',
@@ -26,27 +28,39 @@ import { OrderService, OrderDetails } from '../../services/order.service';
   ]
 })
 export class OrderDetailsComponent implements OnInit {
-  orderDetails: OrderDetails | null = null;
+  order: OrderDetails | null = null;
   showConfetti: boolean = false;
+  userName: string = '';
+  userPhone: string = '';
 
   constructor(
     private orderService: OrderService,
+    private authService: AuthService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
-    // Récupérer les détails de la commande depuis le service
-    this.orderDetails = this.orderService.getCurrentOrder();
-
-    // Si aucune donnée de commande n'est disponible, rediriger vers la page d'accueil
-    if (!this.orderDetails) {
-      this.router.navigate(['/']);
+    this.order = this.orderService.getCurrentOrder();
+    if (!this.order) {
+      this.router.navigate(['/account']);
       return;
     }
 
-    // Déclencher l'animation de confetti
+    // Récupérer les informations de l'utilisateur
+    this.authService.currentUser$.subscribe(user => {
+      if (user) {
+        this.userName = user.name;
+        this.userPhone = user.phone || '';
+      }
+    });
+
+    // Afficher l'animation de confetti
     setTimeout(() => {
       this.showConfetti = true;
+      // Cacher l'animation après 3 secondes
+      // setTimeout(() => {
+      //   this.showConfetti = false;
+      // }, 3000);
     }, 500);
     
     // Sauvegarder la commande dans l'historique
@@ -54,8 +68,12 @@ export class OrderDetailsComponent implements OnInit {
   }
 
   getSubtotal(): number {
-    if (!this.orderDetails?.items) return 0;
-    return this.orderDetails.items.reduce((total, item) => total + (item.price * item.quantity), 0);
+    if (!this.order) return 0;
+    return this.order.items.reduce((total: number, item: OrderItem) => total + (item.price * item.quantity), 0);
+  }
+
+  getFormattedDate(date: Date): string {
+    return this.orderService.formatDate(new Date(date));
   }
 
   returnToHome(): void {
@@ -64,39 +82,37 @@ export class OrderDetailsComponent implements OnInit {
   }
 
   downloadInvoice(): void {
-    if (!this.orderDetails) return;
+    if (!this.order) return;
 
     // Création du contenu de la facture
     const invoiceContent = `
 FACTURE
 
-Numéro de commande: ${this.orderDetails.orderNumber}
-Date: ${this.orderDetails.date}
+Numéro de commande: ${this.order.orderNumber}
+Date: ${this.getFormattedDate(this.order.orderDate)}
 
-INFORMATIONS CLIENT
-${this.orderDetails.customerInfo.firstName} ${this.orderDetails.customerInfo.lastName}
-${this.orderDetails.customerInfo.address}
-${this.orderDetails.customerInfo.postcode} ${this.orderDetails.customerInfo.city}
-${this.orderDetails.customerInfo.country}
-Tél: ${this.orderDetails.customerInfo.phone}
-Email: ${this.orderDetails.customerInfo.email}
+INFORMATIONS DE LIVRAISON
+${this.userName}
+${this.order.shippingAddress.street}
+${this.order.shippingAddress.zip} ${this.order.shippingAddress.city}
+${this.order.shippingAddress.country}
+${this.userPhone ? 'Tél: ' + this.userPhone : ''}
 
 DÉTAILS DE LA COMMANDE
-${this.orderDetails.items.map(item => 
+${this.order.items.map(item => 
   `${item.name} × ${item.quantity} : ${item.price.toFixed(2)}€`
 ).join('\n')}
 
-Sous-total: ${this.getSubtotal().toFixed(2)}€
-Mode de paiement: ${this.orderDetails.paymentMethod}
-TOTAL: ${this.orderDetails.total.toFixed(2)}€
+Mode de paiement: ${this.order.paymentMethod}
+TOTAL: ${this.order.totalPrice.toFixed(2)}€
     `;
 
     // Création et téléchargement du fichier
-    const blob = new Blob([invoiceContent], { type: 'text/plain' });
+    const blob = new Blob([invoiceContent], { type: 'text/plain;charset=utf-8' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `facture_${this.orderDetails.orderNumber}.txt`;
+    a.download = `facture_${this.order.orderNumber}.txt`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -104,14 +120,14 @@ TOTAL: ${this.orderDetails.total.toFixed(2)}€
   }
 
   private saveOrderToHistory(): void {
-    if (!this.orderDetails) return;
+    if (!this.order) return;
 
     // Récupérer l'historique existant
     const orderHistory = JSON.parse(localStorage.getItem('orderHistory') || '[]');
-    
+
     // Ajouter la nouvelle commande
     const orderWithTimestamp = {
-      ...this.orderDetails,
+      ...this.order,
       timestamp: new Date().toISOString()
     };
     

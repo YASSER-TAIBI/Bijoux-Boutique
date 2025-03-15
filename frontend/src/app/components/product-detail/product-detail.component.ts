@@ -5,13 +5,17 @@ import { FormsModule } from '@angular/forms';
 import { Product, Review } from '../../models/product.interface';
 import { ProductService } from '../../services/product.service';
 import { ViewportScroller } from '@angular/common';
+import { ToastrService } from 'ngx-toastr';
+import { CartService } from '../../services/cart.service';
+import { fadeSlideInAnimation } from '../../animations/shared.animations';
 
 @Component({
   selector: 'app-product-detail',
   standalone: true,
   imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './product-detail.component.html',
-  styleUrls: ['./product-detail.component.scss']
+  styleUrls: ['./product-detail.component.scss'],
+  animations: [fadeSlideInAnimation]
 })
 export class ProductDetailComponent implements OnInit {
   product: Product | null = null;
@@ -28,10 +32,15 @@ export class ProductDetailComponent implements OnInit {
   relatedProducts: Product[] = [];
   selectedImage: string = '';
 
-  constructor(private route: ActivatedRoute, private productService: ProductService, private viewportScroller: ViewportScroller) {}
+  constructor(
+    private route: ActivatedRoute, 
+    private productService: ProductService, 
+    private viewportScroller: ViewportScroller,
+    private toastr: ToastrService,
+    private cartService: CartService
+  ) {}
 
   ngOnInit() {
- 
     this.route.params.subscribe(params => {
       const id = params['id'];
       this.findProduct(id);
@@ -42,11 +51,20 @@ export class ProductDetailComponent implements OnInit {
   }
 
   findProduct(id: string) {
-    this.productService.getProduct(id).subscribe(product => {
-      if (product) {
-        this.product = product;
-        this.selectedImage = product.image;
-        this.findRelatedProducts();
+    this.productService.getProduct(id).subscribe({
+      next: (product) => {
+        if (product) {
+          this.product = product;
+          this.selectedImage = product.image;
+          this.findRelatedProducts();
+        } else {
+          this.toastr.error('Produit non trouvé');
+          this.viewportScroller.scrollToPosition([0, 0]);
+        }
+      },
+      error: (error) => {
+        this.toastr.error('Erreur lors du chargement du produit');
+        console.error('Erreur lors du chargement du produit:', error);
       }
     });
   }
@@ -54,10 +72,15 @@ export class ProductDetailComponent implements OnInit {
   findRelatedProducts() {
     if (!this.product) return;
 
-    this.productService.getProducts().subscribe(products => {
-      this.relatedProducts = products
-        .filter(p => p.category === this.product?.category && p._id !== this.product?._id)
-        .slice(0, 4);
+    this.productService.getProducts().subscribe({
+      next: (products) => {
+        this.relatedProducts = products
+          .filter(p => p.category === this.product?.category && p._id !== this.product?._id)
+          .slice(0, 4);
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement des produits similaires:', error);
+      }
     });
   }
 
@@ -70,7 +93,11 @@ export class ProductDetailComponent implements OnInit {
   }
 
   incrementQuantity() {
-    this.quantity++;
+    if (this.quantity < 5) {
+      this.quantity++;
+    } else {
+      this.toastr.warning('Maximum 5 articles par commande');
+    }
   }
 
   decrementQuantity() {
@@ -85,7 +112,12 @@ export class ProductDetailComponent implements OnInit {
   }
 
   submitReview() {
-    if (this.review.userName && this.review.rating && this.review.comment && this.product) {
+    if (!this.review.userName || !this.review.email || !this.review.rating || !this.review.comment) {
+      this.toastr.warning('Veuillez remplir tous les champs obligatoires');
+      return;
+    }
+
+    if (this.product) {
       const newReview: Review = {
         userName: this.review.userName,
         email: this.review.email,
@@ -99,6 +131,7 @@ export class ProductDetailComponent implements OnInit {
       }
 
       this.product.reviews.unshift(newReview);
+      this.toastr.success('Merci pour votre avis !');
       
       // Réinitialiser le formulaire
       this.review = {
@@ -118,6 +151,9 @@ export class ProductDetailComponent implements OnInit {
         product: this.product,
         quantity: this.quantity
       });
+      
+      this.toastr.success(`${this.product.name} ajouté au panier`);
+      this.quantity = 1;
     }
   }
 

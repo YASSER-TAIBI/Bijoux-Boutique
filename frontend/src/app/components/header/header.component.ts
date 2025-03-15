@@ -33,15 +33,21 @@ export class HeaderComponent implements OnInit {
   }
 
   ngOnInit() {
-    // Charger l'utilisateur au démarrage
-    this.authService.getUserProfile().subscribe({
-      next: (user) => {
-        this.currentUser = user;
-      },
-      error: (error) => {
-        console.error('Error loading profile in header:', error);
-      }
-    });
+    // Ne charger le profil que si l'utilisateur est connecté
+    if (this.authService.isLoggedIn()) {
+      this.authService.getUserProfile().subscribe({
+        next: (user) => {
+          this.currentUser = user;
+        },
+        error: (error) => {
+          console.error('Erreur lors du chargement du profil:', error);
+          if (error.status === 401) {
+            this.authService.logout(); // Déconnexion si le token est invalide
+          }
+        }
+      });
+    }
+    
     this.cartService.cartItems$.subscribe(() => {
       this.cartCount = this.cartService.getCartCount();
     });

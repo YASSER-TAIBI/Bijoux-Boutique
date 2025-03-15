@@ -14,10 +14,8 @@ const getAllProducts = async (req, res) => {
 // Obtenir un produit par son ID
 const getProductById = async (req, res) => {
     try {
-        console.log('Recherche du produit avec l\'ID:', req.params.id);
         const product = await Product.findById(req.params.id);
         if (product) {
-            console.log('Produit trouvé:', product.name);
             res.json(product);
         } else {
             console.log('Aucun produit trouvé avec cet ID');

@@ -4,6 +4,7 @@ const cors = require('cors');
 const connectDB = require('./config/database');
 const productRoutes = require('./routes/product.routes');
 const userRoutes = require('./routes/user.routes');
+const orderRoutes = require('./routes/order.routes');
 const { errorHandler, notFound } = require('./middleware/error.middleware');
 
 const app = express();
@@ -25,7 +26,11 @@ app.get('/', (req, res) => {
             register: '/api/users/register',
             login: '/api/users/login',
             profile: '/api/users/profile',
-            wishlist: '/api/users/wishlist'
+            wishlist: '/api/users/wishlist',
+            createOrder: '/api/orders',
+            getUserOrders: '/api/orders/user/:userId',
+            getOrderById: '/api/orders/:id',
+            updateOrderStatus: '/api/orders/:id/status'
         }
     });
 });
@@ -33,6 +38,7 @@ app.get('/', (req, res) => {
 // Routes
 app.use('/api/products', productRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/orders', orderRoutes);
 
 // Middleware d'erreur
 app.use(notFound);
