@@ -22,6 +22,101 @@
     }
   }
 
+  .controls {
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+
+    .search-box {
+      flex: 1;
+      min-width: 250px;
+      position: relative;
+
+      input {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        padding-right: 2.5rem;
+        border: 1px solid rgba(196, 166, 97, 0.2);
+        border-radius: 8px;
+        font-family: 'Poppins', sans-serif;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+
+        &:focus {
+          outline: none;
+          border-color: var(--secondary-color);
+          box-shadow: 0 0 0 2px rgba(196, 166, 97, 0.1);
+        }
+      }
+
+      i {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--secondary-color);
+      }
+    }
+
+    .filters {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+
+      select {
+        padding: 0.8rem 2rem 0.8rem 1rem;
+        border: 1px solid rgba(196, 166, 97, 0.2);
+        border-radius: 8px;
+        font-family: 'Poppins', sans-serif;
+        font-size: 0.9rem;
+        background-color: white;
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 0.7rem center;
+        background-size: 1em;
+
+        &:focus {
+          outline: none;
+          border-color: var(--secondary-color);
+          box-shadow: 0 0 0 2px rgba(196, 166, 97, 0.1);
+        }
+      }
+
+      .sort-controls {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        .sort-direction {
+          background: transparent;
+          border: 1px solid rgba(196, 166, 97, 0.2);
+          color: var(--secondary-color);
+          width: 2.5rem;
+          height: 2.5rem;
+          border-radius: 8px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.3s ease;
+
+          &:hover {
+            background: rgba(196, 166, 97, 0.1);
+          }
+
+          i {
+            font-size: 1rem;
+          }
+        }
+      }
+    }
+  }
+
   .orders-list {
     display: flex;
     flex-direction: column;
@@ -227,6 +322,50 @@
     }
   }
 
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 2rem;
+
+    .page-btn {
+      min-width: 2.5rem;
+      height: 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(196, 166, 97, 0.2);
+      background: transparent;
+      color: var(--text-color);
+      border-radius: 8px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+
+      &:hover:not(.disabled) {
+        background: rgba(196, 166, 97, 0.1);
+        border-color: var(--secondary-color);
+      }
+
+      &.active {
+        background: var(--secondary-color);
+        border-color: var(--secondary-color);
+        color: white;
+      }
+
+      &.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      i {
+        font-size: 0.8rem;
+      }
+    }
+  }
+
   .empty-state {
     text-align: center;
     padding: 4rem 2rem;
@@ -274,6 +413,12 @@
 // Responsive Design
 @media (max-width: 992px) {
   .order-history-container {
+    .controls {
+      .filters {
+        flex-wrap: wrap;
+      }
+    }
+
     .order-card {
       .order-details {
         gap: 1.5rem;
@@ -291,6 +436,20 @@
 
 @media (max-width: 768px) {
   .order-history-container {
+    .controls {
+      flex-direction: column;
+      align-items: stretch;
+
+      .search-box {
+        width: 100%;
+      }
+
+      .filters {
+        width: 100%;
+        justify-content: space-between;
+      }
+    }
+
     .order-card {
       .order-details {
         flex-direction: column;
@@ -318,11 +477,30 @@
         }
       }
     }
+
+    .pagination {
+      .page-btn {
+        min-width: 2rem;
+        height: 2rem;
+        font-size: 0.8rem;
+      }
+    }
   }
 }
 
 @media (max-width: 576px) {
   .order-history-container {
+    .controls {
+      .filters {
+        flex-direction: column;
+        gap: 0.5rem;
+
+        select, .sort-controls {
+          width: 100%;
+        }
+      }
+    }
+
     .order-card {
       padding: 1rem;
 
@@ -352,6 +530,12 @@
       .order-actions {
         text-align: center;
       }
+    }
+
+    .pagination {
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.25rem;
     }
   }
 }
