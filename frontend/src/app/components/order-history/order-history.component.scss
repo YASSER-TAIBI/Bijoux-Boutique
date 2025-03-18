@@ -141,7 +141,6 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 1rem;
       padding-bottom: 1rem;
       border-bottom: 1px solid rgba(196, 166, 97, 0.2);
 
@@ -255,7 +254,7 @@
 
         .total-price {
           .value {
-            font-size: 1.2rem;
+            font-size: 1rem;
             font-weight: 600;
             color: var(--secondary-color);
           }
@@ -267,9 +266,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-top: 1rem;
       padding-top: 1rem;
-      border-top: 1px solid rgba(196, 166, 97, 0.2);
 
       .date, .total {
         .label {

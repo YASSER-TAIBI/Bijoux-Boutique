@@ -16,7 +16,7 @@ interface OrderHistory {
 interface Item {
   productImage: string;
   productName: string;
-  sellerName: string;
+  category: string;
   quantity: number;
   price: number;
 }
@@ -36,16 +36,16 @@ export class OrderHistoryComponent implements OnInit {
       orderNumber: '90500088907037',
       status: 'Complete',
       items: [{
-        productImage: 'assets/images/products/ea-sports-fc24.jpg',
-        productName: 'EA SPORTS FC 24 (Xbox Series X/S)',
-        sellerName: 'Gamebooth',
+        productImage: '../../../assets/images/Boucles_Oreilles/boucle_oreille_1.jpg',
+        productName: 'Boucles d\'Oreilles Diamant Étoilé',
+        category: 'Boucles d\'Oreilles',
         quantity: 1,
         price: 17.63
       },
       {
-        productImage: 'assets/images/products/gta5.jpg',
-        productName: 'Grand Theft Auto V | Premium Edition (Xbox One)',
-        sellerName: 'Kinguin',
+        productImage: '../../../assets/images/Bagues/bague_1.jpg',
+        productName: 'Bague Solitaire Diamant',
+        category: 'Bagues',
         quantity: 1,
         price: 12.30
       }],
@@ -57,14 +57,14 @@ export class OrderHistoryComponent implements OnInit {
       orderNumber: '90500089981078',
       status: 'Complete',
       items: [{
-        productImage: 'assets/images/products/gta5.jpg',
-        productName: 'Grand Theft Auto V | Premium Edition (Xbox One)',
-        sellerName: 'Kinguin',
+        productImage: '../../../assets/images/Bracelets/bracelet_4.jpg',
+        productName: 'Bracelet Multi-Rangs Cuir',
+        category: 'Bracelets',
         quantity: 1,
         price: 12.30
       }],
       purchaseDate: new Date('2024-02-04T17:58:00'),
-      totalPrice: 17.63
+      totalPrice: 12.30
     }
   ];
 
@@ -98,7 +98,7 @@ export class OrderHistoryComponent implements OnInit {
         order.orderNumber.toLowerCase().includes(searchLower) ||
         order.items.some(item => 
           item.productName.toLowerCase().includes(searchLower) ||
-          item.sellerName.toLowerCase().includes(searchLower)
+          item.category.toLowerCase().includes(searchLower)
         )
       );
     }
