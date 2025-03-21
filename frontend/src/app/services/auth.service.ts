@@ -87,7 +87,6 @@ export class AuthService {
 
   getCurrentUserId(): string | null {
     const currentUser = this.currentUserSubject.getValue();
-    console.log('Current user:', currentUser); // Debug log
     if (!currentUser?.id) {
       console.error('ID utilisateur non disponible:', currentUser);
       // Essayer de recharger le profil

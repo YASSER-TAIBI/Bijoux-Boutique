@@ -4,9 +4,10 @@ import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { fadeSlideInAnimation } from '../../animations/shared.animations';
 import { OrderService } from '../../services/order.service';
+import { ProductService } from '../../services/product.service';
 import { AuthService } from '../../services/auth.service';
 import { OrderDetails } from '../../models/order.interface';
-import { Subject, takeUntil, filter } from 'rxjs';
+import { Subject, takeUntil, filter, forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-order-history',
@@ -22,6 +23,7 @@ export class OrderHistoryComponent implements OnInit, OnDestroy {
   loading = true;
   error: string | null = null;
   private destroy$ = new Subject<void>();
+  productImages = new Map<string, string>();
 
   // Filtres et tri
   searchTerm = '';
@@ -36,6 +38,7 @@ export class OrderHistoryComponent implements OnInit, OnDestroy {
 
   constructor(
     private orderService: OrderService,
+    private productService: ProductService,
     private authService: AuthService,
     private router: Router
   ) {}
@@ -52,19 +55,13 @@ export class OrderHistoryComponent implements OnInit, OnDestroy {
     this.authService.currentUser$
       .pipe(
         takeUntil(this.destroy$),
-        filter(user => !!user) // Ne réagir que lorsqu'un utilisateur est disponible
+        filter(user => !!user) 
       )
       .subscribe(user => {
         if (user?.id) {
           this.loadOrders(user.id);
         }
       });
-
-    // Déclencher le chargement initial
-    const userId = this.authService.getCurrentUserId();
-    if (userId) {
-      this.loadOrders(userId);
-    }
   }
 
   private loadOrders(userId: string): void {
@@ -76,6 +73,7 @@ export class OrderHistoryComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (orders) => {
           this.orders = orders;
+          this.loadProductImages(orders);
           this.applyFilters();
           this.loading = false;
         },
@@ -85,6 +83,53 @@ export class OrderHistoryComponent implements OnInit, OnDestroy {
           this.loading = false;
         }
       });
+  }
+
+  private loadProductImages(orders: OrderDetails[]): void {
+    const productIds = new Set<string>();
+    orders.forEach(order => {
+      order.items.forEach(item => {
+        productIds.add(item.productId);
+      });
+    });
+
+    const productRequests = Array.from(productIds).map(id =>
+      this.productService.getProduct(id).pipe(
+        takeUntil(this.destroy$)
+      )
+    );
+
+    if (productRequests.length > 0) {
+      forkJoin(productRequests).subscribe({
+        next: (products) => {
+          products.forEach(product => {
+            if (product && product._id) {
+              this.productImages.set(product._id, product.image);
+            }
+          });
+          // Forcer la mise à jour de la vue
+          this.filteredOrders = [...this.filteredOrders];
+        },
+        error: (err) => {
+          console.error('Erreur lors du chargement des images:', err);
+        }
+      });
+    }
+  }
+
+  getProductImage(productId: string): string {
+    const image = this.productImages.get(productId);
+    if (image) {
+      return image;
+    } else {
+      // Si l'image n'est pas encore chargée, on utilise l'URL directe
+      return `../../../assets/images/products/picture-not-available.jpg`;
+    }
+  }
+
+  onImageError(event: any): void {
+    event.target.src = '../../../assets/images/products/picture-not-available.jpg';
+    event.target.classList.add('error');
   }
 
   ngOnDestroy(): void {

@@ -68,7 +68,7 @@
         <div class="order-card" *ngFor="let order of filteredOrders | slice:(currentPage-1)*itemsPerPage:currentPage*itemsPerPage">
           <div class="order-header">
             <div class="order-info">
-              <span class="label">Numéro de commande: </span>
+              <span class="label">Numéro de commande : </span>
               <span class="value">{{ order.orderNumber }}</span>
             </div>
             <div class="order-status" [ngClass]="getOrderStatusClass(order.status)">
@@ -80,17 +80,23 @@
           <!-- Liste des articles -->
           <div class="order-details" *ngFor="let item of order.items">
             <div class="product-info">
-              <img [src]="'../../../assets/images/Products/' + item.productId + '.jpg'" [alt]="item.name" class="product-image">
+              <div class="image-container">
+                <div class="image-loader" *ngIf="!productImages.has(item.productId)">
+                  <i class="fas fa-spinner fa-spin"></i>
+                </div>
+                <img [src]="getProductImage(item.productId)" 
+                     [alt]="item.name" 
+                     class="product-image" 
+                     (error)="onImageError($event)"
+                     [class.loaded]="productImages.has(item.productId)">
+              </div>
               <div class="product-details">
                 <h3>{{ item.name }}</h3>
+                <span class="value">x {{ item.quantity }}</span>
               </div>
             </div>
 
             <div class="purchase-info">
-              <div class="quantity">
-                <span class="label">Quantité:</span>
-                <span class="value">{{ item.quantity }}</span>
-              </div>
               <div class="total-price">
                 <span class="value">{{ item.price | currency:'EUR':'symbol':'1.2-2' }}</span>
               </div>
@@ -100,15 +106,15 @@
           <!-- Résumé de la commande -->
           <div class="order-summary">
             <div class="date">
-              <span class="label">Date de commande:</span>
+              <span class="label">Date de commande</span>
               <span class="value">{{ order.orderDate | date:'dd/MM/yy - HH:mm' }}</span>
             </div>
             <div class="delivery-date">
-              <span class="label">Date de livraison estimée:</span>
+              <span class="label">Date de livraison estimée</span>
               <span class="value">{{ order.deliveryDate | date:'dd/MM/yy' }}</span>
             </div>
             <div class="total">
-              <span class="label">Total:</span>
+              <span class="label">Total</span>
               <span class="value">{{ order.totalPrice | currency:'EUR':'symbol':'1.2-2' }}</span>
             </div>
           </div>
