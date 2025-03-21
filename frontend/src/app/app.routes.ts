@@ -30,7 +30,7 @@ export const routes: Routes = [
   { path: 'order', component: OrderDetailsComponent },
   { path: 'account', component: AccountComponent },
   { path: 'wishlist', component: WishlistComponent, canActivate: [AuthGuard] },
-  { path: 'order-history', component: OrderHistoryComponent},
+  { path: 'order-history', component: OrderHistoryComponent, canActivate: [AuthGuard] },
 ];
 
 @NgModule({

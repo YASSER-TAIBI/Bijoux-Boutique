@@ -1,25 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { fadeSlideInAnimation } from '../../animations/shared.animations';
-
-interface OrderHistory {
-  id: string;
-  orderNumber: string;
-  status: string;
-  items: Item[];
-  purchaseDate: Date;
-  totalPrice: number;
-}
-
-interface Item {
-  productImage: string;
-  productName: string;
-  category: string;
-  quantity: number;
-  price: number;
-}
+import { OrderService } from '../../services/order.service';
+import { AuthService } from '../../services/auth.service';
+import { OrderDetails } from '../../models/order.interface';
+import { Subject, takeUntil, filter } from 'rxjs';
 
 @Component({
   selector: 'app-order-history',
@@ -29,93 +16,109 @@ interface Item {
   styleUrls: ['./order-history.component.scss'],
   animations: [fadeSlideInAnimation]
 })
-export class OrderHistoryComponent implements OnInit {
-  allOrders: OrderHistory[] = [
-    {
-      id: '1',
-      orderNumber: '90500088907037',
-      status: 'Complete',
-      items: [{
-        productImage: '../../../assets/images/Boucles_Oreilles/boucle_oreille_1.jpg',
-        productName: 'Boucles d\'Oreilles Diamant Étoilé',
-        category: 'Boucles d\'Oreilles',
-        quantity: 1,
-        price: 17.63
-      },
-      {
-        productImage: '../../../assets/images/Bagues/bague_1.jpg',
-        productName: 'Bague Solitaire Diamant',
-        category: 'Bagues',
-        quantity: 1,
-        price: 12.30
-      }],
-      purchaseDate: new Date('2024-01-20T18:14:00'),
-      totalPrice: 29.93
-    },
-    {
-      id: '2',
-      orderNumber: '90500089981078',
-      status: 'Complete',
-      items: [{
-        productImage: '../../../assets/images/Bracelets/bracelet_4.jpg',
-        productName: 'Bracelet Multi-Rangs Cuir',
-        category: 'Bracelets',
-        quantity: 1,
-        price: 12.30
-      }],
-      purchaseDate: new Date('2024-02-04T17:58:00'),
-      totalPrice: 12.30
-    }
-  ];
+export class OrderHistoryComponent implements OnInit, OnDestroy {
+  orders: OrderDetails[] = [];
+  filteredOrders: OrderDetails[] = [];
+  loading = true;
+  error: string | null = null;
+  private destroy$ = new Subject<void>();
 
   // Filtres et tri
-  orders: OrderHistory[] = [];
-  searchTerm: string = '';
+  searchTerm = '';
   sortOption: 'date' | 'price' | 'status' = 'date';
   sortDirection: 'asc' | 'desc' = 'desc';
-  statusFilter: string = 'all';
+  statusFilter = 'all';
 
   // Pagination
-  currentPage: number = 1;
-  itemsPerPage: number = 5;
-  totalPages: number = 1;
+  currentPage = 1;
+  itemsPerPage = 5;
+  totalPages = 1;
 
-  constructor() {}
+  constructor(
+    private orderService: OrderService,
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
-  ngOnInit() {
-    this.orders = [...this.allOrders];
-    this.applyFilters();
+  ngOnInit(): void {
+    if (!this.authService.isLoggedIn()) {
+      this.router.navigate(['/login'], { 
+        queryParams: { returnUrl: '/order-history' }
+      });
+      return;
+    }
+
+    // S'abonner aux changements de l'utilisateur
+    this.authService.currentUser$
+      .pipe(
+        takeUntil(this.destroy$),
+        filter(user => !!user) // Ne réagir que lorsqu'un utilisateur est disponible
+      )
+      .subscribe(user => {
+        if (user?.id) {
+          this.loadOrders(user.id);
+        }
+      });
+
+    // Déclencher le chargement initial
+    const userId = this.authService.getCurrentUserId();
+    if (userId) {
+      this.loadOrders(userId);
+    }
   }
 
-  // Méthodes de filtrage et tri
-  applyFilters() {
-    let filteredOrders = [...this.allOrders];
+  private loadOrders(userId: string): void {
+    this.loading = true;
+    this.error = null;
 
-    // Recherche
+    this.orderService.getUserOrders(userId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (orders) => {
+          this.orders = orders;
+          this.applyFilters();
+          this.loading = false;
+        },
+        error: (err) => {
+          console.error('Erreur lors du chargement des commandes:', err);
+          this.error = 'Impossible de charger vos commandes. Veuillez réessayer plus tard.';
+          this.loading = false;
+        }
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  applyFilters(): void {
+    let result = [...this.orders];
+
+    // Filtre par recherche
     if (this.searchTerm) {
       const searchLower = this.searchTerm.toLowerCase();
-      filteredOrders = filteredOrders.filter(order => 
+      result = result.filter(order => 
         order.orderNumber.toLowerCase().includes(searchLower) ||
         order.items.some(item => 
-          item.productName.toLowerCase().includes(searchLower) ||
-          item.category.toLowerCase().includes(searchLower)
+          item.name.toLowerCase().includes(searchLower)
         )
       );
     }
 
     // Filtre par statut
     if (this.statusFilter !== 'all') {
-      filteredOrders = filteredOrders.filter(order => 
+      result = result.filter(order => 
         order.status.toLowerCase() === this.statusFilter.toLowerCase()
       );
     }
 
     // Tri
-    filteredOrders.sort((a, b) => {
+    result.sort((a, b) => {
       let comparison = 0;
       switch (this.sortOption) {
         case 'date':
-          comparison = a.purchaseDate.getTime() - b.purchaseDate.getTime();
+          comparison = new Date(a.orderDate).getTime() - new Date(b.orderDate).getTime();
           break;
         case 'price':
           comparison = a.totalPrice - b.totalPrice;
@@ -124,56 +127,51 @@ export class OrderHistoryComponent implements OnInit {
           comparison = a.status.localeCompare(b.status);
           break;
       }
-      return this.sortDirection === 'desc' ? -comparison : comparison;
+      return this.sortDirection === 'asc' ? comparison : -comparison;
     });
 
-    // Mise à jour de la pagination
-    this.totalPages = Math.ceil(filteredOrders.length / this.itemsPerPage);
-    this.currentPage = Math.min(this.currentPage, this.totalPages);
-    if (this.currentPage === 0 && this.totalPages > 0) this.currentPage = 1;
-
-    // Application de la pagination
-    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-    this.orders = filteredOrders.slice(startIndex, startIndex + this.itemsPerPage);
+    this.filteredOrders = result;
+    this.updatePagination();
   }
 
-  // Méthodes de pagination
-  goToPage(page: number) {
-    if (page >= 1 && page <= this.totalPages) {
-      this.currentPage = page;
-      this.applyFilters();
-    }
-  }
-
-  getPages(): number[] {
-    const pages: number[] = [];
-    for (let i = 1; i <= this.totalPages; i++) {
-      pages.push(i);
-    }
-    return pages;
-  }
-
-  // Méthodes de tri et filtrage
-  onSearch() {
-    this.currentPage = 1;
-    this.applyFilters();
-  }
-
-  onSortChange() {
-    this.applyFilters();
-  }
-
-  onStatusFilterChange() {
-    this.currentPage = 1;
-    this.applyFilters();
-  }
-
-  toggleSortDirection() {
+  toggleSortDirection(): void {
     this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
     this.applyFilters();
   }
 
-  viewOrderDetails(orderId: string) {
-    console.log('Viewing order details for ID:', orderId);
+  updatePagination(): void {
+    this.totalPages = Math.ceil(this.filteredOrders.length / this.itemsPerPage);
+    this.currentPage = Math.min(this.currentPage, this.totalPages);
+    if (this.currentPage < 1) this.currentPage = 1;
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+    }
+  }
+
+  getOrderStatusClass(status: string): string {
+    switch (status.toLowerCase()) {
+      case 'en cours':
+        return 'pending';
+      case 'expédiée':
+        return 'shipped';
+      case 'livrée':
+        return 'delivered';
+      default:
+        return '';
+    }
+  }
+
+  retry(): void {
+    const userId = this.authService.getCurrentUserId();
+    if (userId) {
+      this.loadOrders(userId);
+    } else {
+      this.router.navigate(['/login'], { 
+        queryParams: { returnUrl: '/order-history' }
+      });
+    }
   }
 }
