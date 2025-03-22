@@ -233,12 +233,109 @@ export class OrderHistoryComponent implements OnInit, OnDestroy {
     }
   }
 
-  toggleOrderDetails(orderId: string, event: Event): void {
+  toggleOrderDetails(orderId: string | undefined, event: Event): void {
     event.preventDefault();
-    this.expandedOrderId = this.expandedOrderId === orderId ? null : orderId;
+    if (orderId) {
+      this.expandedOrderId = this.expandedOrderId === orderId ? null : orderId;
+    }
   }
 
-  isOrderExpanded(orderId: string): boolean {
-    return this.expandedOrderId === orderId;
+  isOrderExpanded(orderId: string | undefined): boolean {
+    return !!orderId && this.expandedOrderId === orderId;
+  }
+
+  isStepActive(order: OrderDetails, step: 'commandé' | 'préparation' | 'expédiée' | 'livrée'): boolean {
+    const statusMap: Record<string, number> = {
+      'en cours': 1,      // Active commandé et préparation
+      'expédiée': 2,     // Active commandé, préparation et expédiée
+      'livrée': 3        // Active tout
+    };
+
+    const stepMap: Record<string, number> = {
+      'commandé': 0,
+      'préparation': 1,
+      'expédiée': 2,
+      'livrée': 3
+    };
+
+    const orderStatus = order.status.toLowerCase();
+    const currentStepValue = statusMap[orderStatus] || 0;
+    const targetStepValue = stepMap[step];
+    return currentStepValue >= targetStepValue;
+  }
+
+  getStepDate(order: OrderDetails, step: 'commandé' | 'préparation' | 'expédiée' | 'livrée'): Date {
+    const orderStatus = order.status.toLowerCase();
+    
+    if (orderStatus === 'livrée') {
+      // Si la commande est livrée, on utilise la date de livraison pour toutes les étapes sauf 'commandé'
+      return order.deliveryDate;
+    } else if (orderStatus === 'expédiée') {
+      // Si la commande est expédiée, on utilise la date de commande pour toutes les étapes actives
+      return order.orderDate;
+    } else {
+      // Pour les autres statuts (en cours), on utilise la date de commande
+      return order.orderDate;
+    }
+  }
+
+  getProgressWidth(order: OrderDetails): string {
+    const statusMap: Record<string, string> = {
+      'en cours': '33%',     // Jusqu'à préparation
+      'expédiée': '66%',     // Jusqu'à expédiée
+      'livrée': '100%'       // Complet
+    };
+
+    return statusMap[order.status.toLowerCase()] || '0%';
+  }
+
+  private formatDate(date: Date): string {
+    const d = new Date(date);
+    return d.toLocaleDateString('fr-FR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+  }
+
+  downloadInvoice(order: OrderDetails): void {
+    if (!order) return;
+
+    const invoiceContent = `
+FACTURE
+
+Numéro de commande: ${order.orderNumber}
+Date: ${this.formatDate(order.orderDate)}
+
+INFORMATIONS DE LIVRAISON
+${order.shippingAddress.street}
+${order.shippingAddress.zip} ${order.shippingAddress.city}
+${order.shippingAddress.country}
+
+DÉTAILS DE LA COMMANDE
+${order.items.map(item => 
+  `${item.name} × ${item.quantity} : ${(item.price * item.quantity).toFixed(2)}€`
+).join('\n')}
+
+TOTAL HT: ${(order.totalPrice / 1.2).toFixed(2)}€
+TVA (20%): ${(order.totalPrice - (order.totalPrice / 1.2)).toFixed(2)}€
+TOTAL TTC: ${order.totalPrice.toFixed(2)}€
+
+Mode de paiement: ${order.paymentMethod}
+Statut: ${order.status}
+
+Date d'émission: ${this.formatDate(new Date())}
+    `;
+
+    // Création et téléchargement du fichier
+    const blob = new Blob([invoiceContent], { type: 'text/plain;charset=utf-8' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `facture_${order.orderNumber}_${this.formatDate(new Date()).replace(/\//g, '')}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
   }
 }

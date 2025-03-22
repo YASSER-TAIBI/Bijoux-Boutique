@@ -14,7 +14,7 @@ export interface CustomerInfo {
 }
 
 export interface OrderDetails {
-    _id?: string;              // Identifiant unique de la commande
+    _id?: string;              // Identifiant unique de la commande (optionnel lors de la création)
     orderNumber: string;      // Numéro de la commande
     userId: string;           // Référence vers l'utilisateur
     items: OrderItem[];       // Liste des produits commandés

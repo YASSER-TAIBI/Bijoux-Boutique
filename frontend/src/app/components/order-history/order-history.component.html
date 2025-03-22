@@ -129,18 +129,68 @@
 
           <!-- Détails étendus -->
           <div class="order-extended-details" *ngIf="isOrderExpanded(order._id)" [@expandCollapse]>
+            <div class="progress-bar">
+              <div class="progress-steps">
+                <div class="step" [ngClass]="{'active': isStepActive(order, 'commandé')}">
+                  <div class="step-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                  </div>
+                  <div class="step-label">
+                    <p>Commandé</p>
+                    <small>{{order.orderDate | date:'dd/MM/yyyy'}}</small>
+                  </div>
+                </div>
+                <div class="step" [ngClass]="{'active': isStepActive(order, 'préparation')}">
+                  <div class="step-icon">
+                    <i class="fas fa-box"></i>
+                  </div>
+                  <div class="step-label">
+                    <p>Préparation</p>
+                    <small>{{getStepDate(order, 'préparation') | date:'dd/MM/yyyy'}}</small>
+                  </div>
+                </div>
+                <div class="step" [ngClass]="{'active': isStepActive(order, 'expédiée')}">
+                  <div class="step-icon">
+                    <i class="fas fa-truck"></i>
+                  </div>
+                  <div class="step-label">
+                    <p>Expédiée</p>
+                    <small>{{getStepDate(order, 'expédiée') | date:'dd/MM/yyyy'}}</small>
+                  </div>
+                </div>
+                <div class="step" [ngClass]="{'active': isStepActive(order, 'livrée')}">
+                  <div class="step-icon">
+                    <i class="fas fa-check-circle"></i>
+                  </div>
+                  <div class="step-label">
+                    <p>Livrée</p>
+                    <small>{{getStepDate(order, 'livrée') | date:'dd/MM/yyyy'}}</small>
+                  </div>
+                </div>
+                <div class="progress-line">
+                  <div class="progress" [style.width]="getProgressWidth(order)"></div>
+                </div>
+              </div>
+            </div>
             <div class="extended-section">
               <div class="shipping-info">
                 <h4>Adresse de livraison</h4>
-                <p>{{ order.shippingAddress.fullName }}</p>
+                <!-- <p>{{ order.shippingAddress.fullName }}</p> -->
                 <p>{{ order.shippingAddress.street }}</p>
-                <p>{{ order.shippingAddress.city }}, {{ order.shippingAddress.postalCode }}</p>
+                <p>{{ order.shippingAddress.zip }}, {{ order.shippingAddress.city }}</p>
                 <p>{{ order.shippingAddress.country }}</p>
               </div>
               <div class="payment-info">
                 <h4>Informations de paiement</h4>
                 <p><strong>Méthode :</strong> {{ order.paymentMethod }}</p>
-                <p><strong>Statut :</strong> {{ order.paymentStatus }}</p>
+                <p><strong>Statut :</strong> {{ order.status }}</p>
+              </div>
+              <div class="documents-info">
+                <h4>Documents</h4>
+                <button class="print-button" (click)="downloadInvoice(order)">
+                  <i class="fas fa-file-download"></i>
+                  Télécharger la facture
+                </button>
               </div>
             </div>
           </div>
