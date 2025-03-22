@@ -8,6 +8,7 @@ import { ProductService } from '../../services/product.service';
 import { AuthService } from '../../services/auth.service';
 import { OrderDetails } from '../../models/order.interface';
 import { Subject, takeUntil, filter, forkJoin } from 'rxjs';
+import { trigger, state, style, animate, transition } from '@angular/animations';
 
 @Component({
   selector: 'app-order-history',
@@ -15,7 +16,18 @@ import { Subject, takeUntil, filter, forkJoin } from 'rxjs';
   imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './order-history.component.html',
   styleUrls: ['./order-history.component.scss'],
-  animations: [fadeSlideInAnimation]
+  animations: [
+    fadeSlideInAnimation,
+    trigger('expandCollapse', [
+      transition(':enter', [
+        style({ height: '0', opacity: 0 }),
+        animate('300ms ease-out', style({ height: '*', opacity: 1 }))
+      ]),
+      transition(':leave', [
+        animate('300ms ease-in', style({ height: '0', opacity: 0 }))
+      ])
+    ])
+  ]
 })
 export class OrderHistoryComponent implements OnInit, OnDestroy {
   orders: OrderDetails[] = [];
@@ -24,6 +36,7 @@ export class OrderHistoryComponent implements OnInit, OnDestroy {
   error: string | null = null;
   private destroy$ = new Subject<void>();
   productImages = new Map<string, string>();
+  expandedOrderId: string | null = null;
 
   // Filtres et tri
   searchTerm = '';
@@ -218,5 +231,14 @@ export class OrderHistoryComponent implements OnInit, OnDestroy {
         queryParams: { returnUrl: '/order-history' }
       });
     }
+  }
+
+  toggleOrderDetails(orderId: string, event: Event): void {
+    event.preventDefault();
+    this.expandedOrderId = this.expandedOrderId === orderId ? null : orderId;
+  }
+
+  isOrderExpanded(orderId: string): boolean {
+    return this.expandedOrderId === orderId;
   }
 }
