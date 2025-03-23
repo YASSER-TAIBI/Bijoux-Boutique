@@ -7,6 +7,7 @@ import { ProductService } from '../../services/product.service';
 import { ViewportScroller } from '@angular/common';
 import { ToastrService } from 'ngx-toastr';
 import { CartService } from '../../services/cart.service';
+import { WishlistService } from '../../services/wishlist.service';
 import { fadeSlideInAnimation } from '../../animations/shared.animations';
 
 @Component({
@@ -37,7 +38,8 @@ export class ProductDetailComponent implements OnInit {
     private productService: ProductService, 
     private viewportScroller: ViewportScroller,
     private toastr: ToastrService,
-    private cartService: CartService
+    private cartService: CartService,
+    private wishlistService: WishlistService
   ) {}
 
   ngOnInit() {
@@ -75,7 +77,10 @@ export class ProductDetailComponent implements OnInit {
     this.productService.getProducts().subscribe({
       next: (products) => {
         this.relatedProducts = products
-          .filter(p => p.category === this.product?.category && p._id !== this.product?._id)
+          .filter(p => 
+            p.category === this.product?.category && 
+            p._id !== this.product?._id
+          )
           .slice(0, 4);
       },
       error: (error) => {
@@ -155,6 +160,32 @@ export class ProductDetailComponent implements OnInit {
       this.toastr.success(`${this.product.name} ajouté au panier`);
       this.quantity = 1;
     }
+  }
+
+  toggleFavorite(productId: string) {
+    if (this.isFavorite(productId)) {
+      this.wishlistService.removeFromWishlist(productId).subscribe({
+        next: () => {
+          this.toastr.success('Produit retiré des favoris');
+        },
+        error: () => {
+          this.toastr.error('Erreur lors du retrait des favoris');
+        }
+      });
+    } else {
+      this.wishlistService.addToWishlist(productId).subscribe({
+        next: () => {
+          this.toastr.success('Produit ajouté aux favoris');
+        },
+        error: () => {
+          this.toastr.error('Erreur lors de l\'ajout aux favoris');
+        }
+      });
+    }
+  }
+
+  isFavorite(productId: string): boolean {
+    return this.wishlistService.isInWishlist(productId);
   }
 
   get averageRating(): number {

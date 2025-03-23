@@ -46,10 +46,15 @@
           <span>{{ quantity }}</span>
           <button (click)="incrementQuantity()">+</button>
         </div>
-        <button class="add-to-cart" (click)="addToCart()">
-          <i class="fas fa-shopping-cart"></i>
-          Ajouter au panier
-        </button>
+        <div class="action-buttons">
+          <button class="add-to-cart" (click)="addToCart()">
+            <i class="fas fa-shopping-cart"></i>
+            Ajouter au panier
+          </button>
+          <button class="wishlist-btn" [title]="isFavorite(product._id) ? 'Retirer des favoris' : 'Ajouter aux favoris'" (click)="toggleFavorite(product._id)" [attr.data-product-id]="product._id">
+            <i class="fa-heart" [ngClass]="{'far': !isFavorite(product._id), 'fas': isFavorite(product._id)}"></i>
+          </button>
+        </div>
       </div>
 
       <div class="divider"></div>
