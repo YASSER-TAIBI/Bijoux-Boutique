@@ -41,9 +41,6 @@
               <option value="price">Prix</option>
               <option value="status">Statut</option>
             </select>
-            <button class="sort-direction" (click)="toggleSortDirection()">
-              <i class="fas" [class.fa-sort-up]="sortDirection === 'asc'" [class.fa-sort-down]="sortDirection === 'desc'"></i>
-            </button>
           </div>
 
           <select [(ngModel)]="statusFilter" (change)="applyFilters()">
