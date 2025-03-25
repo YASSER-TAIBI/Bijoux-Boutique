@@ -3,7 +3,10 @@ const router = express.Router();
 const orderController = require('../controllers/order.controller');
 const { verifyToken } = require('../middleware/auth.middleware');
 
-// Appliquer le middleware d'authentification à toutes les routes
+// Route publique pour les meilleures ventes
+router.get('/best-sellers', orderController.getBestSellers);
+
+// Appliquer le middleware d'authentification aux routes protégées
 router.use(verifyToken);
 
 // Créer une nouvelle commande

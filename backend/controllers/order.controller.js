@@ -80,3 +80,48 @@ exports.updateOrderStatus = async (req, res) => {
     res.status(500).json({ message: 'Erreur lors de la mise à jour de la commande', error: error.message });
   }
 };
+
+// Obtenir les produits les plus vendus
+exports.getBestSellers = async (req, res) => {
+  try {
+    const bestSellers = await Order.aggregate([
+      // Déplie le tableau items pour avoir chaque produit sur une ligne séparée
+      { $unwind: "$items" },
+      
+      // Groupe par productId et somme les quantités
+      {
+        $group: {
+          _id: "$items.productId",
+          totalQuantity: { $sum: "$items.quantity" },
+          productName: { $first: "$items.name" },
+          price: { $first: "$items.price" }
+        }
+      },
+      
+      // Trie par quantité totale vendue (décroissant)
+      { $sort: { totalQuantity: -1 } },
+      
+      // Limite aux 4 premiers produits
+      { $limit: 4 }
+    ]);
+
+    // Récupère les détails complets des produits depuis la collection Products
+    const Product = require('../models/product.model');
+    const bestSellerProducts = await Promise.all(
+      bestSellers.map(async (item) => {
+        const product = await Product.findById(item._id);
+        return {
+          ...product.toObject(),
+          totalQuantitySold: item.totalQuantity
+        };
+      })
+    );
+
+    res.status(200).json(bestSellerProducts);
+  } catch (error) {
+    res.status(500).json({ 
+      message: 'Erreur lors de la récupération des meilleures ventes',
+      error: error.message 
+    });
+  }
+};

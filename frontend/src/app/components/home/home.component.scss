@@ -391,15 +391,28 @@
   }
 }
 
-@keyframes heartBeat {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.3);
-  }
-  100% {
-    transform: scale(1);
+.best-sellers {
+  .product-card {
+    position: relative;
+    
+    .product-number {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 4rem;
+      font-weight: 300;
+      color: #c4a661;
+      z-index: 1;
+      transform: translate(-20%, -30%);
+      font-family: Arial, sans-serif;
+    }
+
+    &:hover {
+      .product-number {
+        color: rgba(196, 166, 97, 0.5);
+        transition: color 0.3s ease;
+      }
+    }
   }
 }
 
@@ -806,5 +819,17 @@
         margin-top: 0 !important;
       }
     }
+  }
+}
+
+@keyframes heartBeat {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
   }
 }

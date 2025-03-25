@@ -87,6 +87,50 @@
     </div>
   </section>
 
+  <!-- Best Sellers -->
+  <section class="featured-products best-sellers">
+    <div class="section-header">
+      <p class="subtitle">Nos favoris</p>
+      <h2>Meilleures ventes</h2>
+      <div class="divider"></div>
+    </div>
+
+    <div class="products-grid">
+      <div class="product-card" *ngFor="let product of bestSellers; let i = index">
+        <div class="product-number">{{i + 1}}</div>
+        <div class="product-image">
+          <img [src]="product.images && product.images.length > 0 ? product.image : product.image" [alt]="product.name">
+          <div class="product-actions">
+            <button class="action-btn" title="Ajouter au panier" (click)="handleAddToCart({product: product, quantity: 1})">
+              <i class="fas fa-bag-shopping"></i>
+            </button>
+            <button class="action-btn" title="Aperçu rapide" (click)="openQuickView(product)">
+              <i class="fas fa-eye"></i>
+            </button>
+            <button class="action-btn" [title]="isFavorite(product._id) ? 'Retirer des favoris' : 'Ajouter aux favoris'" (click)="toggleFavorite(product._id)" [attr.data-product-id]="product._id">
+              <i class="fa-heart" [ngClass]="{'far': !isFavorite(product._id), 'fas': isFavorite(product._id)}"></i>
+            </button>
+          </div>
+        </div>
+        <div class="product-info" (click)="navigateToProduct(product._id)">
+          <h3>{{product.name}}</h3>
+          <div class="price-container">
+            <ng-container *ngIf="product.discountPrice; else regularPrice">
+              <span class="old-price">{{ product.price | currency:'EUR' }}</span>
+              <span class="current-price">{{ product.discountPrice | currency:'EUR' }}</span>
+            </ng-container>
+            <ng-template #regularPrice>
+              <span class="current-price">{{ product.price | currency:'EUR' }}</span>
+            </ng-template>
+          </div>
+          <div class="stock-status" [class.in-stock]="product.quantity && product.quantity > 0" [class.out-of-stock]="!product.quantity || product.quantity === 0">
+            {{(product.quantity && product.quantity > 0) ? 'En stock' : 'Rupture de stock'}}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Trend Section -->
   <section class="trend-section">
     <div class="trend-content">
