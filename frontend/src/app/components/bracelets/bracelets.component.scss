@@ -1,5 +1,4 @@
 .bracelets-container {
-  padding: 7rem 2rem;
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -62,8 +61,8 @@
 
 .products-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
 }
 
 .product-card {
@@ -97,11 +96,11 @@
   }
 
   .product-info {
-    padding: 1rem;
+    padding: 0.5rem;
     text-align: center;
+    background: #f9f9f9;
 
     .product-name {
-      margin: 0.5rem 0;
       font-size: 1.1rem;
       color: var(--text-color);
       font-weight: 500;
@@ -112,7 +111,6 @@
       justify-content: center;
       align-items: center;
       gap: 0.5rem;
-      margin: 0.5rem 0;
 
       .product-price {
         color: var(--secondary-color);
