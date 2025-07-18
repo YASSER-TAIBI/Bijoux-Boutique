@@ -15,6 +15,7 @@ import { AccountComponent } from './components/account/account.component';
 import { WishlistComponent } from './components/wishlist/wishlist.component';
 import { OrderHistoryComponent } from './components/order-history/order-history.component';
 import { AuthGuard } from './guards/auth.guard';
+import { ADMIN_ROUTES } from './routes/admin.routes';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -31,6 +32,7 @@ export const routes: Routes = [
   { path: 'account', component: AccountComponent },
   { path: 'wishlist', component: WishlistComponent, canActivate: [AuthGuard] },
   { path: 'order-history', component: OrderHistoryComponent, canActivate: [AuthGuard] },
+  ...ADMIN_ROUTES
 ];
 
 @NgModule({

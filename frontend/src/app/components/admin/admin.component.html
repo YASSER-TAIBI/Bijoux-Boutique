@@ -1,0 +1,68 @@
+<div class="admin-container">
+  <div class="admin-sidebar">
+    <div class="logo">
+      <a routerLink="/admin">
+        <img src="../../../assets/images/jalorine.png" alt="Logo" width="auto" height="50px">
+      </a>
+    </div>
+    <nav class="admin-nav">
+      <ul>
+        <li>
+          <a href="" routerLinkActive="active">
+            <i class="fas fa-chart-line"></i>
+            <span>Tableau de bord</span>
+          </a>
+        </li>
+        <li>
+          <a href="" routerLinkActive="active">
+            <i class="fas fa-gem"></i>
+            <span>Produits</span>
+          </a>
+        </li>
+        <li>
+          <a href="" routerLinkActive="active">
+            <i class="fas fa-boxes"></i>
+            <span>Stocks</span>
+          </a>
+        </li>
+        <li>
+          <a href="" routerLinkActive="active">
+            <i class="fas fa-shopping-bag"></i>
+            <span>Commandes</span>
+          </a>
+        </li>
+        <li>
+          <a href="" routerLinkActive="active">
+            <i class="fas fa-users"></i>
+            <span>Utilisateurs</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+    <div class="admin-sidebar-footer">
+      <a href="">
+        <i class="fas fa-store"></i>
+        <span>Retour à la boutique</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="admin-content">
+    <div class="admin-header">
+      <div class="admin-header-left">
+        <button class="menu-toggle">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+      <div class="admin-header-right">
+        <div class="admin-user-menu">
+          <span>Admin</span>
+          <i class="fas fa-user-circle"></i>
+        </div>
+      </div>
+    </div>
+    <div class="admin-main">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

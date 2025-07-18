@@ -177,9 +177,15 @@
   }
 </style>
 
-<app-header></app-header>
+<ng-container *ngIf="!isAdminRoute()">
+  <app-header></app-header>
+</ng-container>
+
 <router-outlet></router-outlet>
-<app-footer></app-footer>
+
+<ng-container *ngIf="!isAdminRoute()">
+  <app-footer></app-footer>
+</ng-container>
 
 <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
 <!-- * * * * * * * * * * * The content above * * * * * * * * * * * * -->
