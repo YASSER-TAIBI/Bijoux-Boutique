@@ -15,15 +15,11 @@ exports.register = async (req, res) => {
             return res.status(400).json({ message: 'User already exists' });
         }
 
-        // Hash password
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
-
-        // Create new user
+        // Create new user (password will be hashed by the pre-save middleware)
         const user = new User({
             name,
             email,
-            password: hashedPassword,
+            password, // Le mot de passe sera haché automatiquement par le middleware
             phone,
             address,
             role: "user",

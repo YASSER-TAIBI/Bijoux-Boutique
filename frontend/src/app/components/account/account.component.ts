@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
@@ -21,6 +21,18 @@ export class AccountComponent implements OnInit {
   loginForm: FormGroup;
   registerForm: FormGroup;
 
+  // Validateur personnalisé pour la confirmation du mot de passe
+  passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
+    const password = control.get('password');
+    const confirmPassword = control.get('confirmPassword');
+    
+    if (!password || !confirmPassword) {
+      return null;
+    }
+    
+    return password.value === confirmPassword.value ? null : { passwordMismatch: true };
+  }
+
   constructor(
     private fb: FormBuilder,
     private router: Router,
@@ -39,12 +51,13 @@ export class AccountComponent implements OnInit {
       firstName: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ['', [Validators.required]],
       phone: ['', [Validators.required, Validators.pattern(/^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/)]],
       address: ['', Validators.required],
       postalCode: ['', [Validators.required, Validators.pattern(/^[0-9]{5}$/)]],
       city: ['', Validators.required],
       country: ['', Validators.required]
-    });
+    }, { validators: this.passwordMatchValidator });
   }
 
   ngOnInit(): void {
@@ -108,6 +121,7 @@ export class AccountComponent implements OnInit {
   }
 
   onRegister() {
+    console.log('Form errors:', this.getFormValidationErrors());
     if (this.registerForm.valid) {
       const userData = {
         name: `${this.registerForm.value.firstName} ${this.registerForm.value.lastName}`,
@@ -170,6 +184,14 @@ export class AccountComponent implements OnInit {
       this.toastr.warning('Le mot de passe doit contenir au moins 6 caractères');
     }
 
+    if (form.get('confirmPassword')?.hasError('required')) {
+      this.toastr.warning('La confirmation du mot de passe est requise');
+    }
+
+    if (form.hasError('passwordMismatch')) {
+      this.toastr.warning('Les mots de passe ne correspondent pas');
+    }
+
     if (form.get('phone')?.hasError('required')) {
       this.toastr.warning('Le numéro de téléphone est requis');
     } else if (form.get('phone')?.hasError('pattern')) {
@@ -201,5 +223,19 @@ export class AccountComponent implements OnInit {
 
   viewCart(): void {
     this.router.navigate(['/cart']);
+  }
+
+  // Helper method to get form validation errors
+  getFormValidationErrors() {
+    let formErrors: any = {};
+    
+    Object.keys(this.registerForm.controls).forEach(key => {
+      const controlErrors = this.registerForm.get(key)?.errors;
+      if (controlErrors) {
+        formErrors[key] = controlErrors;
+      }
+    });
+    
+    return formErrors;
   }
 }
