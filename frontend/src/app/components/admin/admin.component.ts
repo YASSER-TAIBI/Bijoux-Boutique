@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-admin',
@@ -10,5 +11,13 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./admin.component.scss']
 })
 export class AdminComponent {
-  constructor() {}
+  currentUser: any = null;
+
+  constructor(
+    private authService: AuthService,
+  ) {
+    this.authService.currentUser$.subscribe(user => {
+      this.currentUser = user;
+    });
+  }
 }

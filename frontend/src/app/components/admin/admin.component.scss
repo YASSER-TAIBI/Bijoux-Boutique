@@ -56,6 +56,10 @@
           color: rgba(255, 255, 255, 0.8);
           text-decoration: none;
           transition: all 0.3s ease;
+          font-family: "Playfair Display", serif;
+          letter-spacing: 1px;
+          font-weight: 500;
+          font-size: 15px;
           
           i {
             margin-right: 10px;
@@ -141,8 +145,10 @@
       
       span {
         margin-right: 10px;
-        font-family: 'Poppins', sans-serif;
-        font-weight: 500;
+        font-family: "Playfair Display", serif;
+        letter-spacing: 0.7px;
+        font-weight: 600;
+        font-size: 17px;
       }
       
       i {
