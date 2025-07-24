@@ -71,8 +71,8 @@ export class OrderHistoryComponent implements OnInit, OnDestroy {
         filter(user => !!user) 
       )
       .subscribe(user => {
-        if (user?.id) {
-          this.loadOrders(user.id);
+        if (user?._id) {
+          this.loadOrders(user._id);
         }
       });
   }

@@ -96,7 +96,7 @@ export class CheckoutDetailsComponent implements OnInit {
     }
 
     const user = this.authService.getCurrentUser();
-    if (!user || !user.id) {
+    if (!user || !user._id) {
       this.toastr.warning('Veuillez vous connecter pour continuer');
       localStorage.setItem('redirectAfterLogin', '/checkout');
       this.router.navigate(['/account']);
@@ -105,7 +105,7 @@ export class CheckoutDetailsComponent implements OnInit {
 
     const orderDetails: OrderDetails = {
       orderNumber: this.orderService.generateOrderNumber(),
-      userId: user.id,
+      userId: user._id,
       items: this.cartItems.map(item => ({
         productId: item._id,
         name: item.name,

@@ -3,13 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap, catchError, throwError } from 'rxjs';
 import { TokenService } from './token.service';
 import { environment } from '../../environments/environment';
-
-interface User {
-  id?: string;
-  email: string;
-  name: string;
-  phone?: string;
-}
+import { User } from '../models/user.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -67,9 +61,15 @@ export class AuthService {
     return this.http.get<User>(`${this.apiUrl}/profile`).pipe(
       tap(user => {
         console.log('Profile loaded:', user);
-        // Vérifier que l'ID utilisateur est présent
-        if (!user.id) {
+        // Vérifier que l'ID utilisateur est présent (accepter 'id' ou '_id')
+        const userId = (user as any).id || user._id;
+        if (!userId) {
           console.error('ID utilisateur manquant dans la réponse:', user);
+        } else {
+          // Normaliser l'ID pour l'interface User
+          if ((user as any).id && !user._id) {
+            (user as any)._id = (user as any).id;
+          }
         }
         this.currentUserSubject.next(user);
       })
@@ -87,12 +87,14 @@ export class AuthService {
 
   getCurrentUserId(): string | null {
     const currentUser = this.currentUserSubject.getValue();
-    if (!currentUser?.id) {
+    // Accepter 'id' ou '_id'
+    const userId = currentUser ? ((currentUser as any).id || currentUser._id) : null;
+    if (!userId && currentUser) {
       console.error('ID utilisateur non disponible:', currentUser);
       // Essayer de recharger le profil
       this.getUserProfile().subscribe();
     }
-    return currentUser?.id || null;
+    return userId;
   }
 
   getCurrentUser(): User | null {
