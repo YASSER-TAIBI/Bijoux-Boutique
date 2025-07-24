@@ -68,14 +68,17 @@ export class DashboardComponent implements OnInit {
     new Chart(ctx, {
       type: 'line',
       data: {
-        labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'],
+        labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15'],
         datasets: [{
-          label: 'Ventes (€)',
-          data: [1200, 1900, 1500, 2000, 2400, 1800, 2200, 2600, 2300, 2800, 3000, 3200],
-          borderColor: '#4e73df',
-          backgroundColor: 'rgba(78, 115, 223, 0.05)',
-          tension: 0.3,
-          fill: true
+          label: 'Sales',
+          data: [20, 35, 25, 45, 30, 55, 40, 65, 50, 70, 60, 80, 75, 85, 80],
+          borderColor: '#4dabf7',
+          backgroundColor: 'rgba(77, 171, 247, 0.1)',
+          tension: 0.4,
+          fill: true,
+          pointRadius: 0,
+          pointHoverRadius: 6,
+          borderWidth: 3
         }]
       },
       options: {
@@ -88,15 +91,16 @@ export class DashboardComponent implements OnInit {
         },
         scales: {
           y: {
-            beginAtZero: true,
-            grid: {
-              color: 'rgba(0, 0, 0, 0.05)'
-            }
+            display: false,
+            beginAtZero: true
           },
           x: {
-            grid: {
-              display: false
-            }
+            display: false
+          }
+        },
+        elements: {
+          point: {
+            radius: 0
           }
         }
       }
@@ -104,18 +108,17 @@ export class DashboardComponent implements OnInit {
   }
 
   createCategoryChart(): void {
-    const ctx = document.getElementById('categoryChart') as HTMLCanvasElement;
+    const ctx = document.getElementById('profitsChart') as HTMLCanvasElement;
     if (!ctx) return;
     
     new Chart(ctx, {
       type: 'doughnut',
       data: {
-        labels: ['Bagues', 'Bracelets', 'Colliers', 'Boucles d\'oreilles'],
+        labels: ['Direct', 'Social', 'Other'],
         datasets: [{
-          data: [35, 25, 20, 20],
-          backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e'],
-          hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf', '#dda20a'],
-          hoverBorderColor: 'rgba(234, 236, 244, 1)',
+          data: [50, 25, 25],
+          backgroundColor: ['#ff6b6b', '#4dabf7', '#ffd700'],
+          borderWidth: 0
         }]
       },
       options: {
@@ -123,7 +126,7 @@ export class DashboardComponent implements OnInit {
         maintainAspectRatio: false,
         plugins: {
           legend: {
-            position: 'bottom'
+            display: false
           }
         },
         cutout: '70%'
