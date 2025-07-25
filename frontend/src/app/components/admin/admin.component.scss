@@ -1,3 +1,7 @@
+// Variables
+$tablet-width: 1024px;
+$mobile-width: 768px;
+
 // Layout principal
 .admin-layout {
   display: flex;
@@ -21,16 +25,27 @@
 }
 
 .sidebar-header {
-  padding: 25px 20px;
+  padding: 11px;
   border-bottom: 1px solid #e8e9ea;
   
   .logo {
-    .logo-text {
+    a {
+      display: flex;
+      font-family: 'Playfair Display', serif;
       font-size: 24px;
+      color: var(--primary-color);
+      text-decoration: none;
       font-weight: 700;
-      color: #2c3e50;
-      margin: 0;
-      letter-spacing: -0.5px;
+      letter-spacing: 1px;
+      cursor: pointer;
+      justify-content: center;
+
+      @media (max-width: $mobile-width) {
+        img {
+          height: 50px;
+          cursor: pointer;
+        }
+      }
     }
   }
 }
@@ -56,10 +71,15 @@
         transition: all 0.3s ease;
         border-radius: 0;
         position: relative;
+        cursor: pointer;
         
         &:hover {
           background-color: #f8f9fa;
-          color: #495057;
+          color: #c4a661;
+
+          .nav-icon {
+            color: #c4a661;
+          }
         }
         
         &.active {
@@ -97,13 +117,12 @@
     .logout-link {
       display: flex;
       align-items: center;
-      padding: 12px 0;
-      color: #dc3545;
+      color: #6c757d;
       text-decoration: none;
       transition: all 0.3s ease;
       
       &:hover {
-        color: #c82333;
+        color: #c4a661;
       }
       
       .nav-icon {
