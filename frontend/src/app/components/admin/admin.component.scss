@@ -25,7 +25,7 @@ $mobile-width: 768px;
 }
 
 .sidebar-header {
-  padding: 11px;
+  padding: 8px;
   border-bottom: 1px solid #e8e9ea;
   
   .logo {
@@ -182,7 +182,7 @@ $mobile-width: 768px;
 
 .main-header {
   background-color: #ffffff;
-  padding: 15px 30px;
+  padding: 14.5px 30px;
   border-bottom: 1px solid #e8e9ea;
   display: flex;
   justify-content: space-between;
@@ -261,8 +261,8 @@ $mobile-width: 768px;
       gap: 12px;
       
       .user-avatar {
-        width: 40px;
-        height: 40px;
+        width: 47px;
+        height: 47px;
         border-radius: 50%;
         object-fit: cover;
         border: 2px solid #e8e9ea;
