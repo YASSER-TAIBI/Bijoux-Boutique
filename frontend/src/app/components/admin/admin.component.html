@@ -1,48 +1,58 @@
-<div class="admin-layout">
-  <!-- Sidebar fixe -->
-  <div class="admin-sidebar">
+<!-- Layout principal avec gestion responsive -->
+<div class="admin-layout" [class.sidebar-open]="sidebarOpen">
+  <!-- Overlay pour mobile -->
+  <div class="sidebar-overlay" 
+       [class.active]="sidebarOpen" 
+       (click)="toggleSidebar()"></div>
+
+  <!-- Sidebar -->
+  <div class="admin-sidebar" [class.mobile-open]="sidebarOpen">
     <div class="sidebar-header">
       <div class="logo">
         <a routerLink="/">
-          <img src="../../../assets/images/jalorine.png" alt="Logo" width="auto" height="60px">
+          <img src="../../../assets/images/jalorine.png" alt="Logo" class="logo-image">
         </a>
       </div>
+      <!-- Bouton fermer pour mobile -->
+      <button class="sidebar-close-btn" (click)="toggleSidebar()">
+        <i class="fas fa-times"></i>
+      </button>
     </div>
     
     <nav class="sidebar-nav">
       <ul class="nav-list">
         <li class="nav-item">
-          <a routerLink="/admin/dashboard" routerLinkActive="active" class="nav-link">
+          <a routerLink="/admin/dashboard" routerLinkActive="active" class="nav-link" (click)="closeSidebarOnMobile()">
             <i class="fas fa-tachometer-alt nav-icon"></i>
             <span class="nav-text">Tableau de bord</span>
           </a>
         </li>
         <li class="nav-item">
-          <a routerLink="/admin/products" routerLinkActive="active" class="nav-link">
+          <a routerLink="/admin/products" routerLinkActive="active" class="nav-link" (click)="closeSidebarOnMobile()">
             <i class="fas fa-gem nav-icon"></i>
             <span class="nav-text">Produits</span>
           </a>
         </li>
         <li class="nav-item">
-          <a routerLink="/admin/customers" routerLinkActive="active" class="nav-link">
+          <a routerLink="/admin/customers" routerLinkActive="active" class="nav-link" (click)="closeSidebarOnMobile()">
             <i class="fas fa-users nav-icon"></i>
             <span class="nav-text">Clients</span>
           </a>
         </li>
         <li class="nav-item">
-          <a routerLink="/admin/orders" routerLinkActive="active" class="nav-link">
+          <a routerLink="/admin/orders" routerLinkActive="active" class="nav-link" (click)="closeSidebarOnMobile()">
             <i class="fas fa-shopping-cart nav-icon"></i>
             <span class="nav-text">Commandes</span>
           </a>
         </li>
         <li class="nav-item">
-          <a routerLink="/admin/analytics" routerLinkActive="active" class="nav-link">
+          <a routerLink="/admin/analytics" routerLinkActive="active" class="nav-link" (click)="closeSidebarOnMobile()">
             <i class="fas fa-chart-bar nav-icon"></i>
             <span class="nav-text">Analyses</span>
           </a>
         </li>
         <li class="nav-item">
-          <a routerLink="/admin/settings" routerLinkActive="active" class="nav-link">
+          <a routerLink="/admin/settings" routerLinkActive="active" class="nav-link" (click)="closeSidebarOnMobile()">
             <i class="fas fa-cog nav-icon"></i>
             <span class="nav-text">Paramètres</span>
           </a>
@@ -52,7 +62,7 @@
     
     <div class="sidebar-footer">
       <div class="logout-section">
-        <a href="#" class="logout-link">
+        <a href="#" class="logout-link" (click)="closeSidebarOnMobile()">
           <i class="fas fa-home nav-icon"></i>
           <span class="nav-text">Retour à la boutique</span>
         </a>
@@ -64,6 +74,10 @@
   <div class="admin-main-content">
     <div class="main-header">
       <div class="header-left">
+        <!-- Bouton hamburger pour mobile -->
+        <button class="mobile-menu-btn" (click)="toggleSidebar()">
+          <i class="fas fa-bars"></i>
+        </button>
         <div class="search-container">
           <i class="fas fa-search search-icon"></i>
           <input type="text" placeholder="Rechercher" class="search-input">
