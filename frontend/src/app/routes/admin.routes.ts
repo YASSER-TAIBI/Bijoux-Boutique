@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { AdminComponent } from '../components/admin/admin.component';
 import { DashboardComponent } from '../components/admin/dashboard/dashboard.component';
+import { UsersComponent } from '../components/admin/users/users.component';
 import { AdminGuard } from '../guards/admin.guard';
 
 export const ADMIN_ROUTES: Routes = [
@@ -17,6 +18,10 @@ export const ADMIN_ROUTES: Routes = [
       {
         path: 'dashboard',
         component: DashboardComponent
+      },
+      {
+        path: 'users',
+        component: UsersComponent
       },
     ]
   }

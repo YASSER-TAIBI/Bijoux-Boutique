@@ -47,6 +47,7 @@ export class AccountComponent implements OnInit {
     });
 
     this.registerForm = this.fb.group({
+      civility: ['', Validators.required],
       lastName: ['', [Validators.required, Validators.minLength(2)]],
       firstName: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
@@ -124,6 +125,7 @@ export class AccountComponent implements OnInit {
     console.log('Form errors:', this.getFormValidationErrors());
     if (this.registerForm.valid) {
       const userData = {
+        civility: this.registerForm.value.civility,
         name: `${this.registerForm.value.firstName} ${this.registerForm.value.lastName}`,
         email: this.registerForm.value.email,
         password: this.registerForm.value.password,
@@ -160,6 +162,10 @@ export class AccountComponent implements OnInit {
 
   private validateRegisterForm() {
     const form = this.registerForm;
+    if (form.get('civility')?.hasError('required')) {
+      this.toastr.warning('La civilité est requise');
+    }
+
     if (form.get('firstName')?.hasError('required')) {
       this.toastr.warning('Le prénom est requis');
     } else if (form.get('firstName')?.hasError('minlength')) {

@@ -5,8 +5,8 @@ const jwt = require('jsonwebtoken');
 // Register a new user
 exports.register = async (req, res) => {
     try {
-        const { name, email, password, phone, address } = req.body;
-        console.log('Tentative d\'inscription:', { name, email, phone, address });
+        const { civility, name, email, password, phone, address } = req.body;
+        console.log('Tentative d\'inscription:', { civility, name, email, phone, address });
 
         // Check if user already exists
         const existingUser = await User.findOne({ email });
@@ -17,6 +17,7 @@ exports.register = async (req, res) => {
 
         // Create new user (password will be hashed by the pre-save middleware)
         const user = new User({
+            civility,
             name,
             email,
             password, // Le mot de passe sera haché automatiquement par le middleware
@@ -43,6 +44,7 @@ exports.register = async (req, res) => {
             token,
             user: {
                 id: user._id,
+                civility: user.civility,
                 name: user.name,
                 email: user.email,
                 role: user.role
@@ -118,6 +120,7 @@ exports.getProfile = async (req, res) => {
 
         res.json({
             id: user._id,
+            civility: user.civility,
             name: user.name,
             email: user.email,
             phone: user.phone,
@@ -133,13 +136,14 @@ exports.getProfile = async (req, res) => {
 // Update user profile
 exports.updateProfile = async (req, res) => {
     try {
-        const { name, phone, address } = req.body;
+        const { civility, name, phone, address } = req.body;
         console.log('Mise à jour du profil pour:', req.user.userId);
 
         const user = await User.findByIdAndUpdate(
             req.user.userId,
             {
                 $set: {
+                    civility,
                     name,
                     phone,
                     address
@@ -158,6 +162,7 @@ exports.updateProfile = async (req, res) => {
             message: 'Profile updated successfully',
             user: {
                 id: user._id,
+                civility: user.civility,
                 name: user.name,
                 email: user.email,
                 phone: user.phone,
@@ -249,5 +254,220 @@ exports.removeFromWishlist = async (req, res) => {
     } catch (error) {
         console.error('Erreur lors de la suppression des favoris:', error);
         res.status(500).json({ message: 'Erreur serveur' });
+    }
+};
+
+// ===== ADMIN USER MANAGEMENT ENDPOINTS =====
+
+// Get all users (Admin only)
+exports.getAllUsers = async (req, res) => {
+    try {
+        // Vérifier que l'utilisateur est admin
+        if (req.user.role !== 'admin') {
+            return res.status(403).json({ message: 'Accès refusé. Droits administrateur requis.' });
+        }
+
+        const users = await User.find({}).select('-password').sort({ createdAt: -1 });
+        
+        // Séparer les utilisateurs par rôle
+        const admins = users.filter(user => user.role === 'admin');
+        const regularUsers = users.filter(user => user.role === 'user');
+
+        res.json({
+            admins,
+            users: regularUsers,
+            total: users.length
+        });
+    } catch (error) {
+        console.error('Erreur lors de la récupération des utilisateurs:', error);
+        res.status(500).json({ message: 'Erreur serveur' });
+    }
+};
+
+// Create user (Admin only)
+exports.createUser = async (req, res) => {
+    try {
+        // Vérifier que l'utilisateur est admin
+        if (req.user.role !== 'admin') {
+            return res.status(403).json({ message: 'Accès refusé. Droits administrateur requis.' });
+        }
+
+        const { civility, name, email, password, phone, address, role = 'user' } = req.body;
+
+        // Vérifier si l'utilisateur existe déjà
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({ message: 'Un utilisateur avec cet email existe déjà' });
+        }
+
+        // Créer le nouvel utilisateur
+        const user = new User({
+            civility,
+            name,
+            email,
+            password, // Le mot de passe sera haché automatiquement par le middleware
+            phone,
+            address,
+            role,
+            wishlist: []
+        });
+
+        await user.save();
+
+        res.status(201).json({
+            message: 'Utilisateur créé avec succès',
+            user: {
+                id: user._id,
+                civility: user.civility,
+                name: user.name,
+                email: user.email,
+                phone: user.phone,
+                address: user.address,
+                role: user.role,
+                createdAt: user.createdAt
+            }
+        });
+    } catch (error) {
+        console.error('Erreur lors de la création de l\'utilisateur:', error);
+        res.status(500).json({ message: 'Erreur serveur', error: error.message });
+    }
+};
+
+// Update user (Admin only)
+exports.updateUser = async (req, res) => {
+    try {
+        // Vérifier que l'utilisateur est admin
+        if (req.user.role !== 'admin') {
+            return res.status(403).json({ message: 'Accès refusé. Droits administrateur requis.' });
+        }
+
+        const userId = req.params.userId;
+        const { civility, name, email, phone, address, role } = req.body;
+
+        // Vérifier si l'email est déjà utilisé par un autre utilisateur
+        if (email) {
+            const existingUser = await User.findOne({ email, _id: { $ne: userId } });
+            if (existingUser) {
+                return res.status(400).json({ message: 'Cet email est déjà utilisé par un autre utilisateur' });
+            }
+        }
+
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            {
+                $set: {
+                    civility,
+                    name,
+                    email,
+                    phone,
+                    address,
+                    role
+                }
+            },
+            { new: true }
+        ).select('-password');
+
+        if (!updatedUser) {
+            return res.status(404).json({ message: 'Utilisateur non trouvé' });
+        }
+
+        res.json({
+            message: 'Utilisateur mis à jour avec succès',
+            user: {
+                id: updatedUser._id,
+                civility: updatedUser.civility,
+                name: updatedUser.name,
+                email: updatedUser.email,
+                phone: updatedUser.phone,
+                address: updatedUser.address,
+                role: updatedUser.role,
+                createdAt: updatedUser.createdAt
+            }
+        });
+    } catch (error) {
+        console.error('Erreur lors de la mise à jour de l\'utilisateur:', error);
+        res.status(500).json({ message: 'Erreur serveur', error: error.message });
+    }
+};
+
+// Delete user (Admin only)
+exports.deleteUser = async (req, res) => {
+    try {
+        // Vérifier que l'utilisateur est admin
+        if (req.user.role !== 'admin') {
+            return res.status(403).json({ message: 'Accès refusé. Droits administrateur requis.' });
+        }
+
+        const userId = req.params.userId;
+
+        // Empêcher la suppression de son propre compte
+        if (userId === req.user.userId) {
+            return res.status(400).json({ message: 'Vous ne pouvez pas supprimer votre propre compte' });
+        }
+
+        const deletedUser = await User.findByIdAndDelete(userId);
+
+        if (!deletedUser) {
+            return res.status(404).json({ message: 'Utilisateur non trouvé' });
+        }
+
+        res.json({
+            message: 'Utilisateur supprimé avec succès',
+            deletedUser: {
+                id: deletedUser._id,
+                name: deletedUser.name,
+                email: deletedUser.email
+            }
+        });
+    } catch (error) {
+        console.error('Erreur lors de la suppression de l\'utilisateur:', error);
+        res.status(500).json({ message: 'Erreur serveur', error: error.message });
+    }
+};
+
+// Update user role (Admin only)
+exports.updateUserRole = async (req, res) => {
+    try {
+        // Vérifier que l'utilisateur est admin
+        if (req.user.role !== 'admin') {
+            return res.status(403).json({ message: 'Accès refusé. Droits administrateur requis.' });
+        }
+
+        const userId = req.params.userId;
+        const { role } = req.body;
+
+        // Valider le rôle
+        if (!['user', 'admin'].includes(role)) {
+            return res.status(400).json({ message: 'Rôle invalide. Utilisez "user" ou "admin"' });
+        }
+
+        // Empêcher la modification de son propre rôle
+        if (userId === req.user.userId) {
+            return res.status(400).json({ message: 'Vous ne pouvez pas modifier votre propre rôle' });
+        }
+
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            { $set: { role } },
+            { new: true }
+        ).select('-password');
+
+        if (!updatedUser) {
+            return res.status(404).json({ message: 'Utilisateur non trouvé' });
+        }
+
+        res.json({
+            message: 'Rôle utilisateur mis à jour avec succès',
+            user: {
+                id: updatedUser._id,
+                civility: updatedUser.civility,
+                name: updatedUser.name,
+                email: updatedUser.email,
+                role: updatedUser.role
+            }
+        });
+    } catch (error) {
+        console.error('Erreur lors de la mise à jour du rôle:', error);
+        res.status(500).json({ message: 'Erreur serveur', error: error.message });
     }
 };

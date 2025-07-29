@@ -14,4 +14,11 @@ router.post('/wishlist', auth, userController.addToWishlist);
 router.delete('/wishlist/:productId', auth, userController.removeFromWishlist);
 router.get('/wishlist', auth, userController.getWishlist);
 
+// Admin routes (protected by auth middleware, admin check in controller)
+router.get('/admin/all', auth, userController.getAllUsers);
+router.post('/admin/create', auth, userController.createUser);
+router.put('/admin/:userId', auth, userController.updateUser);
+router.delete('/admin/:userId', auth, userController.deleteUser);
+router.patch('/admin/:userId/role', auth, userController.updateUserRole);
+
 module.exports = router;

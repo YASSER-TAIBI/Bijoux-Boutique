@@ -1,0 +1,424 @@
+<div class="users-container" [@fadeSlideIn]>
+  <div class="users-header">
+    <h1>Gestion des Utilisateurs</h1>
+    <button class="btn btn-primary" (click)="openCreateModal()">
+      <i class="fas fa-plus"></i>
+      Ajouter un utilisateur
+    </button>
+  </div>
+
+  <!-- Contrôles de recherche et filtrage -->
+  <div class="controls-section">
+    <div class="search-box">
+      <i class="fas fa-search"></i>
+      <input 
+        type="text" 
+        placeholder="Rechercher par nom ou email..." 
+        [(ngModel)]="searchTerm"
+        (input)="onSearchChange()"
+      >
+    </div>
+    
+    <div class="filter-section">
+      <label for="roleFilter">Filtrer par rôle:</label>
+      <select 
+        id="roleFilter" 
+        [(ngModel)]="selectedRole" 
+        (change)="onRoleFilterChange()"
+      >
+        <option value="all">Tous</option>
+        <option value="admin">Administrateurs</option>
+        <option value="user">Utilisateurs</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Message d'erreur -->
+  <div *ngIf="error" class="error-message">
+    <i class="fas fa-exclamation-triangle"></i>
+    {{ error }}
+    <button (click)="error = null" class="close-btn">&times;</button>
+  </div>
+
+  <!-- Spinner de chargement -->
+  <div *ngIf="isLoading" class="loading-spinner">
+    <div class="spinner"></div>
+    <p>Chargement des utilisateurs...</p>
+  </div>
+
+  <!-- Section Administrateurs -->
+  <div *ngIf="!isLoading && (selectedRole === 'all' || selectedRole === 'admin')" class="users-section">
+    <h2>
+      <i class="fas fa-user-shield"></i>
+      Administrateurs ({{ filteredAdmins.length }})
+    </h2>
+    
+    <div *ngIf="filteredAdmins.length === 0" class="no-users">
+      <i class="fas fa-users"></i>
+      <p>Aucun administrateur trouvé</p>
+    </div>
+    
+    <div *ngIf="filteredAdmins.length > 0" class="users-grid">
+      <div *ngFor="let admin of filteredAdmins" class="user-card admin-card">
+        <div class="user-info">
+          <div class="user-avatar">
+            <img 
+              [src]="admin.civility === 'Mr' ? '../../../../assets/images/Users/men.png' : '../../../../assets/images/Users/women.png'" 
+              [alt]="admin.civility === 'Mr' ? 'Avatar homme' : 'Avatar femme'"
+              class="avatar-image"
+            />
+          </div>
+          <div class="user-details">
+            <h3>{{ admin.name }}</h3>
+            <p class="email">{{ admin.email }}</p>
+            <p *ngIf="admin.phone" class="phone">
+              <i class="fas fa-phone"></i>
+              {{ admin.phone }}
+            </p>
+            <span class="role-badge badge-admin">Administrateur</span>
+            <p class="created-date">Créé le {{ formatDate(admin.createdAt) }}</p>
+          </div>
+        </div>
+        
+        <div class="user-actions">
+          <button 
+            class="btn btn-sm btn-secondary" 
+            (click)="openEditModal(admin)"
+            title="Modifier"
+          >
+            <i class="fas fa-edit"></i>
+          </button>
+          
+          <button 
+            *ngIf="canChangeRole(admin)"
+            class="btn btn-sm btn-warning" 
+            (click)="openRoleModal(admin)"
+            title="Changer le rôle"
+          >
+            <i class="fas fa-user-cog"></i>
+          </button>
+          
+          <button 
+            *ngIf="canDeleteUser(admin)"
+            class="btn btn-sm btn-danger" 
+            (click)="openDeleteModal(admin)"
+            title="Supprimer"
+          >
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section Utilisateurs -->
+  <div *ngIf="!isLoading && (selectedRole === 'all' || selectedRole === 'user')" class="users-section">
+    <h2>
+      <i class="fas fa-users"></i>
+      Utilisateurs ({{ filteredUsers.length }})
+    </h2>
+    
+    <div *ngIf="filteredUsers.length === 0" class="no-users">
+      <i class="fas fa-users"></i>
+      <p>Aucun utilisateur trouvé</p>
+    </div>
+    
+    <div *ngIf="filteredUsers.length > 0" class="users-grid">
+      <div *ngFor="let user of filteredUsers" class="user-card user-card-regular">
+        <div class="user-info">
+          <div class="user-avatar">
+            <img 
+              [src]="user.civility === 'Mr' ? '../../../../assets/images/Users/men.png' : '../../../../assets/images/Users/women.png'" 
+              [alt]="user.civility === 'Mr' ? 'Avatar homme' : 'Avatar femme'"
+              class="avatar-image"
+            />
+          </div>
+          <div class="user-details">
+            <h3>{{ user.name }}</h3>
+            <p class="email">{{ user.email }}</p>
+            <p *ngIf="user.phone" class="phone">
+              <i class="fas fa-phone"></i>
+              {{ user.phone }}
+            </p>
+            <span class="role-badge badge-user">Utilisateur</span>
+            <p class="created-date">Créé le {{ formatDate(user.createdAt) }}</p>
+          </div>
+        </div>
+        
+        <div class="user-actions">
+          <button 
+            class="btn btn-sm btn-secondary" 
+            (click)="openEditModal(user)"
+            title="Modifier"
+          >
+            <i class="fas fa-edit"></i>
+          </button>
+          
+          <button 
+            class="btn btn-sm btn-warning" 
+            (click)="openRoleModal(user)"
+            title="Changer le rôle"
+          >
+            <i class="fas fa-user-cog"></i>
+          </button>
+          
+          <button 
+            class="btn btn-sm btn-danger" 
+            (click)="openDeleteModal(user)"
+            title="Supprimer"
+          >
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de création d'utilisateur -->
+<div *ngIf="showCreateModal" class="modal-overlay" (click)="closeModals()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Créer un nouvel utilisateur</h3>
+      <button class="close-btn" (click)="closeModals()">&times;</button>
+    </div>
+    
+    <form [formGroup]="createForm" (ngSubmit)="createUser()">
+      <div class="form-group">
+        <label for="createName">Nom complet *</label>
+        <input 
+          type="text" 
+          id="createName" 
+          formControlName="name"
+          placeholder="Nom complet"
+        >
+        <div *ngIf="createForm.get('name')?.invalid && createForm.get('name')?.touched" class="error">
+          Le nom est requis (minimum 2 caractères)
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="createCivility">Civilité *</label>
+        <select id="createCivility" formControlName="civility">
+          <option value="Mr">Monsieur</option>
+          <option value="Mme">Madame</option>
+        </select>
+        <div *ngIf="createForm.get('civility')?.invalid && createForm.get('civility')?.touched" class="error">
+          La civilité est requise
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="createEmail">Email *</label>
+        <input 
+          type="email" 
+          id="createEmail" 
+          formControlName="email"
+          placeholder="email@example.com"
+        >
+        <div *ngIf="createForm.get('email')?.invalid && createForm.get('email')?.touched" class="error">
+          Email valide requis
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="createPassword">Mot de passe *</label>
+        <input 
+          type="password" 
+          id="createPassword" 
+          formControlName="password"
+          placeholder="Minimum 6 caractères"
+        >
+        <div *ngIf="createForm.get('password')?.invalid && createForm.get('password')?.touched" class="error">
+          Mot de passe requis (minimum 6 caractères)
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="createPhone">Téléphone</label>
+        <input 
+          type="tel" 
+          id="createPhone" 
+          formControlName="phone"
+          placeholder="Numéro de téléphone"
+        >
+      </div>
+      
+      <div class="form-group">
+        <label for="createAddress">Adresse</label>
+        <textarea 
+          id="createAddress" 
+          formControlName="address"
+          placeholder="Adresse complète"
+          rows="3"
+        ></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label for="createRole">Rôle *</label>
+        <select id="createRole" formControlName="role">
+          <option value="user">Utilisateur</option>
+          <option value="admin">Administrateur</option>
+        </select>
+      </div>
+      
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" (click)="closeModals()">
+          Annuler
+        </button>
+        <button type="submit" class="btn btn-primary" [disabled]="createForm.invalid || isLoading">
+          <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
+          Créer l'utilisateur
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal de modification d'utilisateur -->
+<div *ngIf="showEditModal" class="modal-overlay" (click)="closeModals()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Modifier l'utilisateur</h3>
+      <button class="close-btn" (click)="closeModals()">&times;</button>
+    </div>
+    
+    <form [formGroup]="editForm" (ngSubmit)="updateUser()">
+      <div class="form-group">
+        <label for="editName">Nom complet *</label>
+        <input 
+          type="text" 
+          id="editName" 
+          formControlName="name"
+          placeholder="Nom complet"
+        >
+        <div *ngIf="editForm.get('name')?.invalid && editForm.get('name')?.touched" class="error">
+          Le nom est requis (minimum 2 caractères)
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="editEmail">Email *</label>
+        <input 
+          type="email" 
+          id="editEmail" 
+          formControlName="email"
+          placeholder="email@example.com"
+        >
+        <div *ngIf="editForm.get('email')?.invalid && editForm.get('email')?.touched" class="error">
+          Email valide requis
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="editPhone">Téléphone</label>
+        <input 
+          type="tel" 
+          id="editPhone" 
+          formControlName="phone"
+          placeholder="Numéro de téléphone"
+        >
+      </div>
+      
+      <div class="form-group">
+        <label for="editAddress">Adresse</label>
+        <textarea 
+          id="editAddress" 
+          formControlName="address"
+          placeholder="Adresse complète"
+          rows="3"
+        ></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label for="editRole">Rôle *</label>
+        <select id="editRole" formControlName="role">
+          <option value="user">Utilisateur</option>
+          <option value="admin">Administrateur</option>
+        </select>
+      </div>
+      
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" (click)="closeModals()">
+          Annuler
+        </button>
+        <button type="submit" class="btn btn-primary" [disabled]="editForm.invalid || isLoading">
+          <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
+          Mettre à jour
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal de suppression -->
+<div *ngIf="showDeleteModal" class="modal-overlay" (click)="closeModals()">
+  <div class="modal-content modal-confirm" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Confirmer la suppression</h3>
+      <button class="close-btn" (click)="closeModals()">&times;</button>
+    </div>
+    
+    <div class="modal-body">
+      <div class="warning-icon">
+        <i class="fas fa-exclamation-triangle"></i>
+      </div>
+      <p>Êtes-vous sûr de vouloir supprimer l'utilisateur <strong>{{ selectedUser?.name }}</strong> ?</p>
+      <p class="warning-text">Cette action est irréversible.</p>
+    </div>
+    
+    <div class="modal-actions">
+      <button type="button" class="btn btn-secondary" (click)="closeModals()">
+        Annuler
+      </button>
+      <button type="button" class="btn btn-danger" (click)="deleteUser()" [disabled]="isLoading">
+        <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
+        Supprimer
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de changement de rôle -->
+<div *ngIf="showRoleModal" class="modal-overlay" (click)="closeModals()">
+  <div class="modal-content modal-confirm" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Changer le rôle</h3>
+      <button class="close-btn" (click)="closeModals()">&times;</button>
+    </div>
+    
+    <div class="modal-body">
+      <div class="info-icon">
+        <i class="fas fa-user-cog"></i>
+      </div>
+      <p>Changer le rôle de <strong>{{ selectedUser?.name }}</strong> :</p>
+      <p class="current-role">Rôle actuel: <span class="role-badge" [class]="getRoleBadgeClass(selectedUser?.role || '')">{{ selectedUser?.role === 'admin' ? 'Administrateur' : 'Utilisateur' }}</span></p>
+    </div>
+    
+    <div class="modal-actions">
+      <button type="button" class="btn btn-secondary" (click)="closeModals()">
+        Annuler
+      </button>
+      <button 
+        *ngIf="selectedUser?.role === 'user'" 
+        type="button" 
+        class="btn btn-warning" 
+        (click)="updateRole('admin')" 
+        [disabled]="isLoading"
+      >
+        <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
+        Promouvoir Admin
+      </button>
+      <button 
+        *ngIf="selectedUser?.role === 'admin'" 
+        type="button" 
+        class="btn btn-info" 
+        (click)="updateRole('user')" 
+        [disabled]="isLoading"
+      >
+        <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
+        Rétrograder Utilisateur
+      </button>
+    </div>
+  </div>
+</div>
