@@ -46,6 +46,7 @@
     <p>Chargement des utilisateurs...</p>
   </div>
 
+  <div class="allUsers-card">
   <!-- Section Administrateurs -->
   <div *ngIf="!isLoading && (selectedRole === 'all' || selectedRole === 'admin')" class="users-section">
     <h2>
@@ -173,6 +174,7 @@
       </div>
     </div>
   </div>
+</div>
 </div>
 
 <!-- Modal de création d'utilisateur -->
