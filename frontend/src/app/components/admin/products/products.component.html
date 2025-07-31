@@ -1,0 +1,467 @@
+<div class="products-container" [@fadeSlideIn]>
+  <!-- Header avec titre et bouton d'ajout -->
+  <div class="products-header">
+    <h1>Gestion des Produits</h1>
+    <button class="btn btn-primary" (click)="openCreateModal()">
+      <i class="fas fa-plus"></i>
+      Ajouter un produit
+    </button>
+  </div>
+
+  <!-- Contrôles de recherche et filtrage -->
+  <div class="controls-section">
+    <div class="search-box">
+      <i class="fas fa-search"></i>
+      <input 
+        type="text" 
+        placeholder="Rechercher par nom, description, matériau..." 
+        [(ngModel)]="searchTerm"
+        (input)="onSearchChange()"
+      >
+    </div>
+    
+    <div class="filter-section">
+      <label for="categoryFilter">Filtrer par catégorie:</label>
+      <select 
+        id="categoryFilter" 
+        [(ngModel)]="selectedCategory" 
+        (change)="onCategoryChange()"
+      >
+        <option value="">Toutes les catégories</option>
+        <option *ngFor="let category of categories" [value]="category">
+          {{ category }}
+        </option>
+      </select>
+    </div>
+
+    <button class="btn btn-secondary" (click)="clearFilters()">
+      <i class="fas fa-times"></i>
+      Effacer
+    </button>
+  </div>
+
+  <!-- Message d'erreur -->
+  <div *ngIf="error" class="error-message">
+    <i class="fas fa-exclamation-triangle"></i>
+    {{ error }}
+    <button (click)="error = null" class="close-btn">&times;</button>
+  </div>
+
+  <!-- Spinner de chargement -->
+  <div *ngIf="isLoading" class="loading-spinner">
+    <div class="spinner"></div>
+    <p>Chargement des produits...</p>
+  </div>
+
+  <!-- Section des produits -->
+  <div class="allProducts-card">
+    <div *ngIf="!isLoading" class="products-section">
+      <h2>
+        <i class="fas fa-gem"></i>
+        Produits ({{ filteredProducts.length }})
+      </h2>
+      
+      <div *ngIf="filteredProducts.length === 0" class="no-products">
+        <i class="fas fa-gem"></i>
+        <p *ngIf="searchTerm || selectedCategory">Aucun produit trouvé avec ces critères</p>
+        <p *ngIf="!searchTerm && !selectedCategory">Aucun produit disponible</p>
+        <button class="btn btn-primary" (click)="openCreateModal()">
+          <i class="fas fa-plus"></i>
+          Ajouter le premier produit
+        </button>
+      </div>
+      
+      <div *ngIf="filteredProducts.length > 0" class="products-grid">
+        <div class="table-container">
+          <table class="products-table">
+            <thead>
+              <tr>
+                <th>Image</th>
+                <th>Nom</th>
+                <th>Catégorie</th>
+                <th>Matériau</th>
+                <th>Prix</th>
+                <th>Stock</th>
+                <th>Note</th>
+                <th>Statut</th>
+                <th>Date création</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let product of paginatedProducts" class="product-row">
+                <!-- Image -->
+                <td class="product-image-cell">
+                  <div class="product-image-container">
+                    <img [src]="getProductImage(product)" [alt]="product.name" class="product-image">
+                    <!-- Badges -->
+                    <div class="product-badges">
+                      <span *ngIf="hasDiscount(product)" class="badge discount-badge">
+                        -{{ getDiscountPercentage(product) }}%
+                      </span>
+                      <span *ngIf="isOutOfStock(product)" class="badge out-of-stock-badge">
+                        Rupture
+                      </span>
+                    </div>
+                  </div>
+                </td>
+
+                <!-- Nom -->
+                <td class="product-name-cell">
+                  <div class="product-name">{{ product.name }}</div>
+                  <div class="product-description" *ngIf="product.description">
+                    {{ product.description.length > 50 ? (product.description | slice:0:50) + '...' : product.description }}
+                  </div>
+                </td>
+
+                <!-- Catégorie -->
+                <td class="product-category-cell">
+                  <span class="category-badge" [class]="'category-' + product.frenchCategory.toLowerCase().replace(' ', '-')">
+                    {{ product.frenchCategory }}
+                  </span>
+                </td>
+
+                <!-- Matériau -->
+                <td class="product-material-cell">
+                  <span class="material-info">{{ product.material }}</span>
+                </td>
+
+                <!-- Prix -->
+                <td class="product-price-cell">
+                  <div class="price-container">
+                    <span class="current-price">{{ formatPrice(product.price) }}</span>
+                    <span class="old-price" *ngIf="product.oldPrice && product.oldPrice > product.price">
+                      {{ formatPrice(product.oldPrice) }}
+                    </span>
+                  </div>
+                </td>
+
+                <!-- Stock -->
+                <td class="product-stock-cell">
+                  <div class="stock-info" [class]="getStockClass(product.quantity)">
+                    <span class="stock-number">{{ product.quantity }}</span>
+                    <span class="stock-label">unités</span>
+                  </div>
+                </td>
+
+                <!-- Note -->
+                <td class="product-rating-cell">
+                  <div class="rating-container" *ngIf="product.rating">
+                    <div class="stars">
+                      <i class="fas fa-star" *ngFor="let star of [1,2,3,4,5]" 
+                         [class.filled]="star <= product.rating"></i>
+                    </div>
+                    <span class="rating-value">({{ product.rating }})</span>
+                  </div>
+                  <span class="no-rating" *ngIf="!product.rating">Aucune note</span>
+                </td>
+
+                <!-- Statut -->
+                <td class="product-status-cell">
+                  <span class="status-badge" [class]="getStatusClass(product)">
+                    {{ getStatusText(product) }}
+                  </span>
+                </td>
+
+                <!-- Date création -->
+                <td class="product-date-cell">
+                  <span class="creation-date">{{ product.createdAt | date:'dd/MM/yyyy' }}</span>
+                  <span class="creation-time">{{ product.createdAt | date:'HH:mm' }}</span>
+                </td>
+
+                <!-- Actions -->
+                <td class="product-actions-cell">
+                  <div class="action-buttons">
+                    <button class="btn btn-edit" (click)="openEditModal(product)" title="Modifier">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-delete" (click)="openDeleteModal(product)" title="Supprimer">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Empty State -->
+          <div class="empty-state" *ngIf="!loading && paginatedProducts.length === 0">
+            <i class="fas fa-box-open"></i>
+            <h3>Aucun produit trouvé</h3>
+            <p *ngIf="searchTerm || selectedCategory">Aucun produit ne correspond à vos critères de recherche.</p>
+            <p *ngIf="!searchTerm && !selectedCategory">Commencez par ajouter votre premier produit.</p>
+          </div>
+
+          <!-- Loading State -->
+          <div class="loading-state" *ngIf="loading">
+            <div class="spinner"></div>
+            <p>Chargement des produits...</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Pagination -->
+      <div *ngIf="totalPages > 1" class="pagination">
+        <button 
+          class="pagination-btn" 
+          [disabled]="currentPage === 1" 
+          (click)="goToPage(currentPage - 1)"
+        >
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        
+        <span *ngFor="let page of [].constructor(totalPages); let i = index" class="pagination-item">
+          <button 
+            class="pagination-btn" 
+            [class.active]="currentPage === i + 1"
+            (click)="goToPage(i + 1)"
+          >
+            {{ i + 1 }}
+          </button>
+        </span>
+        
+        <button 
+          class="pagination-btn" 
+          [disabled]="currentPage === totalPages" 
+          (click)="goToPage(currentPage + 1)"
+        >
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de création/modification -->
+<div *ngIf="showCreateModal || showEditModal" class="modal-overlay" (click)="closeModals()">
+  <div class="modal-content large-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>{{ showCreateModal ? 'Créer un nouveau produit' : 'Modifier le produit' }}</h3>
+      <button class="close-btn" (click)="closeModals()">&times;</button>
+    </div>
+
+    <form [formGroup]="productForm" (ngSubmit)="showCreateModal ? createProduct() : updateProduct()" class="product-form">
+      <!-- Informations de base -->
+      <div class="form-section">
+        <h4>Informations de base</h4>
+        
+        <div class="form-group">
+          <label for="name">Nom du produit *</label>
+          <input
+            type="text"
+            id="name"
+            formControlName="name"
+            placeholder="Nom du produit"
+          />
+          <div *ngIf="productForm.get('name')?.invalid && productForm.get('name')?.touched" class="error">
+            Le nom est requis (minimum 2 caractères)
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="frenchCategory">Catégorie *</label>
+            <select id="frenchCategory" formControlName="frenchCategory">
+              <option value="">Sélectionner une catégorie</option>
+              <option *ngFor="let category of categories" [value]="category">
+                {{ category }}
+              </option>
+            </select>
+            <div *ngIf="productForm.get('frenchCategory')?.invalid && productForm.get('frenchCategory')?.touched" class="error">
+              La catégorie est requise
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="material">Matériau *</label>
+            <input
+              type="text"
+              id="material"
+              formControlName="material"
+              placeholder="Or, Argent, Acier..."
+            />
+            <div *ngIf="productForm.get('material')?.invalid && productForm.get('material')?.touched" class="error">
+              Le matériau est requis
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="description">Description courte *</label>
+          <textarea
+            id="description"
+            formControlName="description"
+            placeholder="Description courte du produit"
+            rows="2"
+          ></textarea>
+          <div *ngIf="productForm.get('description')?.invalid && productForm.get('description')?.touched" class="error">
+            La description est requise (minimum 10 caractères)
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="detailDescription">Description détaillée *</label>
+          <textarea
+            id="detailDescription"
+            formControlName="detailDescription"
+            placeholder="Description détaillée du produit"
+            rows="4"
+          ></textarea>
+          <div *ngIf="productForm.get('detailDescription')?.invalid && productForm.get('detailDescription')?.touched" class="error">
+            La description détaillée est requise (minimum 20 caractères)
+          </div>
+        </div>
+      </div>
+
+      <!-- Prix et stock -->
+      <div class="form-section">
+        <h4>Prix et stock</h4>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="price">Prix actuel (€) *</label>
+            <input
+              type="number"
+              id="price"
+              formControlName="price"
+              min="0"
+              step="0.01"
+              placeholder="0.00"
+            />
+            <div *ngIf="productForm.get('price')?.invalid && productForm.get('price')?.touched" class="error">
+              Le prix doit être supérieur à 0
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="oldPrice">Ancien prix (€)</label>
+            <input
+              type="number"
+              id="oldPrice"
+              formControlName="oldPrice"
+              min="0"
+              step="0.01"
+              placeholder="Prix avant réduction"
+            />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="quantity">Quantité en stock *</label>
+            <input
+              type="number"
+              id="quantity"
+              formControlName="quantity"
+              min="0"
+              placeholder="0"
+            />
+            <div *ngIf="productForm.get('quantity')?.invalid && productForm.get('quantity')?.touched" class="error">
+              La quantité doit être supérieure ou égale à 0
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="image">Image principale *</label>
+            <input
+              type="text"
+              id="image"
+              formControlName="image"
+              placeholder="URL ou nom de fichier"
+            />
+            <div *ngIf="productForm.get('image')?.invalid && productForm.get('image')?.touched" class="error">
+              L'image principale est requise
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Détails optionnels -->
+      <div class="form-section">
+        <h4>Détails optionnels</h4>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="style">Style</label>
+            <input
+              type="text"
+              id="style"
+              formControlName="style"
+              placeholder="Moderne, Classique, Vintage..."
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="occasion">Occasion</label>
+            <input
+              type="text"
+              id="occasion"
+              formControlName="occasion"
+              placeholder="Mariage, Soirée, Quotidien..."
+            />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="dimensions">Dimensions</label>
+            <input
+              type="text"
+              id="dimensions"
+              formControlName="dimensions"
+              placeholder="2cm x 1.5cm"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="weight">Poids</label>
+            <input
+              type="text"
+              id="weight"
+              formControlName="weight"
+              placeholder="5g"
+            />
+          </div>
+        </div>
+      </div>
+      
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" (click)="closeModals()">
+          Annuler
+        </button>
+        <button type="submit" class="btn btn-primary" [disabled]="productForm.invalid || isLoading">
+          <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
+          {{ showCreateModal ? 'Créer' : 'Mettre à jour' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal de suppression -->
+<div *ngIf="showDeleteModal" class="modal-overlay" (click)="closeModals()">
+  <div class="modal-content modal-confirm" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Confirmer la suppression</h3>
+      <button class="close-btn" (click)="closeModals()">&times;</button>
+    </div>
+    
+    <div class="modal-body">
+      <div class="warning-icon">
+        <i class="fas fa-exclamation-triangle"></i>
+      </div>
+      <p>Êtes-vous sûr de vouloir supprimer le produit <strong>{{ selectedProduct?.name }}</strong> ?</p>
+      <p class="warning-text">Cette action est irréversible.</p>
+    </div>
+    
+    <div class="modal-actions">
+      <button type="button" class="btn btn-secondary" (click)="closeModals()">
+        Annuler
+      </button>
+      <button type="button" class="btn btn-danger" (click)="deleteProduct()" [disabled]="isLoading">
+        <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
+        Supprimer
+      </button>
+    </div>
+  </div>
+</div>

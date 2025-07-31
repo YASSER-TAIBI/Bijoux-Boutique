@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 
-module.exports = (req, res, next) => {
+// Middleware pour vérifier le token JWT
+const authenticateToken = (req, res, next) => {
     try {
         const authHeader = req.headers.authorization;
         
@@ -37,4 +38,30 @@ module.exports = (req, res, next) => {
         console.error('Erreur d\'authentification:', error);
         res.status(401).json({ message: 'Authentication failed' });
     }
+};
+
+// Middleware pour vérifier que l'utilisateur est admin
+const requireAdmin = (req, res, next) => {
+    try {
+        // Vérifier que l'utilisateur est authentifié
+        if (!req.user) {
+            return res.status(401).json({ message: 'User not authenticated' });
+        }
+
+        // Vérifier que l'utilisateur a le rôle admin
+        if (req.user.role !== 'admin') {
+            console.log('Tentative d\'accès admin par utilisateur non-admin:', req.user.email);
+            return res.status(403).json({ message: 'Admin access required' });
+        }
+
+        next();
+    } catch (error) {
+        console.error('Erreur de vérification admin:', error);
+        res.status(500).json({ message: 'Server error during admin verification' });
+    }
+};
+
+module.exports = {
+    authenticateToken,
+    requireAdmin
 };
