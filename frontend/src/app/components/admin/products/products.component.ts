@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
 import { ProductAdminService } from '../../../services/product-admin.service';
+import { FirebaseStorageService } from '../../../services/firebase-storage.service';
 import { fadeSlideInAnimation } from '../../../animations/shared.animations';
 import { Product } from '../../../models/product.interface';
 
@@ -41,8 +42,16 @@ export class ProductsComponent implements OnInit, OnDestroy {
   // Formulaires
   productForm: FormGroup;
   
+  // Gestion des images
+  selectedImages: File[] = [];
+  imageUrls: string[] = [];
+  imagePreviewUrls: string[] = [];
+  uploadingImages = false;
+  imageUploadError: string | null = null;
+  
   constructor(
     private productService: ProductAdminService,
+    private firebaseStorage: FirebaseStorageService,
     private fb: FormBuilder
   ) {
     this.productForm = this.createProductForm();
@@ -186,6 +195,13 @@ export class ProductsComponent implements OnInit, OnDestroy {
       images: product.images || [],
       features: product.features || []
     });
+    
+    // Charger les images existantes
+    this.imageUrls = product.images || [];
+    this.selectedImages = [];
+    this.imagePreviewUrls = [];
+    this.imageUploadError = null;
+    
     this.showEditModal = true;
   }
   
@@ -199,12 +215,94 @@ export class ProductsComponent implements OnInit, OnDestroy {
     this.showEditModal = false;
     this.showDeleteModal = false;
     this.selectedProduct = null;
+    this.resetImageUpload();
   }
   
+  // Gestion des images
+  onImagesSelected(event: any): void {
+    const files = Array.from(event.target.files) as File[];
+    this.selectedImages = [];
+    this.imagePreviewUrls = [];
+    this.imageUploadError = null;
+
+    // Valider chaque fichier
+    for (const file of files) {
+      const validation = this.firebaseStorage.validateImageFile(file);
+      if (!validation.isValid) {
+        this.imageUploadError = validation.error || 'Fichier invalide';
+        return;
+      }
+      this.selectedImages.push(file);
+      this.imagePreviewUrls.push(URL.createObjectURL(file));
+    }
+
+    // Limiter à 5 images maximum
+    if (this.selectedImages.length > 5) {
+      this.imageUploadError = 'Maximum 5 images autorisées';
+      this.selectedImages = this.selectedImages.slice(0, 5);
+      this.imagePreviewUrls = this.imagePreviewUrls.slice(0, 5);
+    }
+  }
+
+  async uploadImages(): Promise<string[]> {
+    if (this.selectedImages.length === 0) {
+      return this.imageUrls;
+    }
+
+    this.uploadingImages = true;
+    this.imageUploadError = null;
+
+    try {
+      const uploadedUrls = await this.firebaseStorage.uploadMultipleImages(this.selectedImages);
+      this.imageUrls = [...this.imageUrls, ...uploadedUrls];
+      return this.imageUrls;
+    } catch (error) {
+      this.imageUploadError = 'Erreur lors de l\'upload des images';
+      console.error('Upload error:', error);
+      throw error;
+    } finally {
+      this.uploadingImages = false;
+    }
+  }
+
+  removeImage(index: number): void {
+    if (index >= 0 && index < this.imageUrls.length) {
+      // Optionnel : supprimer de Firebase Storage
+      const imageUrl = this.imageUrls[index];
+      this.firebaseStorage.deleteImage(imageUrl).catch(error => {
+        console.warn('Could not delete image from Firebase:', error);
+      });
+      
+      this.imageUrls.splice(index, 1);
+    }
+  }
+
+  removeSelectedImage(index: number): void {
+    if (index >= 0 && index < this.selectedImages.length) {
+      this.selectedImages.splice(index, 1);
+      this.imagePreviewUrls.splice(index, 1);
+    }
+  }
+
+  resetImageUpload(): void {
+    this.selectedImages = [];
+    this.imageUrls = [];
+    this.imagePreviewUrls = [];
+    this.uploadingImages = false;
+    this.imageUploadError = null;
+  }
+
   // Actions CRUD
-  createProduct(): void {
+  async createProduct(): Promise<void> {
     if (this.productForm.valid) {
-      const productData = this.productForm.value;
+      try {
+        // Upload des images d'abord
+        const uploadedImageUrls = await this.uploadImages();
+        
+        const productData = {
+          ...this.productForm.value,
+          images: uploadedImageUrls
+        };
       
       this.productService.createProduct(productData)
         .pipe(takeUntil(this.destroy$))
@@ -218,12 +316,23 @@ export class ProductsComponent implements OnInit, OnDestroy {
             console.error('Erreur:', error);
           }
         });
+      } catch (error) {
+        this.error = 'Erreur lors de l\'upload des images';
+        console.error('Upload error:', error);
+      }
     }
   }
   
-  updateProduct(): void {
+  async updateProduct(): Promise<void> {
     if (this.productForm.valid && this.selectedProduct?._id) {
-      const productData = this.productForm.value;
+      try {
+        // Upload des nouvelles images si nécessaire
+        const uploadedImageUrls = await this.uploadImages();
+        
+        const productData = {
+          ...this.productForm.value,
+          images: uploadedImageUrls
+        };
       
       this.productService.updateProduct(this.selectedProduct._id, productData)
         .pipe(takeUntil(this.destroy$))
@@ -237,6 +346,10 @@ export class ProductsComponent implements OnInit, OnDestroy {
             console.error('Erreur:', error);
           }
         });
+      } catch (error) {
+        this.error = 'Erreur lors de l\'upload des images';
+        console.error('Upload error:', error);
+      }
     }
   }
   
@@ -308,5 +421,9 @@ export class ProductsComponent implements OnInit, OnDestroy {
     if (stock === 0) return 'Rupture';
     if (stock <= 5) return 'Stock faible';
     return 'Disponible';
+  }
+
+  getImagePreview(file: File): string {
+    return URL.createObjectURL(file);
   }
 }

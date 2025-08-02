@@ -312,6 +312,64 @@
         </div>
       </div>
 
+      <!-- Photos du produit -->
+      <div class="form-section">
+        <h4>Photos du produit</h4>
+        
+        <div class="form-group">
+          <label for="productImages">Sélectionner des images (max 5)</label>
+          <input
+            type="file"
+            id="productImages"
+            multiple
+            accept="image/jpeg,image/jpg,image/png,image/webp"
+            (change)="onImagesSelected($event)"
+            class="file-input"
+          />
+          <div class="file-input-info">
+            <small>Formats acceptés : JPG, PNG, WebP (max 5MB par image)</small>
+          </div>
+          
+          <!-- Erreur d'upload -->
+          <div *ngIf="imageUploadError" class="error">
+            {{ imageUploadError }}
+          </div>
+        </div>
+
+        <!-- Aperçu des images sélectionnées -->
+        <div *ngIf="selectedImages.length > 0" class="selected-images-preview">
+          <h5>Images sélectionnées ({{ selectedImages.length }})</h5>
+          <div class="images-grid">
+            <div *ngFor="let image of selectedImages; let i = index" class="image-preview-item">
+              <img [src]="imagePreviewUrls[i]" alt="Aperçu" class="preview-image">
+              <button type="button" class="remove-image-btn" (click)="removeSelectedImage(i)" title="Supprimer">
+                <i class="fas fa-times"></i>
+              </button>
+              <div class="image-name">{{ image.name }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Images déjà uploadées (mode édition) -->
+        <div *ngIf="imageUrls.length > 0" class="uploaded-images">
+          <h5>Images du produit ({{ imageUrls.length }})</h5>
+          <div class="images-grid">
+            <div *ngFor="let imageUrl of imageUrls; let i = index" class="image-preview-item">
+              <img [src]="imageUrl" alt="Image produit" class="preview-image">
+              <button type="button" class="remove-image-btn" (click)="removeImage(i)" title="Supprimer">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Indicateur d'upload -->
+        <div *ngIf="uploadingImages" class="upload-progress">
+          <div class="loading-spinner"></div>
+          <span>Upload des images en cours...</span>
+        </div>
+      </div>
+
       <!-- Prix et stock -->
       <div class="form-section">
         <h4>Prix et stock</h4>
