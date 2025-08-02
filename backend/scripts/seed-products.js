@@ -37,7 +37,7 @@ const sampleProducts = [
     isAvailable: true
   },
   {
-    name: "Boucles d'Oreilles Émeraude",
+    name: "Boucles d'oreilles Émeraude",
     description: "Superbes boucles d'oreilles pendantes avec émeraudes naturelles et diamants, monture en platine.",
     price: 3200.00,
     category: "Boucles d'oreilles",
@@ -77,7 +77,7 @@ const sampleProducts = [
     isAvailable: true
   },
   {
-    name: "Boucles d'Oreilles Créoles",
+    name: "Boucles d'oreilles Créoles",
     description: "Boucles d'oreilles créoles en or blanc serties de petits diamants, parfaites pour le quotidien.",
     price: 890.00,
     category: "Boucles d'oreilles",
@@ -117,7 +117,7 @@ const sampleProducts = [
     isAvailable: true
   },
   {
-    name: "Boucles d'Oreilles Perles",
+    name: "Boucles d'oreilles Perles",
     description: "Délicates boucles d'oreilles avec perles d'eau douce et crochets en or rose.",
     price: 165.00,
     category: "Boucles d'oreilles",

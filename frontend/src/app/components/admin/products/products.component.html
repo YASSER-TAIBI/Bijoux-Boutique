@@ -48,21 +48,20 @@
   </div>
 
   <!-- Spinner de chargement -->
-  <div *ngIf="isLoading" class="loading-spinner">
+  <div *ngIf="loading" class="loading-spinner">
     <div class="spinner"></div>
     <p>Chargement des produits...</p>
   </div>
 
   <!-- Section des produits -->
   <div class="allProducts-card">
-    <div *ngIf="!isLoading" class="products-section">
-      <h2>
+    <div *ngIf="!loading" class="products-section">
+      <h2 class="products-title">
         <i class="fas fa-gem"></i>
         Produits ({{ filteredProducts.length }})
       </h2>
       
       <div *ngIf="filteredProducts.length === 0" class="no-products">
-        <i class="fas fa-gem"></i>
         <p *ngIf="searchTerm || selectedCategory">Aucun produit trouvé avec ces critères</p>
         <p *ngIf="!searchTerm && !selectedCategory">Aucun produit disponible</p>
         <button class="btn btn-primary" (click)="openCreateModal()">
@@ -71,7 +70,7 @@
         </button>
       </div>
       
-      <div *ngIf="filteredProducts.length > 0" class="products-grid">
+      <div *ngIf="filteredProducts.length > 0">
         <div class="table-container">
           <table class="products-table">
             <thead>
@@ -84,7 +83,7 @@
                 <th>Stock</th>
                 <th>Note</th>
                 <th>Statut</th>
-                <th>Date création</th>
+                <!-- <th>Date création</th> -->
                 <th>Actions</th>
               </tr>
             </thead>
@@ -138,7 +137,7 @@
 
                 <!-- Stock -->
                 <td class="product-stock-cell">
-                  <div class="stock-info" [class]="getStockClass(product.quantity)">
+                  <div class="stock-info" [class]="getStockClass(product.quantity || 0)">
                     <span class="stock-number">{{ product.quantity }}</span>
                     <span class="stock-label">unités</span>
                   </div>
@@ -164,10 +163,10 @@
                 </td>
 
                 <!-- Date création -->
-                <td class="product-date-cell">
+                <!-- <td class="product-date-cell">
                   <span class="creation-date">{{ product.createdAt | date:'dd/MM/yyyy' }}</span>
                   <span class="creation-time">{{ product.createdAt | date:'HH:mm' }}</span>
-                </td>
+                </td> -->
 
                 <!-- Actions -->
                 <td class="product-actions-cell">
@@ -429,8 +428,8 @@
         <button type="button" class="btn btn-secondary" (click)="closeModals()">
           Annuler
         </button>
-        <button type="submit" class="btn btn-primary" [disabled]="productForm.invalid || isLoading">
-          <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
+        <button type="submit" class="btn btn-primary" [disabled]="productForm.invalid || loading">
+          <i *ngIf="loading" class="fas fa-spinner fa-spin"></i>
           {{ showCreateModal ? 'Créer' : 'Mettre à jour' }}
         </button>
       </div>
@@ -458,8 +457,8 @@
       <button type="button" class="btn btn-secondary" (click)="closeModals()">
         Annuler
       </button>
-      <button type="button" class="btn btn-danger" (click)="deleteProduct()" [disabled]="isLoading">
-        <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
+      <button type="button" class="btn btn-danger" (click)="deleteProduct()" [disabled]="loading">
+        <i *ngIf="loading" class="fas fa-spinner fa-spin"></i>
         Supprimer
       </button>
     </div>
