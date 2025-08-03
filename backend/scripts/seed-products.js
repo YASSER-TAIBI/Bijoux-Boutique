@@ -13,7 +13,7 @@ const sampleProducts = [
     category: "Bagues",
     images: ["bague-solitaire-diamant.jpg"],
     material: "Or blanc 18k, Diamant",
-    stock: 5,
+    quantity: 5,
     isAvailable: true
   },
   {
@@ -23,7 +23,7 @@ const sampleProducts = [
     category: "Colliers",
     images: ["collier-perles-culture.jpg"],
     material: "Perles de culture, Argent sterling",
-    stock: 12,
+    quantity: 12,
     isAvailable: true
   },
   {
@@ -33,7 +33,7 @@ const sampleProducts = [
     category: "Bracelets",
     images: ["bracelet-tennis-diamants.jpg"],
     material: "Or jaune 14k, Diamants",
-    stock: 3,
+    quantity: 3,
     isAvailable: true
   },
   {
@@ -43,7 +43,7 @@ const sampleProducts = [
     category: "Boucles d'oreilles",
     images: ["boucles-oreilles-emeraude.jpg"],
     material: "Platine, Émeraudes, Diamants",
-    stock: 2,
+    quantity: 2,
     isAvailable: true
   },
   {
@@ -53,7 +53,7 @@ const sampleProducts = [
     category: "Bagues",
     images: ["alliance-classique-or-rose.jpg"],
     material: "Or rose 18k",
-    stock: 15,
+    quantity: 15,
     isAvailable: true
   },
   {
@@ -63,7 +63,7 @@ const sampleProducts = [
     category: "Colliers",
     images: ["collier-chaine-serpentine.jpg"],
     material: "Argent sterling 925",
-    stock: 20,
+    quantity: 20,
     isAvailable: true
   },
   {
@@ -73,7 +73,7 @@ const sampleProducts = [
     category: "Bracelets",
     images: ["bracelet-jonc-grave.jpg"],
     material: "Or jaune 18k",
-    stock: 1,
+    quantity: 1,
     isAvailable: true
   },
   {
@@ -83,7 +83,7 @@ const sampleProducts = [
     category: "Boucles d'oreilles",
     images: ["creoles-diamants-or-blanc.jpg"],
     material: "Or blanc 18k, Diamants",
-    stock: 8,
+    quantity: 8,
     isAvailable: true
   },
   {
@@ -93,7 +93,7 @@ const sampleProducts = [
     category: "Bagues",
     images: ["bague-vintage-saphir.jpg"],
     material: "Or blanc 18k, Saphir, Diamants",
-    stock: 1,
+    quantity: 1,
     isAvailable: true
   },
   {
@@ -103,7 +103,7 @@ const sampleProducts = [
     category: "Autres",
     images: ["parure-complete-rubis.jpg"],
     material: "Or jaune 18k, Rubis, Diamants",
-    stock: 1,
+    quantity: 1,
     isAvailable: true
   },
   {
@@ -113,7 +113,7 @@ const sampleProducts = [
     category: "Bracelets",
     images: ["bracelet-cuir-argent.jpg"],
     material: "Cuir, Argent sterling",
-    stock: 25,
+    quantity: 25,
     isAvailable: true
   },
   {
@@ -123,7 +123,7 @@ const sampleProducts = [
     category: "Boucles d'oreilles",
     images: ["boucles-oreilles-perles.jpg"],
     material: "Or rose 14k, Perles d'eau douce",
-    stock: 18,
+    quantity: 18,
     isAvailable: true
   }
 ];

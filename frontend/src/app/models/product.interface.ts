@@ -31,4 +31,6 @@ export interface Product {
   warranty?: string;
   careInstructions?: string;
   reviews?: Review[];
+  createdAt?: Date | string; // Date de création
+  updatedAt?: Date | string; // Date de modification
 }

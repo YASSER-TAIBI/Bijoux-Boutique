@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
 import { ProductAdminService } from '../../../services/product-admin.service';
-import { FirebaseStorageService } from '../../../services/firebase-storage.service';
+import { CloudinaryStorageService } from '../../../services/cloudinary-storage.service';
 import { fadeSlideInAnimation } from '../../../animations/shared.animations';
 import { Product } from '../../../models/product.interface';
 
@@ -37,6 +37,7 @@ export class ProductsComponent implements OnInit, OnDestroy {
   showCreateModal = false;
   showEditModal = false;
   showDeleteModal = false;
+  showViewModal = false;
   selectedProduct: Product | null = null;
   
   // Formulaires
@@ -51,7 +52,7 @@ export class ProductsComponent implements OnInit, OnDestroy {
   
   constructor(
     private productService: ProductAdminService,
-    private firebaseStorage: FirebaseStorageService,
+    private cloudinaryService: CloudinaryStorageService,
     private fb: FormBuilder
   ) {
     this.productForm = this.createProductForm();
@@ -74,7 +75,7 @@ export class ProductsComponent implements OnInit, OnDestroy {
       price: [0, [Validators.required, Validators.min(0.01)]],
       oldPrice: [null],
       discountPrice: [null],
-      category: ['', Validators.required],
+      category: [''], // Optionnel, sera généré depuis frenchCategory
       frenchCategory: ['', Validators.required],
       image: ['', Validators.required],
       images: [[]],
@@ -82,6 +83,7 @@ export class ProductsComponent implements OnInit, OnDestroy {
       dimensions: [''],
       weight: [''],
       features: [[]],
+      featuresText: [''], // Champ texte pour saisir les caractéristiques
       style: [''],
       occasion: [''],
       warranty: [''],
@@ -187,13 +189,25 @@ export class ProductsComponent implements OnInit, OnDestroy {
     });
     this.showCreateModal = true;
   }
+
+  openViewModal(product: Product): void {
+    this.selectedProduct = product;
+    this.showViewModal = true;
+    console.log('👁️ Ouverture modal visualisation pour:', product.name);
+    console.log('📋 Données complètes du produit:', product);
+  }
   
   openEditModal(product: Product): void {
     this.selectedProduct = product;
+    
+    // Convertir le tableau features en string pour l'affichage
+    const featuresText = product.features ? product.features.join(', ') : '';
+    
     this.productForm.patchValue({
       ...product,
       images: product.images || [],
-      features: product.features || []
+      features: product.features || [],
+      featuresText: featuresText
     });
     
     // Charger les images existantes
@@ -214,6 +228,7 @@ export class ProductsComponent implements OnInit, OnDestroy {
     this.showCreateModal = false;
     this.showEditModal = false;
     this.showDeleteModal = false;
+    this.showViewModal = false;
     this.selectedProduct = null;
     this.resetImageUpload();
   }
@@ -227,7 +242,7 @@ export class ProductsComponent implements OnInit, OnDestroy {
 
     // Valider chaque fichier
     for (const file of files) {
-      const validation = this.firebaseStorage.validateImageFile(file);
+      const validation = this.cloudinaryService.validateImageFile(file);
       if (!validation.isValid) {
         this.imageUploadError = validation.error || 'Fichier invalide';
         return;
@@ -253,7 +268,7 @@ export class ProductsComponent implements OnInit, OnDestroy {
     this.imageUploadError = null;
 
     try {
-      const uploadedUrls = await this.firebaseStorage.uploadMultipleImages(this.selectedImages);
+      const uploadedUrls = await this.cloudinaryService.uploadMultipleImages(this.selectedImages);
       this.imageUrls = [...this.imageUrls, ...uploadedUrls];
       return this.imageUrls;
     } catch (error) {
@@ -267,10 +282,10 @@ export class ProductsComponent implements OnInit, OnDestroy {
 
   removeImage(index: number): void {
     if (index >= 0 && index < this.imageUrls.length) {
-      // Optionnel : supprimer de Firebase Storage
+      // Optionnel : supprimer de Cloudinary Storage
       const imageUrl = this.imageUrls[index];
-      this.firebaseStorage.deleteImage(imageUrl).catch(error => {
-        console.warn('Could not delete image from Firebase:', error);
+      this.cloudinaryService.deleteImage(imageUrl).catch(error => {
+        console.warn('Could not delete image from Cloudinary:', error);
       });
       
       this.imageUrls.splice(index, 1);
@@ -294,62 +309,176 @@ export class ProductsComponent implements OnInit, OnDestroy {
 
   // Actions CRUD
   async createProduct(): Promise<void> {
+    console.log('🔍 Début création produit');
+    console.log('📝 Formulaire valide:', this.productForm.valid);
+    console.log('📋 Erreurs formulaire:', this.getFormErrors());
+    
     if (this.productForm.valid) {
+      this.loading = true;
       try {
+        console.log('📤 Upload des images...');
         // Upload des images d'abord
         const uploadedImageUrls = await this.uploadImages();
+        console.log('✅ Images uploadées:', uploadedImageUrls);
+        
+        // Convertir featuresText en tableau features
+        const formValue = this.productForm.value;
+        console.log('📄 Valeurs formulaire:', formValue);
+        
+        const features = formValue.featuresText 
+          ? formValue.featuresText.split(',').map((f: string) => f.trim()).filter((f: string) => f.length > 0)
+          : [];
+        
+        // Générer category depuis frenchCategory
+        const categoryMapping: { [key: string]: string } = {
+          'Bagues': 'Rings',
+          'Colliers': 'Necklaces',
+          'Bracelets': 'Bracelets',
+          'Boucles d\'oreilles': 'Earrings',
+          'Autres': 'Others'
+        };
         
         const productData = {
-          ...this.productForm.value,
-          images: uploadedImageUrls
+          ...formValue,
+          category: categoryMapping[formValue.frenchCategory] || 'Others',
+          frenchCategory: formValue.frenchCategory,
+          images: uploadedImageUrls,
+          features: features,
+          // S'assurer que les champs numériques sont corrects
+          price: Number(formValue.price),
+          oldPrice: formValue.oldPrice ? Number(formValue.oldPrice) : null,
+          discountPrice: formValue.discountPrice ? Number(formValue.discountPrice) : null,
+          quantity: Number(formValue.quantity),
+          rating: Number(formValue.rating || 0),
+          reviewCount: Number(formValue.reviewCount || 0)
         };
-      
-      this.productService.createProduct(productData)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: () => {
-            this.loadProducts();
-            this.closeModals();
-          },
-          error: (error: any) => {
-            this.error = 'Erreur lors de la création du produit';
-            console.error('Erreur:', error);
-          }
-        });
+        
+        // Supprimer featuresText du payload (pas nécessaire en base)
+        delete productData.featuresText;
+        
+        console.log('🚀 Données à envoyer:', productData);
+        
+        this.productService.createProduct(productData)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
+            next: (response) => {
+              console.log('✅ Produit créé avec succès:', response);
+              this.loading = false;
+              this.loadProducts();
+              this.closeModals();
+            },
+            error: (error: any) => {
+              console.error('❌ Erreur création produit:', error);
+              console.error('📋 Status:', error.status);
+              console.error('📋 StatusText:', error.statusText);
+              console.error('📋 Error body:', error.error);
+              console.error('📋 URL:', error.url);
+              
+              let errorMessage = 'Erreur lors de la création du produit';
+              if (error.error && error.error.message) {
+                errorMessage += `: ${error.error.message}`;
+              } else if (error.message) {
+                errorMessage += `: ${error.message}`;
+              }
+              
+              this.error = errorMessage;
+              this.loading = false;
+            }
+          });
       } catch (error) {
-        this.error = 'Erreur lors de l\'upload des images';
-        console.error('Upload error:', error);
+        console.error('❌ Erreur upload images:', error);
+        this.error = `Erreur lors de l'upload des images: ${error}`;
+        this.loading = false;
       }
+    } else {
+      console.log('❌ Formulaire invalide');
+      this.error = 'Veuillez remplir tous les champs obligatoires';
+      this.markFormGroupTouched();
     }
   }
   
   async updateProduct(): Promise<void> {
+    console.log('🔍 Début modification produit');
+    console.log('📝 Formulaire valide:', this.productForm.valid);
+    
     if (this.productForm.valid && this.selectedProduct?._id) {
+      this.loading = true;
       try {
+        console.log('📤 Upload des nouvelles images...');
         // Upload des nouvelles images si nécessaire
         const uploadedImageUrls = await this.uploadImages();
+        console.log('✅ Images uploadées:', uploadedImageUrls);
+        
+        // Convertir featuresText en tableau features
+        const formValue = this.productForm.value;
+        console.log('📄 Valeurs formulaire:', formValue);
+        
+        const features = formValue.featuresText 
+          ? formValue.featuresText.split(',').map((f: string) => f.trim()).filter((f: string) => f.length > 0)
+          : [];
+        
+        // Générer category depuis frenchCategory
+        const categoryMapping: { [key: string]: string } = {
+          'Bagues': 'Rings',
+          'Colliers': 'Necklaces',
+          'Bracelets': 'Bracelets',
+          'Boucles d\'oreilles': 'Earrings',
+          'Autres': 'Others'
+        };
         
         const productData = {
-          ...this.productForm.value,
-          images: uploadedImageUrls
+          ...formValue,
+          category: categoryMapping[formValue.frenchCategory] || 'Others',
+          frenchCategory: formValue.frenchCategory,
+          images: uploadedImageUrls,
+          features: features,
+          // S'assurer que les champs numériques sont corrects
+          price: Number(formValue.price),
+          oldPrice: formValue.oldPrice ? Number(formValue.oldPrice) : null,
+          discountPrice: formValue.discountPrice ? Number(formValue.discountPrice) : null,
+          quantity: Number(formValue.quantity),
+          rating: Number(formValue.rating || 0),
+          reviewCount: Number(formValue.reviewCount || 0)
         };
+        
+        // Supprimer featuresText du payload (pas nécessaire en base)
+        delete productData.featuresText;
+        
+        console.log('🚀 Données à envoyer:', productData);
+        
+        // 🔧 CORRECTION BACKEND: Adapter les champs pour le modèle backend
+        productData.stock = productData.quantity; // Backend attend 'stock' au lieu de 'quantity'
+        //delete productData.quantity; // Supprimer quantity car on utilise stock
+        
+        // Le backend génère automatiquement 'image' depuis 'images[0]'
+        // Tous les autres champs sont maintenant supportés par le backend
+        
+        console.log('🚀 Données adaptées pour le backend:', productData);
       
-      this.productService.updateProduct(this.selectedProduct._id, productData)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: () => {
-            this.loadProducts();
-            this.closeModals();
-          },
-          error: (error: any) => {
-            this.error = 'Erreur lors de la mise à jour du produit';
-            console.error('Erreur:', error);
-          }
-        });
+        this.productService.updateProduct(this.selectedProduct._id, productData)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
+            next: (response) => {
+              console.log('✅ Produit modifié avec succès:', response);
+              this.loading = false;
+              this.loadProducts();
+              this.closeModals();
+            },
+            error: (error: any) => {
+              console.error('❌ Erreur modification produit:', error);
+              this.error = `Erreur lors de la mise à jour du produit: ${error.message || error}`;
+              this.loading = false;
+            }
+          });
       } catch (error) {
-        this.error = 'Erreur lors de l\'upload des images';
-        console.error('Upload error:', error);
+        console.error('❌ Erreur upload images:', error);
+        this.error = `Erreur lors de l'upload des images: ${error}`;
+        this.loading = false;
       }
+    } else {
+      console.log('❌ Formulaire invalide ou produit non sélectionné');
+      this.error = 'Veuillez remplir tous les champs obligatoires';
+      this.markFormGroupTouched();
     }
   }
   
@@ -425,5 +554,26 @@ export class ProductsComponent implements OnInit, OnDestroy {
 
   getImagePreview(file: File): string {
     return URL.createObjectURL(file);
+  }
+
+  // Méthodes utilitaires pour diagnostiquer les erreurs
+  getFormErrors(): any {
+    const errors: any = {};
+    Object.keys(this.productForm.controls).forEach(key => {
+      const control = this.productForm.get(key);
+      if (control && control.errors) {
+        errors[key] = control.errors;
+      }
+    });
+    return errors;
+  }
+
+  markFormGroupTouched(): void {
+    Object.keys(this.productForm.controls).forEach(key => {
+      const control = this.productForm.get(key);
+      if (control) {
+        control.markAsTouched();
+      }
+    });
   }
 }

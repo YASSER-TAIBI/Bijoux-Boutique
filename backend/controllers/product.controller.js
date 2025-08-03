@@ -30,25 +30,22 @@ const getProductById = async (req, res) => {
 // Créer un nouveau produit (Admin uniquement)
 const createProduct = async (req, res) => {
     try {
-        const { name, description, price, category, images, material, stock, isAvailable } = req.body;
+        const productData = req.body;
         
         // Validation des données requises
-        if (!name || !description || !price || !category || !material || stock === undefined) {
+        if (!productData.name || !productData.description || !productData.price || !productData.category || !productData.material || productData.quantity === undefined) {
             return res.status(400).json({ 
                 message: 'Tous les champs obligatoires doivent être renseignés' 
             });
         }
 
-        const product = new Product({
-            name,
-            description,
-            price,
-            category,
-            images: images || [],
-            material,
-            stock,
-            isAvailable: isAvailable !== undefined ? isAvailable : true
-        });
+        // Renseigner automatiquement le champ 'image' avec la première URL de 'images'
+        if (productData.images && productData.images.length > 0) {
+            productData.image = productData.images[0];
+        }
+
+        // Créer le produit avec toutes les données
+        const product = new Product(productData);
 
         const savedProduct = await product.save();
         res.status(201).json(savedProduct);

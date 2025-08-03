@@ -171,6 +171,9 @@
                 <!-- Actions -->
                 <td class="product-actions-cell">
                   <div class="action-buttons">
+                    <button class="btn btn-view" (click)="openViewModal(product)" title="Voir">
+                      <i class="fas fa-eye"></i>
+                    </button>
                     <button class="btn btn-edit" (click)="openEditModal(product)" title="Modifier">
                       <i class="fas fa-edit"></i>
                     </button>
@@ -480,6 +483,39 @@
             />
           </div>
         </div>
+
+        <div class="form-group">
+          <label for="features">Caractéristiques</label>
+          <textarea
+            id="features"
+            formControlName="featuresText"
+            placeholder="Séparez les caractéristiques par des virgules (ex: Hypoallergénique, Résistant à l'eau, Fait main)"
+            rows="3"
+          ></textarea>
+          <small class="form-help">Séparez chaque caractéristique par une virgule</small>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="warranty">Garantie</label>
+            <input
+              type="text"
+              id="warranty"
+              formControlName="warranty"
+              placeholder="2 ans, Garantie à vie..."
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="careInstructions">Instructions d'entretien</label>
+            <input
+              type="text"
+              id="careInstructions"
+              formControlName="careInstructions"
+              placeholder="Nettoyer avec un chiffon doux..."
+            />
+          </div>
+        </div>
       </div>
       
       <div class="modal-actions">
@@ -492,6 +528,162 @@
         </button>
       </div>
     </form>
+  </div>
+</div>
+
+<!-- Modal de visualisation -->
+<div *ngIf="showViewModal" class="modal-overlay" (click)="closeModals()">
+  <div class="modal-content large-modal" (click)="$event.stopPropagation()" *ngIf="selectedProduct">
+    <div class="modal-header">
+      <h3><i class="fas fa-eye"></i> Détails du produit</h3>
+      <button class="close-btn" (click)="closeModals()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <div class="modal-body view-modal-body">
+      <!-- Images du produit -->
+      <div class="product-images-section" *ngIf="selectedProduct.images && selectedProduct.images.length > 0">
+        <h4><i class="fas fa-images"></i> Photos du produit</h4>
+        <div class="images-gallery">
+          <div class="image-item" *ngFor="let imageUrl of selectedProduct.images">
+            <img [src]="imageUrl" [alt]="selectedProduct.name" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Informations de base -->
+      <div class="product-info-section">
+        <h4><i class="fas fa-info-circle"></i> Informations générales</h4>
+        <div class="info-grid">
+          <div class="info-item">
+            <label>Nom :</label>
+            <span>{{ selectedProduct.name }}</span>
+          </div>
+          <div class="info-item">
+            <label>Catégorie :</label>
+            <span>{{ selectedProduct.frenchCategory || selectedProduct.category }}</span>
+          </div>
+          <div class="info-item">
+            <label>Matériau :</label>
+            <span>{{ selectedProduct.material }}</span>
+          </div>
+          <div class="info-item">
+            <label>Prix :</label>
+            <span class="price">{{ selectedProduct.price | currency:'EUR':'symbol':'1.2-2' }}</span>
+          </div>
+          <div class="info-item" *ngIf="selectedProduct.oldPrice">
+            <label>Ancien prix :</label>
+            <span class="old-price">{{ selectedProduct.oldPrice | currency:'EUR':'symbol':'1.2-2' }}</span>
+          </div>
+          <div class="info-item" *ngIf="selectedProduct.discountPrice">
+            <label>Prix remisé :</label>
+            <span class="discount-price">{{ selectedProduct.discountPrice | currency:'EUR':'symbol':'1.2-2' }}</span>
+          </div>
+          <div class="info-item">
+            <label>Stock :</label>
+            <span [class]="getStockClass(selectedProduct.quantity || 0)">{{ selectedProduct.quantity || 0 }}</span>
+          </div>
+          <div class="info-item">
+            <label>Note :</label>
+            <span class="rating">
+              <i class="fas fa-star" *ngFor="let star of [1,2,3,4,5]; let i = index" 
+                 [class.filled]="i < (selectedProduct.rating || 0)"></i>
+              {{ selectedProduct.rating || 0 }}/5 ({{ selectedProduct.reviewCount || 0 }} avis)
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Descriptions -->
+      <div class="product-description-section">
+        <h4><i class="fas fa-align-left"></i> Descriptions</h4>
+        <div class="description-item">
+          <label>Description courte :</label>
+          <p>{{ selectedProduct.description }}</p>
+        </div>
+        <div class="description-item" *ngIf="selectedProduct.detailDescription">
+          <label>Description détaillée :</label>
+          <p>{{ selectedProduct.detailDescription }}</p>
+        </div>
+      </div>
+
+      <!-- Caractéristiques techniques -->
+      <div class="product-specs-section">
+        <h4><i class="fas fa-cogs"></i> Caractéristiques techniques</h4>
+        <div class="info-grid">
+          <div class="info-item" *ngIf="selectedProduct.dimensions">
+            <label>Dimensions :</label>
+            <span>{{ selectedProduct.dimensions }}</span>
+          </div>
+          <div class="info-item" *ngIf="selectedProduct.weight">
+            <label>Poids :</label>
+            <span>{{ selectedProduct.weight }}</span>
+          </div>
+          <div class="info-item" *ngIf="selectedProduct.style">
+            <label>Style :</label>
+            <span>{{ selectedProduct.style }}</span>
+          </div>
+          <div class="info-item" *ngIf="selectedProduct.occasion">
+            <label>Occasion :</label>
+            <span>{{ selectedProduct.occasion }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Caractéristiques -->
+      <div class="product-features-section" *ngIf="selectedProduct.features && selectedProduct.features.length > 0">
+        <h4><i class="fas fa-list"></i> Caractéristiques</h4>
+        <ul class="features-list">
+          <li *ngFor="let feature of selectedProduct.features">
+            <i class="fas fa-check"></i> {{ feature }}
+          </li>
+        </ul>
+      </div>
+
+      <!-- Garantie et entretien -->
+      <div class="product-care-section">
+        <h4><i class="fas fa-shield-alt"></i> Garantie et entretien</h4>
+        <div class="info-grid">
+          <div class="info-item" *ngIf="selectedProduct.warranty">
+            <label>Garantie :</label>
+            <span>{{ selectedProduct.warranty }}</span>
+          </div>
+          <div class="info-item" *ngIf="selectedProduct.careInstructions">
+            <label>Instructions d'entretien :</label>
+            <span>{{ selectedProduct.careInstructions }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Informations système -->
+      <div class="product-system-section">
+        <h4><i class="fas fa-database"></i> Informations système</h4>
+        <div class="info-grid">
+          <div class="info-item">
+            <label>ID :</label>
+            <span class="system-info">{{ selectedProduct._id }}</span>
+          </div>
+          <div class="info-item" *ngIf="selectedProduct.createdAt">
+            <label>Date de création :</label>
+            <span class="system-info">{{ selectedProduct.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+          <div class="info-item" *ngIf="selectedProduct.updatedAt">
+            <label>Dernière modification :</label>
+            <span class="system-info">{{ selectedProduct.updatedAt | date:'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="closeModals()">
+        <i class="fas fa-times"></i> Fermer
+      </button>
+      <button class="btn btn-primary" (click)="openEditModal(selectedProduct); closeModals()">
+        <i class="fas fa-edit"></i> Modifier
+      </button>
+    </div>
   </div>
 </div>
 

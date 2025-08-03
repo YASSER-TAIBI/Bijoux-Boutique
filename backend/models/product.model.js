@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 
 const reviewSchema = new mongoose.Schema({
-    _id: mongoose.Schema.Types.ObjectId,
     userName: String,
     email: String,
     rating: Number,
@@ -10,7 +9,6 @@ const reviewSchema = new mongoose.Schema({
 });
 
 const productSchema = new mongoose.Schema({
-    _id: mongoose.Schema.Types.ObjectId,
     name: String,
     price: Number,
     oldPrice: Number,
