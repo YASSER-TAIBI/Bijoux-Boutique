@@ -7,12 +7,20 @@ import { CloudinaryStorageService } from '../../../services/cloudinary-storage.s
 import { fadeSlideInAnimation } from '../../../animations/shared.animations';
 import { Product } from '../../../models/product.interface';
 
+interface ProductPhoto {
+  file?: File;
+  url?: string;
+  preview?: string;
+  name?: string;
+  type: 'cover' | 'face' | 'side-right' | 'side-left' | 'detail';
+}
+
 @Component({
   selector: 'app-products',
   standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './products.component.html',
-  styleUrls: ['./products.component.scss'],
+  styleUrls: ['./products.component.scss', './photo-slots.scss'],
   animations: [fadeSlideInAnimation]
 })
 export class ProductsComponent implements OnInit, OnDestroy {
@@ -43,12 +51,20 @@ export class ProductsComponent implements OnInit, OnDestroy {
   // Formulaires
   productForm: FormGroup;
   
-  // Gestion des images
-  selectedImages: File[] = [];
-  imageUrls: string[] = [];
-  imagePreviewUrls: string[] = [];
+  // Gestion des images avec slots
+  productPhotos: (ProductPhoto | null)[] = [null, null, null, null, null];
   uploadingImages = false;
   imageUploadError: string | null = null;
+  
+  // Drag & Drop
+  isDragOver = false;
+  dragTargetIndex: number | null = null;
+  dragSourceIndex: number | null = null;
+  currentSlotTarget: number | null = null;
+  
+  // Validation photos
+  readonly MIN_PHOTOS = 4;
+  readonly MAX_PHOTOS = 5;
   
   constructor(
     private productService: ProductAdminService,
@@ -210,10 +226,8 @@ export class ProductsComponent implements OnInit, OnDestroy {
       featuresText: featuresText
     });
     
-    // Charger les images existantes
-    this.imageUrls = product.images || [];
-    this.selectedImages = [];
-    this.imagePreviewUrls = [];
+    // Charger les images existantes dans les slots
+    this.loadProductPhotosFromUrls(product.images || []);
     this.imageUploadError = null;
     
     this.showEditModal = true;
@@ -230,47 +244,220 @@ export class ProductsComponent implements OnInit, OnDestroy {
     this.showDeleteModal = false;
     this.showViewModal = false;
     this.selectedProduct = null;
-    this.resetImageUpload();
+    this.resetPhotoSlots();
   }
   
-  // Gestion des images
+  // === GESTION DES PHOTOS AVEC SLOTS ===
+  
+  // Méthodes de gestion des slots
+  getFilledSlotsCount(): number {
+    return this.productPhotos.filter(photo => photo !== null).length;
+  }
+  
+  getPhotoTypeByIndex(index: number): string {
+    const types = ['cover', 'face', 'side-right', 'side-left', 'detail'];
+    return types[index] || 'unknown';
+  }
+  
+  // Sélection de photos pour un slot spécifique
+  selectPhotoForSlot(slotIndex: number): void {
+    this.currentSlotTarget = slotIndex;
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/jpeg,image/jpg,image/png,image/webp';
+    fileInput.multiple = false;
+    
+    fileInput.onchange = (event: any) => {
+      const file = event.target.files[0];
+      if (file) {
+        this.addPhotoToSlot(file, slotIndex);
+      }
+    };
+    
+    fileInput.click();
+  }
+  
+  // Gestion des fichiers sélectionnés (zone d'ajout)
   onImagesSelected(event: any): void {
     const files = Array.from(event.target.files) as File[];
-    this.selectedImages = [];
-    this.imagePreviewUrls = [];
     this.imageUploadError = null;
-
-    // Valider chaque fichier
+    
     for (const file of files) {
       const validation = this.cloudinaryService.validateImageFile(file);
       if (!validation.isValid) {
         this.imageUploadError = validation.error || 'Fichier invalide';
-        return;
+        continue;
       }
-      this.selectedImages.push(file);
-      this.imagePreviewUrls.push(URL.createObjectURL(file));
-    }
-
-    // Limiter à 5 images maximum
-    if (this.selectedImages.length > 5) {
-      this.imageUploadError = 'Maximum 5 images autorisées';
-      this.selectedImages = this.selectedImages.slice(0, 5);
-      this.imagePreviewUrls = this.imagePreviewUrls.slice(0, 5);
+      
+      // Trouver le premier slot vide
+      const emptySlotIndex = this.productPhotos.findIndex(photo => photo === null);
+      if (emptySlotIndex !== -1) {
+        this.addPhotoToSlot(file, emptySlotIndex);
+      } else {
+        this.imageUploadError = 'Tous les slots sont remplis (maximum 5 photos)';
+        break;
+      }
     }
   }
-
-  async uploadImages(): Promise<string[]> {
-    if (this.selectedImages.length === 0) {
-      return this.imageUrls;
+  
+  // Ajouter une photo à un slot spécifique
+  addPhotoToSlot(file: File, slotIndex: number): void {
+    if (slotIndex < 0 || slotIndex >= this.MAX_PHOTOS) return;
+    
+    const validation = this.cloudinaryService.validateImageFile(file);
+    if (!validation.isValid) {
+      this.imageUploadError = validation.error || 'Fichier invalide';
+      return;
     }
-
+    
+    const preview = URL.createObjectURL(file);
+    const photoType = this.getPhotoTypeByIndex(slotIndex) as any;
+    
+    this.productPhotos[slotIndex] = {
+      file,
+      preview,
+      name: file.name,
+      type: photoType
+    };
+    
+    this.imageUploadError = null;
+  }
+  
+  // Supprimer une photo d'un slot
+  removePhoto(event: Event, slotIndex: number): void {
+    event.stopPropagation();
+    
+    if (slotIndex >= 0 && slotIndex < this.MAX_PHOTOS) {
+      const photo = this.productPhotos[slotIndex];
+      
+      // Nettoyer l'URL de prévisualisation
+      if (photo?.preview && photo.preview.startsWith('blob:')) {
+        URL.revokeObjectURL(photo.preview);
+      }
+      
+      // Optionnel : supprimer de Cloudinary si c'est une URL existante
+      if (photo?.url) {
+        this.cloudinaryService.deleteImage(photo.url).catch(error => {
+          console.warn('Could not delete image from Cloudinary:', error);
+        });
+      }
+      
+      this.productPhotos[slotIndex] = null;
+    }
+  }
+  
+  // === DRAG & DROP ===
+  
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragOver = true;
+  }
+  
+  onDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragOver = false;
+  }
+  
+  onDropFiles(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragOver = false;
+    
+    const files = Array.from(event.dataTransfer?.files || []);
+    const imageFiles = files.filter(file => file.type.startsWith('image/'));
+    
+    for (const file of imageFiles) {
+      const emptySlotIndex = this.productPhotos.findIndex(photo => photo === null);
+      if (emptySlotIndex !== -1) {
+        this.addPhotoToSlot(file, emptySlotIndex);
+      } else {
+        this.imageUploadError = 'Tous les slots sont remplis (maximum 5 photos)';
+        break;
+      }
+    }
+  }
+  
+  onSlotDragOver(event: DragEvent, slotIndex: number): void {
+    event.preventDefault();
+    this.dragTargetIndex = slotIndex;
+  }
+  
+  onSlotDrop(event: DragEvent, slotIndex: number): void {
+    event.preventDefault();
+    this.dragTargetIndex = null;
+    
+    // Si c'est un fichier externe
+    const files = Array.from(event.dataTransfer?.files || []);
+    if (files.length > 0) {
+      const file = files[0];
+      if (file.type.startsWith('image/')) {
+        this.addPhotoToSlot(file, slotIndex);
+      }
+      return;
+    }
+    
+    // Si c'est un déplacement interne
+    if (this.dragSourceIndex !== null && this.dragSourceIndex !== slotIndex) {
+      this.swapPhotos(this.dragSourceIndex, slotIndex);
+    }
+    
+    this.dragSourceIndex = null;
+  }
+  
+  onDragStart(event: DragEvent, slotIndex: number): void {
+    this.dragSourceIndex = slotIndex;
+    event.dataTransfer?.setData('text/plain', slotIndex.toString());
+  }
+  
+  // Échanger deux photos de place
+  swapPhotos(sourceIndex: number, targetIndex: number): void {
+    if (sourceIndex < 0 || sourceIndex >= this.MAX_PHOTOS || 
+        targetIndex < 0 || targetIndex >= this.MAX_PHOTOS) {
+      return;
+    }
+    
+    const temp = this.productPhotos[sourceIndex];
+    this.productPhotos[sourceIndex] = this.productPhotos[targetIndex];
+    this.productPhotos[targetIndex] = temp;
+    
+    // Mettre à jour les types selon les nouvelles positions
+    if (this.productPhotos[sourceIndex]) {
+      this.productPhotos[sourceIndex]!.type = this.getPhotoTypeByIndex(sourceIndex) as any;
+    }
+    if (this.productPhotos[targetIndex]) {
+      this.productPhotos[targetIndex]!.type = this.getPhotoTypeByIndex(targetIndex) as any;
+    }
+  }
+  
+  // === UPLOAD ET GESTION ===
+  
+  async uploadPhotos(): Promise<string[]> {
+    const photosToUpload = this.productPhotos.filter(photo => photo?.file);
+    
+    if (photosToUpload.length === 0) {
+      return this.getPhotoUrls();
+    }
+    
     this.uploadingImages = true;
     this.imageUploadError = null;
-
+    
     try {
-      const uploadedUrls = await this.cloudinaryService.uploadMultipleImages(this.selectedImages);
-      this.imageUrls = [...this.imageUrls, ...uploadedUrls];
-      return this.imageUrls;
+      const uploadPromises = this.productPhotos.map(async (photo, index) => {
+        if (photo?.file) {
+          const uploadedUrl = await this.cloudinaryService.uploadMultipleImages([photo.file]);
+          this.productPhotos[index] = {
+            ...photo,
+            url: uploadedUrl[0],
+            file: undefined // Nettoyer le fichier après upload
+          };
+          return uploadedUrl[0];
+        } else if (photo?.url) {
+          return photo.url;
+        }
+        return null;
+      });
+      
+      const results = await Promise.all(uploadPromises);
+      return results.filter(url => url !== null) as string[];
     } catch (error) {
       this.imageUploadError = 'Erreur lors de l\'upload des images';
       console.error('Upload error:', error);
@@ -279,30 +466,40 @@ export class ProductsComponent implements OnInit, OnDestroy {
       this.uploadingImages = false;
     }
   }
-
-  removeImage(index: number): void {
-    if (index >= 0 && index < this.imageUrls.length) {
-      // Optionnel : supprimer de Cloudinary Storage
-      const imageUrl = this.imageUrls[index];
-      this.cloudinaryService.deleteImage(imageUrl).catch(error => {
-        console.warn('Could not delete image from Cloudinary:', error);
-      });
-      
-      this.imageUrls.splice(index, 1);
-    }
+  
+  getPhotoUrls(): string[] {
+    return this.productPhotos
+      .filter(photo => photo?.url)
+      .map(photo => photo!.url!);
   }
-
-  removeSelectedImage(index: number): void {
-    if (index >= 0 && index < this.selectedImages.length) {
-      this.selectedImages.splice(index, 1);
-      this.imagePreviewUrls.splice(index, 1);
-    }
+  
+  loadProductPhotosFromUrls(urls: string[]): void {
+    this.resetPhotoSlots();
+    
+    urls.forEach((url, index) => {
+      if (index < this.MAX_PHOTOS) {
+        const photoType = this.getPhotoTypeByIndex(index) as any;
+        this.productPhotos[index] = {
+          url,
+          type: photoType
+        };
+      }
+    });
   }
-
-  resetImageUpload(): void {
-    this.selectedImages = [];
-    this.imageUrls = [];
-    this.imagePreviewUrls = [];
+  
+  resetPhotoSlots(): void {
+    // Nettoyer les URLs de prévisualisation
+    this.productPhotos.forEach(photo => {
+      if (photo?.preview && photo.preview.startsWith('blob:')) {
+        URL.revokeObjectURL(photo.preview);
+      }
+    });
+    
+    this.productPhotos = [null, null, null, null, null];
+    this.isDragOver = false;
+    this.dragTargetIndex = null;
+    this.dragSourceIndex = null;
+    this.currentSlotTarget = null;
     this.uploadingImages = false;
     this.imageUploadError = null;
   }
@@ -318,7 +515,7 @@ export class ProductsComponent implements OnInit, OnDestroy {
       try {
         console.log('📤 Upload des images...');
         // Upload des images d'abord
-        const uploadedImageUrls = await this.uploadImages();
+        const uploadedImageUrls = await this.uploadPhotos();
         console.log('✅ Images uploadées:', uploadedImageUrls);
         
         // Convertir featuresText en tableau features
@@ -406,7 +603,7 @@ export class ProductsComponent implements OnInit, OnDestroy {
       try {
         console.log('📤 Upload des nouvelles images...');
         // Upload des nouvelles images si nécessaire
-        const uploadedImageUrls = await this.uploadImages();
+        const uploadedImageUrls = await this.uploadPhotos();
         console.log('✅ Images uploadées:', uploadedImageUrls);
         
         // Convertir featuresText en tableau features

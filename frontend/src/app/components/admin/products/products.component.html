@@ -318,59 +318,192 @@
       <!-- Photos du produit -->
       <div class="form-section">
         <h4>Photos du produit</h4>
+        <p class="photo-instructions">Faites glisser vos photos pour changer leur ordre. Minimum 4 photos, maximum 5 photos.</p>
         
-        <div class="form-group">
-          <label for="productImages">Sélectionner des images (max 5)</label>
-          <input
-            type="file"
-            id="productImages"
-            multiple
-            accept="image/jpeg,image/jpg,image/png,image/webp"
-            (change)="onImagesSelected($event)"
-            class="file-input"
-          />
-          <div class="file-input-info">
-            <small>Formats acceptés : JPG, PNG, WebP (max 5MB par image)</small>
+        <!-- Zone de drop global -->
+        <div class="photo-upload-zone" 
+             (dragover)="onDragOver($event)" 
+             (dragleave)="onDragLeave($event)"
+             (drop)="onDropFiles($event)"
+             [class.drag-over]="isDragOver">
+          
+          <!-- Input file caché -->
+          <input #fileInput
+                 type="file"
+                 multiple
+                 accept="image/jpeg,image/jpg,image/png,image/webp"
+                 (change)="onImagesSelected($event)"
+                 style="display: none" />
+          
+          <!-- Grille des slots photos -->
+          <div class="photo-slots-grid">
+            
+            <!-- Slot 1: Photo de couverture -->
+            <div class="photo-slot cover-slot" 
+                 [class.filled]="productPhotos[0]"
+                 [class.drag-target]="dragTargetIndex === 0"
+                 (dragover)="onSlotDragOver($event, 0)"
+                 (drop)="onSlotDrop($event, 0)"
+                 (click)="selectPhotoForSlot(0)">
+              
+              <div *ngIf="!productPhotos[0]" class="slot-placeholder">
+                <i class="fas fa-camera"></i>
+                <span class="slot-label">Photo de couverture</span>
+                <span class="slot-required">*Obligatoire</span>
+              </div>
+              
+              <div *ngIf="productPhotos[0]" class="slot-content"
+                   draggable="true"
+                   (dragstart)="onDragStart($event, 0)">
+                <img [src]="productPhotos[0].preview || productPhotos[0].url" alt="Photo de couverture">
+                <div class="photo-overlay">
+                  <span class="photo-label">Couverture</span>
+                  <button type="button" class="remove-photo-btn" (click)="removePhoto($event, 0)">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Slot 2: Vue de face -->
+            <div class="photo-slot face-slot" 
+                 [class.filled]="productPhotos[1]"
+                 [class.drag-target]="dragTargetIndex === 1"
+                 (dragover)="onSlotDragOver($event, 1)"
+                 (drop)="onSlotDrop($event, 1)"
+                 (click)="selectPhotoForSlot(1)">
+              
+              <div *ngIf="!productPhotos[1]" class="slot-placeholder">
+                <i class="fas fa-square"></i>
+                <span class="slot-label">Vue de face</span>
+                <span class="slot-required">*Obligatoire</span>
+              </div>
+              
+              <div *ngIf="productPhotos[1]" class="slot-content"
+                   draggable="true"
+                   (dragstart)="onDragStart($event, 1)">
+                <img [src]="productPhotos[1].preview || productPhotos[1].url" alt="Vue de face">
+                <div class="photo-overlay">
+                  <span class="photo-label">Vue de face</span>
+                  <button type="button" class="remove-photo-btn" (click)="removePhoto($event, 1)">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Slot 3: Vue côté droit -->
+            <div class="photo-slot side-slot" 
+                 [class.filled]="productPhotos[2]"
+                 [class.drag-target]="dragTargetIndex === 2"
+                 (dragover)="onSlotDragOver($event, 2)"
+                 (drop)="onSlotDrop($event, 2)"
+                 (click)="selectPhotoForSlot(2)">
+              
+              <div *ngIf="!productPhotos[2]" class="slot-placeholder">
+                <i class="fas fa-cube"></i>
+                <span class="slot-label">Vue côté droit</span>
+                <span class="slot-required">*Obligatoire</span>
+              </div>
+              
+              <div *ngIf="productPhotos[2]" class="slot-content"
+                   draggable="true"
+                   (dragstart)="onDragStart($event, 2)">
+                <img [src]="productPhotos[2].preview || productPhotos[2].url" alt="Vue côté droit">
+                <div class="photo-overlay">
+                  <span class="photo-label">Côté droit</span>
+                  <button type="button" class="remove-photo-btn" (click)="removePhoto($event, 2)">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Slot 4: Vue côté gauche -->
+            <div class="photo-slot side-slot" 
+                 [class.filled]="productPhotos[3]"
+                 [class.drag-target]="dragTargetIndex === 3"
+                 (dragover)="onSlotDragOver($event, 3)"
+                 (drop)="onSlotDrop($event, 3)"
+                 (click)="selectPhotoForSlot(3)">
+              
+              <div *ngIf="!productPhotos[3]" class="slot-placeholder">
+                <i class="fas fa-cube"></i>
+                <span class="slot-label">Vue côté gauche</span>
+                <span class="slot-required">*Obligatoire</span>
+              </div>
+              
+              <div *ngIf="productPhotos[3]" class="slot-content"
+                   draggable="true"
+                   (dragstart)="onDragStart($event, 3)">
+                <img [src]="productPhotos[3].preview || productPhotos[3].url" alt="Vue côté gauche">
+                <div class="photo-overlay">
+                  <span class="photo-label">Côté gauche</span>
+                  <button type="button" class="remove-photo-btn" (click)="removePhoto($event, 3)">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Slot 5: Vue détaillée (optionnel) -->
+            <div class="photo-slot detail-slot" 
+                 [class.filled]="productPhotos[4]"
+                 [class.drag-target]="dragTargetIndex === 4"
+                 (dragover)="onSlotDragOver($event, 4)"
+                 (drop)="onSlotDrop($event, 4)"
+                 (click)="selectPhotoForSlot(4)">
+              
+              <div *ngIf="!productPhotos[4]" class="slot-placeholder">
+                <i class="fas fa-search-plus"></i>
+                <span class="slot-label">Vue détaillée</span>
+                <span class="slot-optional">Optionnel</span>
+              </div>
+              
+              <div *ngIf="productPhotos[4]" class="slot-content"
+                   draggable="true"
+                   (dragstart)="onDragStart($event, 4)">
+                <img [src]="productPhotos[4].preview || productPhotos[4].url" alt="Vue détaillée">
+                <div class="photo-overlay">
+                  <span class="photo-label">Détaillée</span>
+                  <button type="button" class="remove-photo-btn" (click)="removePhoto($event, 4)">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            
           </div>
           
-          <!-- Erreur d'upload -->
-          <div *ngIf="imageUploadError" class="error">
-            {{ imageUploadError }}
+          <!-- Zone d'ajout de photos -->
+          <div class="add-photos-zone" (click)="fileInput.click()">
+            <i class="fas fa-plus"></i>
+            <span>Ajouter des photos</span>
+            <small>Formats : JPG, PNG, WebP (max 5MB)</small>
+          </div>
+          
+        </div>
+        
+        <!-- Compteur et validation -->
+        <div class="photo-validation">
+          <div class="photo-count" [class.valid]="getFilledSlotsCount() >= 4" [class.invalid]="getFilledSlotsCount() < 4">
+            <i class="fas" [class.fa-check-circle]="getFilledSlotsCount() >= 4" [class.fa-exclamation-circle]="getFilledSlotsCount() < 4"></i>
+            {{ getFilledSlotsCount() }}/5 photos ajoutées
+            <span *ngIf="getFilledSlotsCount() < 4" class="validation-message">(Minimum 4 photos requises)</span>
           </div>
         </div>
-
-        <!-- Aperçu des images sélectionnées -->
-        <div *ngIf="selectedImages.length > 0" class="selected-images-preview">
-          <h5>Images sélectionnées ({{ selectedImages.length }})</h5>
-          <div class="images-grid">
-            <div *ngFor="let image of selectedImages; let i = index" class="image-preview-item">
-              <img [src]="imagePreviewUrls[i]" alt="Aperçu" class="preview-image">
-              <button type="button" class="remove-image-btn" (click)="removeSelectedImage(i)" title="Supprimer">
-                <i class="fas fa-times"></i>
-              </button>
-              <div class="image-name">{{ image.name }}</div>
-            </div>
-          </div>
+        
+        <!-- Erreurs -->
+        <div *ngIf="imageUploadError" class="error">
+          {{ imageUploadError }}
         </div>
-
-        <!-- Images déjà uploadées (mode édition) -->
-        <div *ngIf="imageUrls.length > 0" class="uploaded-images">
-          <h5>Images du produit ({{ imageUrls.length }})</h5>
-          <div class="images-grid">
-            <div *ngFor="let imageUrl of imageUrls; let i = index" class="image-preview-item">
-              <img [src]="imageUrl" alt="Image produit" class="preview-image">
-              <button type="button" class="remove-image-btn" (click)="removeImage(i)" title="Supprimer">
-                <i class="fas fa-times"></i>
-              </button>
-            </div>
-          </div>
-        </div>
-
+        
         <!-- Indicateur d'upload -->
         <div *ngIf="uploadingImages" class="upload-progress">
           <div class="loading-spinner"></div>
           <span>Upload des images en cours...</span>
         </div>
+        
       </div>
 
       <!-- Prix et stock -->
