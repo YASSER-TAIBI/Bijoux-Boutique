@@ -1,0 +1,35 @@
+.sales-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 0 60px 0;
+  }
+
+  .category-title {
+    text-align: center;
+    margin: 2rem 0 1rem;
+    font-size: 2rem;
+    font-weight: 500;
+    color: var(--text-color);
+  }
+  
+  .breadcrumb {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--text-color);
+    font-size: 15px;
+  
+    a {
+      color: var(--text-color);
+      text-decoration: none;
+      cursor: pointer;
+  
+      &:hover {
+        color: var(--secondary-color);
+      }
+    }
+  
+    span {
+      color: var(--secondary-color);
+      cursor: pointer;
+    }
+  }
