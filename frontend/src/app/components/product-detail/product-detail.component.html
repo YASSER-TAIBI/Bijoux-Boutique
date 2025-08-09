@@ -81,7 +81,7 @@
         Caractéristiques
       </button>
       <button [class.active]="activeTab === 'avis'" (click)="changeTab('avis')">
-        Avis clients ({{ product.reviews?.length || 0 }})
+        Avis clients ({{ reviews.length }})
       </button>
     </div>
 
@@ -127,18 +127,26 @@
 
       <div class="tab-pane" [class.active]="activeTab === 'avis'">
         <div class="reviews">
-          <div class="reviews-summary">
+          <!-- Indicateur de chargement -->
+          <div *ngIf="loadingReviews" class="loading-reviews">
+            <i class="fas fa-spinner fa-spin"></i>
+            <span>Chargement des avis...</span>
+          </div>
+
+          <!-- Résumé des avis -->
+          <div class="reviews-summary" *ngIf="!loadingReviews">
             <div class="average-rating">
-              <div class="rating-value">{{ averageRating }}</div>
+              <div class="rating-value">{{ averageRating.toFixed(1) }}</div>
               <div class="stars">
                 <i class="fas fa-star" *ngFor="let star of [1,2,3,4,5]"
                    [class.filled]="star <= averageRating"></i>
               </div>
               <div class="review-count">
-                {{ product.reviews?.length || 0 }} avis
+                {{ reviews.length }} avis
               </div>
             </div>
 
+            <!-- Afficher les barres même s'il n'y a pas d'avis -->
             <div class="rating-bars">
               <div class="rating-bar" *ngFor="let rating of [5,4,3,2,1]">
                 <div class="stars">{{ rating }} <i class="fas fa-star"></i></div>
@@ -150,61 +158,96 @@
             </div>
           </div>
 
-          <div class="review-list" *ngIf="product?.reviews?.length">
-            <div class="review-item" *ngFor="let review of product?.reviews">
+          <!-- Liste des avis -->
+          <div class="review-list" *ngIf="!loadingReviews && reviews.length > 0">
+            <div class="review-item" *ngFor="let review of reviews">
               <div class="review-header">
                 <span class="reviewer-name">{{ review.userName }}</span>
                 <div class="stars">
                   <i class="fas fa-star" *ngFor="let star of [1,2,3,4,5]"
                      [class.filled]="star <= review.rating"></i>
                 </div>
-                <span class="review-date">{{ review.date | date }}</span>
+                <span class="review-date">{{ formatReviewDate(review.date) }}</span>
               </div>
               <div class="review-comment">{{ review.comment }}</div>
             </div>
           </div>
 
+          <!-- Message si aucun avis -->
+          <div class="no-reviews" *ngIf="!loadingReviews && reviews.length === 0" style="text-align: center; padding: 40px 20px; color: #666;">
+            <i class="fas fa-comment-slash" style="font-size: 48px; color: #ccc; margin-bottom: 15px; display: block;"></i>
+            <p style="font-size: 16px; margin: 0; line-height: 1.5;">Aucun avis pour ce produit. Soyez le premier à donner votre avis !</p>
+          </div>
+
+          <!-- Formulaire d'ajout d'avis -->
           <div class="review-form">
             <h2 class="review-title">Ajouter un avis</h2>
             <p class="review-notice">Votre adresse email ne sera pas publiée. Les champs obligatoires sont marqués <span class="required">*</span></p>
             
-            <form (ngSubmit)="submitReview()">
+            <form (ngSubmit)="submitReview()" #reviewForm="ngForm">
               <div class="rating-field">
                 <label>Votre note <span class="required">*</span></label>
-                <div class="stars">
-                  <i class="star fa fa-star" (click)="setRating(1)"></i>
-                  <i class="star fa fa-star" (click)="setRating(2)"></i>
-                  <i class="star fa fa-star" (click)="setRating(3)"></i>
-                  <i class="star fa fa-star" (click)="setRating(4)"></i>
-                  <i class="star fa fa-star" (click)="setRating(5)"></i>
+                <div class="stars rating-input">
+                  <i class="star fa fa-star" 
+                     *ngFor="let star of [1,2,3,4,5]; let i = index"
+                     [class.filled]="star <= selectedRating"
+                     [class.hover]="star <= selectedRating"
+                     (click)="setRating(star)"
+                     (mouseenter)="selectedRating = star"
+                     (mouseleave)="selectedRating = review.rating"></i>
+                </div>
+                <div class="rating-error" *ngIf="review.rating === 0 && reviewForm.submitted">
+                  Veuillez sélectionner une note
                 </div>
               </div>
 
               <div class="form-group">
                 <label>Votre avis <span class="required">*</span></label>
-                <textarea name="reviewText" required></textarea>
+                <textarea 
+                  [(ngModel)]="review.comment" 
+                  name="reviewText" 
+                  required 
+                  placeholder="Partagez votre expérience avec ce produit..."
+                  maxlength="1000"></textarea>
+                <div class="char-count">{{ review.comment.length }}/1000</div>
               </div>
 
               <div class="form-row">
                 <div class="form-group">
                   <label>Nom <span class="required">*</span></label>
-                  <input type="text" name="reviewerName" required>
+                  <input 
+                    type="text" 
+                    [(ngModel)]="review.userName" 
+                    name="reviewerName" 
+                    required
+                    placeholder="Votre nom">
                 </div>
 
                 <div class="form-group">
                   <label>E-mail <span class="required">*</span></label>
-                  <input type="email" name="reviewerEmail" required>
+                  <input 
+                    type="email" 
+                    [(ngModel)]="review.email" 
+                    name="reviewerEmail" 
+                    required
+                    placeholder="votre@email.com">
                 </div>
               </div>
 
               <div class="form-checkbox">
                 <input type="checkbox" name="saveInfo" id="saveInfo">
-                <label for="saveInfo">Enregistrer mon nom, mon e-mail et mon site web dans le navigateur pour mon prochain commentaire.</label>
+                <label for="saveInfo">Enregistrer mon nom et mon e-mail pour mon prochain commentaire.</label>
               </div>
 
-              <button type="submit" class="submit-button">
-                Soumettre
-                <i class="fas fa-paper-plane"></i>
+              <button type="submit" class="submit-button" [disabled]="submittingReview">
+                <span *ngIf="!submittingReview">
+                  Soumettre
+                  <i class="fas fa-paper-plane"></i>
+                </span>
+                <span *ngIf="submittingReview">
+                  <i class="fas fa-spinner fa-spin"></i>
+                  Envoi en cours...
+                </span>
               </button>
             </form>
           </div>

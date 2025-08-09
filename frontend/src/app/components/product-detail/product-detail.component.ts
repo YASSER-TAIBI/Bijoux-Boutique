@@ -9,6 +9,7 @@ import { ToastrService } from 'ngx-toastr';
 import { CartService } from '../../services/cart.service';
 import { WishlistService } from '../../services/wishlist.service';
 import { fadeSlideInAnimation } from '../../animations/shared.animations';
+import { ReviewService, Review as ReviewModel, RatingStats } from '../../services/review.service';
 
 @Component({
   selector: 'app-product-detail',
@@ -22,7 +23,7 @@ export class ProductDetailComponent implements OnInit {
   product: Product | null = null;
   quantity: number = 1;
   selectedRating: number = 0;
-  review: Review = {
+  review: ReviewModel = {
     userName: '',
     email: '',
     rating: 0,
@@ -32,6 +33,13 @@ export class ProductDetailComponent implements OnInit {
   activeTab: string = 'description';
   relatedProducts: Product[] = [];
   selectedImage: string = '';
+  
+  // Nouvelles propriétés pour les avis
+  reviews: ReviewModel[] = [];
+  averageRating: number = 0;
+  ratingStats: RatingStats = {};
+  loadingReviews: boolean = false;
+  submittingReview: boolean = false;
 
   constructor(
     private route: ActivatedRoute, 
@@ -39,7 +47,8 @@ export class ProductDetailComponent implements OnInit {
     private viewportScroller: ViewportScroller,
     private toastr: ToastrService,
     private cartService: CartService,
-    private wishlistService: WishlistService
+    private wishlistService: WishlistService,
+    private reviewService: ReviewService
   ) {}
 
   ngOnInit() {
@@ -59,6 +68,7 @@ export class ProductDetailComponent implements OnInit {
           this.product = product;
           this.selectedImage = product.image;
           this.findRelatedProducts();
+          this.loadProductReviews(id); // Charger les avis du produit
         } else {
           this.toastr.error('Produit non trouvé');
           this.viewportScroller.scrollToPosition([0, 0]);
@@ -122,32 +132,52 @@ export class ProductDetailComponent implements OnInit {
       return;
     }
 
-    if (this.product) {
-      const newReview: Review = {
-        userName: this.review.userName,
-        email: this.review.email,
-        rating: this.review.rating,
-        comment: this.review.comment,
-        date: new Date()
-      };
-
-      if (!this.product.reviews) {
-        this.product.reviews = [];
-      }
-
-      this.product.reviews.unshift(newReview);
-      this.toastr.success('Merci pour votre avis !');
-      
-      // Réinitialiser le formulaire
-      this.review = {
-        userName: '',
-        email: '',
-        rating: 0,
-        comment: '',
-        date: new Date()
-      };
-      this.selectedRating = 0;
+    if (!this.product) {
+      this.toastr.error('Produit non trouvé');
+      return;
     }
+
+    this.submittingReview = true;
+
+    const reviewData = {
+      userName: this.review.userName.trim(),
+      email: this.review.email.trim(),
+      rating: this.review.rating,
+      comment: this.review.comment.trim(),
+      productId: this.product._id
+    };
+
+    this.reviewService.createReview(reviewData).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.toastr.success('Merci pour votre avis !');
+          
+          // Réinitialiser le formulaire
+          this.review = {
+            userName: '',
+            email: '',
+            rating: 0,
+            comment: '',
+            date: new Date()
+          };
+          this.selectedRating = 0;
+          
+          // Recharger les avis
+          if (this.product?._id) {
+            this.loadProductReviews(this.product._id);
+          }
+        } else {
+          this.toastr.error(response.message || 'Erreur lors de l\'ajout de l\'avis');
+        }
+      },
+      error: (error) => {
+        console.error('Erreur lors de l\'ajout de l\'avis:', error);
+        this.toastr.error('Erreur lors de l\'ajout de l\'avis');
+      },
+      complete: () => {
+        this.submittingReview = false;
+      }
+    });
   }
 
   addToCart() {
@@ -188,20 +218,44 @@ export class ProductDetailComponent implements OnInit {
     return this.wishlistService.isInWishlist(productId);
   }
 
-  get averageRating(): number {
-    if (!this.product?.reviews?.length) {
-      return 0;
-    }
-    const sum = this.product.reviews.reduce((acc: number, review: Review) => acc + review.rating, 0);
-    return Math.round((sum / this.product.reviews.length) * 10) / 10;
+  // Charger les avis du produit depuis la base de données
+  loadProductReviews(productId: string) {
+    this.loadingReviews = true;
+    
+    this.reviewService.getProductReviews(productId).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.reviews = response.reviews || [];
+          
+          // Utiliser la moyenne du backend si disponible, sinon calculer côté frontend
+          if (response.statistics?.averageRating !== undefined) {
+            this.averageRating = response.statistics.averageRating;
+          } else {
+            this.averageRating = this.reviewService.calculateAverageRating(this.reviews);
+          }
+          
+          this.ratingStats = this.reviewService.calculateRatingPercentages(this.reviews);
+        }
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement des avis:', error);
+        this.reviews = [];
+        this.averageRating = 0;
+        this.ratingStats = {};
+      },
+      complete: () => {
+        this.loadingReviews = false;
+      }
+    });
   }
 
   getRatingPercentage(rating: number): number {
-    if (!this.product?.reviews?.length) {
-      return 0;
-    }
-    const ratingCount = this.product.reviews.filter((review: Review) => review.rating === rating).length;
-    return Math.round((ratingCount / this.product.reviews.length) * 100);
+    return this.ratingStats[rating]?.percentage || 0;
+  }
+
+  // Formater la date pour l'affichage
+  formatReviewDate(date: Date | string): string {
+    return this.reviewService.formatDate(date);
   }
 
   getDiscountPercentage(): number {
