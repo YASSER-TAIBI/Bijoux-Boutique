@@ -146,7 +146,6 @@
               </div>
             </div>
 
-            <!-- Afficher les barres même s'il n'y a pas d'avis -->
             <div class="rating-bars">
               <div class="rating-bar" *ngFor="let rating of [5,4,3,2,1]">
                 <div class="stars">{{ rating }} <i class="fas fa-star"></i></div>
@@ -160,16 +159,32 @@
 
           <!-- Liste des avis -->
           <div class="review-list" *ngIf="!loadingReviews && reviews.length > 0">
-            <div class="review-item" *ngFor="let review of reviews">
+            <h3 class="reviews-title">
+              <i class="fas fa-comments"></i>
+              Avis de nos clients
+            </h3>
+            
+            <div class="review-item" *ngFor="let review of reviews; let i = index">
+              <!-- Header avec nom, note et date -->
               <div class="review-header">
-                <span class="reviewer-name">{{ review.userName }}</span>
-                <div class="stars">
-                  <i class="fas fa-star" *ngFor="let star of [1,2,3,4,5]"
-                     [class.filled]="star <= review.rating"></i>
+                <div class="reviewer-info">
+                  <span class="reviewer-name">{{ review.userName }}</span>
+                  <div class="review-meta">
+                    <div class="stars">
+                      <i class="fas fa-star" *ngFor="let star of [1,2,3,4,5]"
+                         [class.filled]="star <= review.rating"></i>
+                    </div>
+                    <span class="review-date">
+                      {{ formatReviewDate(review.date) }}
+                    </span>
+                  </div>
                 </div>
-                <span class="review-date">{{ formatReviewDate(review.date) }}</span>
               </div>
-              <div class="review-comment">{{ review.comment }}</div>
+              
+              <!-- Commentaire -->
+              <div class="review-comment">
+                <p class="comment-text">{{ review.comment }}</p>
+              </div>
             </div>
           </div>
 
