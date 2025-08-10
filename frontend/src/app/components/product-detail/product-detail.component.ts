@@ -10,6 +10,7 @@ import { CartService } from '../../services/cart.service';
 import { WishlistService } from '../../services/wishlist.service';
 import { fadeSlideInAnimation } from '../../animations/shared.animations';
 import { ReviewService, Review as ReviewModel, RatingStats } from '../../services/review.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-product-detail',
@@ -48,7 +49,8 @@ export class ProductDetailComponent implements OnInit {
     private toastr: ToastrService,
     private cartService: CartService,
     private wishlistService: WishlistService,
-    private reviewService: ReviewService
+    private reviewService: ReviewService,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -256,6 +258,11 @@ export class ProductDetailComponent implements OnInit {
   // Formater la date pour l'affichage
   formatReviewDate(date: Date | string): string {
     return this.reviewService.formatDate(date);
+  }
+
+  // Vérifier si l'utilisateur est connecté
+  isUserLoggedIn(): boolean {
+    return this.authService.isLoggedIn();
   }
 
   getDiscountPercentage(): number {

@@ -194,8 +194,8 @@
             <p style="font-size: 16px; margin: 0; line-height: 1.5;">Aucun avis pour ce produit. Soyez le premier à donner votre avis !</p>
           </div>
 
-          <!-- Formulaire d'ajout d'avis -->
-          <div class="review-form">
+          <!-- Formulaire d'ajout d'avis - Visible seulement si l'utilisateur est connecté -->
+          <div class="review-form" *ngIf="isUserLoggedIn()">
             <h2 class="review-title">Ajouter un avis</h2>
             <p class="review-notice">Votre adresse email ne sera pas publiée. Les champs obligatoires sont marqués <span class="required">*</span></p>
             
