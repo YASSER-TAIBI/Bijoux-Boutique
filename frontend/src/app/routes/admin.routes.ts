@@ -4,6 +4,7 @@ import { DashboardComponent } from '../components/admin/dashboard/dashboard.comp
 import { UsersComponent } from '../components/admin/users/users.component';
 import { ProductsComponent } from '../components/admin/products/products.component';
 import { AdminGuard } from '../guards/admin.guard';
+import { ReviewsComponent } from '../components/admin/reviews/reviews.component';
 
 export const ADMIN_ROUTES: Routes = [
   {
@@ -27,6 +28,10 @@ export const ADMIN_ROUTES: Routes = [
       {
         path: 'products',
         component: ProductsComponent
+      },
+      {
+        path: 'reviews',
+        component: ReviewsComponent
       },
     ]
   }

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 export interface Review {
@@ -100,13 +100,46 @@ export class ReviewService {
     return stats;
   }
 
-  // Formater la date pour l'affichage
+  // Formater une date pour l'affichage
   formatDate(date: Date | string): string {
-    const dateObj = typeof date === 'string' ? new Date(date) : date;
-    return dateObj.toLocaleDateString('fr-FR', {
+    const d = new Date(date);
+    return d.toLocaleDateString('fr-FR', {
       year: 'numeric',
       month: 'long',
       day: 'numeric'
+    });
+  }
+
+  // === MÉTHODES ADMIN ===
+
+  // Récupérer tous les avis (admin)
+  getAllReviews(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/admin/reviews`, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  // Mettre à jour la visibilité d'un avis (admin)
+  updateReviewVisibility(reviewId: string, isVisible: boolean): Observable<any> {
+    return this.http.patch<any>(`${this.apiUrl}/admin/reviews/${reviewId}/visibility`, 
+      { isVisible },
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  // Supprimer un avis (admin)
+  deleteReview(reviewId: string): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/admin/reviews/${reviewId}`, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  // Obtenir les en-têtes d'authentification
+  private getAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem('token');
+    return new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
     });
   }
 }

@@ -1,0 +1,232 @@
+<div class="reviews-admin-container" [@fadeSlideIn]>
+  <!-- En-tête avec titre et statistiques -->
+  <div class="admin-header">
+    <div class="header-content">
+      <h1 class="page-title">
+        <i class="fas fa-star"></i>
+        Gestion des Avis Clients
+      </h1>
+      <div class="stats-cards">
+        <div class="stat-card">
+          <div class="stat-number">{{ stats.total }}</div>
+          <div class="stat-label">Total</div>
+        </div>
+        <div class="stat-card visible">
+          <div class="stat-number">{{ stats.visible }}</div>
+          <div class="stat-label">Visibles</div>
+        </div>
+        <div class="stat-card hidden">
+          <div class="stat-number">{{ stats.hidden }}</div>
+          <div class="stat-label">Masqués</div>
+        </div>
+        <div class="stat-card rating">
+          <div class="stat-number">{{ stats.averageRating }}/5</div>
+          <div class="stat-label">Note moyenne</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filtres et recherche -->
+  <div class="filters-section">
+    <div class="filters-row">
+      <!-- Recherche -->
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input 
+          type="text" 
+          placeholder="Rechercher par nom, email ou commentaire..."
+          [(ngModel)]="searchTerm"
+          (input)="applyFilters()"
+          class="search-input">
+      </div>
+
+      <!-- Filtres -->
+      <div class="filter-group">
+        <select [(ngModel)]="selectedRating" (change)="applyFilters()" class="filter-select">
+          <option value="">Toutes les notes</option>
+          <option value="5">5 étoiles</option>
+          <option value="4">4 étoiles</option>
+          <option value="3">3 étoiles</option>
+          <option value="2">2 étoiles</option>
+          <option value="1">1 étoile</option>
+        </select>
+
+        <select [(ngModel)]="selectedVisibility" (change)="applyFilters()" class="filter-select">
+          <option value="">Tous les statuts</option>
+          <option value="visible">Visibles</option>
+          <option value="hidden">Masqués</option>
+        </select>
+
+        <select [(ngModel)]="selectedProduct" (change)="applyFilters()" class="filter-select">
+          <option value="">Tous les produits</option>
+          <option *ngFor="let product of products" [value]="product._id">
+            {{ product.name }}
+          </option>
+        </select>
+
+        <button class="reset-btn" (click)="resetFilters()" title="Réinitialiser les filtres">
+          <i class="fas fa-undo"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Actions en lot -->
+    <div class="bulk-actions" *ngIf="selectedReviews.size > 0">
+      <span class="selected-count">{{ selectedReviews.size }} avis sélectionné(s)</span>
+      <div class="bulk-buttons">
+        <button class="bulk-btn show" (click)="bulkAction('show')">
+          <i class="fas fa-eye"></i> Rendre visible
+        </button>
+        <button class="bulk-btn hide" (click)="bulkAction('hide')">
+          <i class="fas fa-eye-slash"></i> Masquer
+        </button>
+        <button class="bulk-btn delete" (click)="bulkAction('delete')">
+          <i class="fas fa-trash"></i> Supprimer
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tableau des avis -->
+  <div class="reviews-table-container">
+    <div class="loading-spinner" *ngIf="loading">
+      <i class="fas fa-spinner fa-spin"></i>
+      <span>Chargement des avis...</span>
+    </div>
+
+    <div class="reviews-table" *ngIf="!loading">
+      <!-- En-tête du tableau -->
+      <div class="table-header">
+        <div class="header-cell checkbox-cell">
+          <input 
+            type="checkbox" 
+            [checked]="isAllSelected()"
+            (change)="toggleSelectAll()"
+            class="checkbox">
+        </div>
+        <div class="header-cell sortable" (click)="changeSort('userName')">
+          Client
+          <i class="fas fa-sort" [class.fa-sort-up]="sortBy === 'userName' && sortDirection === 'asc'"
+             [class.fa-sort-down]="sortBy === 'userName' && sortDirection === 'desc'"></i>
+        </div>
+        <div class="header-cell">Produit</div>
+        <div class="header-cell sortable" (click)="changeSort('rating')">
+          Note
+          <i class="fas fa-sort" [class.fa-sort-up]="sortBy === 'rating' && sortDirection === 'asc'"
+             [class.fa-sort-down]="sortBy === 'rating' && sortDirection === 'desc'"></i>
+        </div>
+        <div class="header-cell">Commentaire</div>
+        <div class="header-cell sortable" (click)="changeSort('date')">
+          Date
+          <i class="fas fa-sort" [class.fa-sort-up]="sortBy === 'date' && sortDirection === 'asc'"
+             [class.fa-sort-down]="sortBy === 'date' && sortDirection === 'desc'"></i>
+        </div>
+        <div class="header-cell">Statut</div>
+        <div class="header-cell">Actions</div>
+      </div>
+
+      <!-- Lignes des avis -->
+      <div class="table-row" *ngFor="let review of getPaginatedReviews(); trackBy: trackByReviewId">
+        <div class="table-cell checkbox-cell">
+          <input 
+            type="checkbox" 
+            [checked]="selectedReviews.has(review._id!)"
+            (change)="toggleSelection(review._id!)"
+            class="checkbox">
+        </div>
+        
+        <div class="table-cell client-cell">
+          <div class="client-info">
+            <div class="client-name">{{ review.userName }}</div>
+            <div class="client-email">{{ review.email }}</div>
+          </div>
+        </div>
+        
+        <div class="table-cell product-cell">
+          <span class="product-name">{{ getProductName(review.productId) }}</span>
+        </div>
+        
+        <div class="table-cell rating-cell">
+          <div class="stars">
+            <i class="fas fa-star" *ngFor="let star of [1,2,3,4,5]" 
+               [class.filled]="star <= review.rating"></i>
+          </div>
+          <span class="rating-number">({{ review.rating }})</span>
+        </div>
+        
+        <div class="table-cell comment-cell">
+          <div class="comment-preview" [title]="review.comment">
+            {{ review.comment.length > 100 ? (review.comment.substring(0, 100) + '...') : review.comment }}
+          </div>
+        </div>
+        
+        <div class="table-cell date-cell">
+          <span class="date">{{ formatDate(review.date) }}</span>
+        </div>
+        
+        <div class="table-cell status-cell">
+          <span class="status-badge" [class.visible]="review.isVisible" [class.hidden]="!review.isVisible">
+            <i class="fas" [class.fa-eye]="review.isVisible" [class.fa-eye-slash]="!review.isVisible"></i>
+            {{ review.isVisible ? 'Visible' : 'Masqué' }}
+          </span>
+        </div>
+        
+        <div class="table-cell actions-cell">
+          <button 
+            class="action-btn toggle" 
+            (click)="toggleVisibility(review)"
+            [title]="review.isVisible ? 'Masquer' : 'Rendre visible'">
+            <i class="fas" [class.fa-eye-slash]="review.isVisible" [class.fa-eye]="!review.isVisible"></i>
+          </button>
+          <button 
+            class="action-btn delete" 
+            (click)="deleteReview(review)"
+            title="Supprimer">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Message si aucun avis -->
+      <div class="no-reviews" *ngIf="filteredReviews.length === 0 && !loading">
+        <i class="fas fa-star fa-3x"></i>
+        <h3>Aucun avis trouvé</h3>
+        <p>Aucun avis ne correspond aux critères de recherche.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination-container" *ngIf="totalPages > 1">
+    <div class="pagination-info">
+      Affichage de {{ (currentPage - 1) * itemsPerPage + 1 }} à 
+      {{ Math.min(currentPage * itemsPerPage, filteredReviews.length) }} 
+      sur {{ filteredReviews.length }} avis
+    </div>
+    
+    <div class="pagination">
+      <button 
+        class="page-btn" 
+        [disabled]="currentPage === 1"
+        (click)="changePage(currentPage - 1)">
+        <i class="fas fa-chevron-left"></i>
+      </button>
+      
+      <button 
+        class="page-btn" 
+        *ngFor="let page of getPaginationArray(); trackBy: trackByPageNumber"
+        [class.active]="currentPage === page"
+        (click)="changePage(page)">
+        {{ page }}
+      </button>
+      
+      <button 
+        class="page-btn" 
+        [disabled]="currentPage === totalPages"
+        (click)="changePage(currentPage + 1)">
+        <i class="fas fa-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+</div>
