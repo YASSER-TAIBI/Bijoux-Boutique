@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ReviewService, Review } from '../../../services/review.service';
+import { ReviewService } from '../../../services/review.service';
 import { ProductService } from '../../../services/product.service';
 import { ToastrService } from 'ngx-toastr';
+import { Review } from '../../../models/review.interface';
 import { fadeSlideInAnimation } from '../../../animations/shared.animations';
 
 @Component({
@@ -34,7 +35,12 @@ export class ReviewsComponent implements OnInit {
   
   // États
   loading: boolean = false;
+  error: string | null = null;
   selectedReviews: Set<string> = new Set();
+  
+  // Modals
+  showViewModal: boolean = false;
+  selectedReview: Review | null = null;
   
   // Statistiques
   stats = {
@@ -59,6 +65,7 @@ export class ReviewsComponent implements OnInit {
   // Charger tous les avis
   loadReviews() {
     this.loading = true;
+    this.error = null;
     
     // Utiliser l'endpoint admin pour récupérer tous les avis
     this.reviewService.getAllReviews().subscribe({
@@ -71,6 +78,7 @@ export class ReviewsComponent implements OnInit {
       },
       error: (error) => {
         console.error('Erreur lors du chargement des avis:', error);
+        this.error = 'Erreur lors du chargement des avis';
         this.toastr.error('Erreur lors du chargement des avis');
       },
       complete: () => {
@@ -372,5 +380,17 @@ export class ReviewsComponent implements OnInit {
   // Générer un tableau pour la pagination
   getPaginationArray(): number[] {
     return Array.from({ length: this.totalPages }, (_, i) => i + 1);
+  }
+
+  // Modal de visualisation
+  viewReview(review: Review) {
+    this.selectedReview = review;
+    this.showViewModal = true;
+  }
+
+  // Fermer les modals
+  closeModals() {
+    this.showViewModal = false;
+    this.selectedReview = null;
   }
 }

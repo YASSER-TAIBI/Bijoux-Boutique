@@ -2,14 +2,15 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { Product, Review } from '../../models/product.interface';
+import { Product } from '../../models/product.interface';
+import { Review, ReviewResponse, RatingStats } from '../../models/review.interface';
 import { ProductService } from '../../services/product.service';
 import { ViewportScroller } from '@angular/common';
 import { ToastrService } from 'ngx-toastr';
 import { CartService } from '../../services/cart.service';
 import { WishlistService } from '../../services/wishlist.service';
 import { fadeSlideInAnimation } from '../../animations/shared.animations';
-import { ReviewService, Review as ReviewModel, RatingStats } from '../../services/review.service';
+import { ReviewService } from '../../services/review.service';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -24,7 +25,7 @@ export class ProductDetailComponent implements OnInit {
   product: Product | null = null;
   quantity: number = 1;
   selectedRating: number = 0;
-  review: ReviewModel = {
+  review: Review = {
     userName: '',
     email: '',
     rating: 0,
@@ -36,7 +37,7 @@ export class ProductDetailComponent implements OnInit {
   selectedImage: string = '';
   
   // Nouvelles propriétés pour les avis
-  reviews: ReviewModel[] = [];
+  reviews: Review[] = [];
   averageRating: number = 0;
   ratingStats: RatingStats = {};
   loadingReviews: boolean = false;
@@ -150,7 +151,7 @@ export class ProductDetailComponent implements OnInit {
     };
 
     this.reviewService.createReview(reviewData).subscribe({
-      next: (response) => {
+      next: (response: ReviewResponse) => {
         if (response.success) {
           this.toastr.success('Merci pour votre avis !');
           
@@ -225,7 +226,7 @@ export class ProductDetailComponent implements OnInit {
     this.loadingReviews = true;
     
     this.reviewService.getProductReviews(productId).subscribe({
-      next: (response) => {
+      next: (response: ReviewResponse) => {
         if (response.success) {
           this.reviews = response.reviews || [];
           
