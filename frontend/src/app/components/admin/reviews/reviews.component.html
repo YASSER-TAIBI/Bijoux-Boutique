@@ -220,7 +220,7 @@
                 <td class="review-actions-cell">
                   <div class="action-buttons">
                     <button class="btn btn-view" (click)="viewReview(review)" title="Voir">
-                      <i class="fas fa-eye"></i>
+                      <i class="fas fa-info-circle"></i>
                     </button>
                     <button 
                       class="btn btn-toggle" 
@@ -291,31 +291,45 @@
 <!-- Modal de visualisation -->
 <div *ngIf="showViewModal" class="modal-overlay" (click)="closeModals()">
   <div class="modal-content modal-view" (click)="$event.stopPropagation()">
+    <!-- En-tête du modal -->
     <div class="modal-header">
-      <h3>Détails de l'avis</h3>
-      <button class="close-btn" (click)="closeModals()">&times;</button>
+      <h3>
+        <i class="fas fa-eye"></i>
+        Détails de l'avis
+      </h3>
+      <button class="close-btn" (click)="closeModals()" title="Fermer">
+        <i class="fas fa-times"></i>
+      </button>
     </div>
     
+    <!-- Corps du modal -->
     <div class="modal-body" *ngIf="selectedReview">
       <div class="review-details">
-        <div class="detail-section">
-          <h4><i class="fas fa-user"></i> Informations client</h4>
-          <div class="info-grid">
-            <div class="info-item">
-              <label>Nom :</label>
-              <span>{{ selectedReview.userName }}</span>
-            </div>
-            <div class="info-item">
-              <label>Email :</label>
-              <span>{{ selectedReview.email }}</span>
+        <!-- En-tête avec avatar et informations principales -->
+        <div class="review-header">
+          <div class="customer-avatar">
+            <i class="fas fa-user-circle"></i>
+          </div>
+          <div class="customer-info">
+            <h5 class="customer-name">{{ selectedReview.userName }}</h5>
+            <p class="customer-email">{{ selectedReview.email }}</p>
+            <div class="review-meta">
+              <span class="review-date">
+                <i class="fas fa-calendar-alt"></i>
+                {{ formatDate(selectedReview.date) }}
+              </span>
+              <span class="review-status" [class.status-visible]="selectedReview.isVisible" [class.status-hidden]="!selectedReview.isVisible">
+                <i class="fas" [class.fa-eye]="selectedReview.isVisible" [class.fa-eye-slash]="!selectedReview.isVisible"></i>
+                {{ selectedReview.isVisible ? 'Visible' : 'Masqué' }}
+              </span>
             </div>
           </div>
         </div>
 
-        <div class="detail-section">
-          <h4><i class="fas fa-star"></i> Évaluation</h4>
+        <!-- Section d'évaluation -->
+        <div class="rating-section">
           <div class="rating-display">
-            <div class="stars">
+            <div class="stars-large">
               <i class="fas fa-star" *ngFor="let star of [1,2,3,4,5]" 
                  [class.filled]="star <= selectedReview.rating"></i>
             </div>
@@ -323,53 +337,77 @@
           </div>
         </div>
 
-        <div class="detail-section">
-          <h4><i class="fas fa-comment"></i> Commentaire</h4>
-          <div class="comment-full">
-            {{ selectedReview.comment }}
+        <!-- Section du commentaire -->
+        <div class="comment-section">
+          <h4 class="section-title">
+            <i class="fas fa-quote-left"></i>
+            Commentaire du client
+          </h4>
+          <div class="comment-content">
+            <p>{{ selectedReview.comment }}</p>
           </div>
         </div>
 
-        <div class="detail-section">
-          <h4><i class="fas fa-box"></i> Produit</h4>
-          <div class="product-info">
-            <span>{{ getProductName(selectedReview.productId) }}</span>
-          </div>
-        </div>
-
-        <div class="detail-section">
-          <h4><i class="fas fa-info-circle"></i> Informations système</h4>
-          <div class="info-grid">
-            <div class="info-item">
-              <label>Date :</label>
-              <span>{{ formatDate(selectedReview.date) }}</span>
+        <!-- Section du produit -->
+        <div class="product-section">
+          <h4 class="section-title">
+            <i class="fas fa-gem"></i>
+            Produit concerné
+          </h4>
+          <div class="product-card">
+            <div class="product-info">
+              <span class="product-name">{{ getProductName(selectedReview.productId) }}</span>
+              <span class="product-id">ID: {{ getProductId(selectedReview.productId) }}</span>
             </div>
-            <div class="info-item">
-              <label>Statut :</label>
-              <span class="status-badge" [class.status-visible]="selectedReview.isVisible" [class.status-hidden]="!selectedReview.isVisible">
-                {{ selectedReview.isVisible ? 'Visible' : 'Masqué' }}
+          </div>
+        </div>
+
+        <!-- Section des détails techniques -->
+        <div class="technical-section">
+          <h4 class="section-title">
+            <i class="fas fa-cog"></i>
+            Informations techniques
+          </h4>
+          <div class="technical-grid">
+            <div class="tech-item">
+              <label>ID de l'avis</label>
+              <span class="tech-value">{{ selectedReview._id }}</span>
+            </div>
+            <div class="tech-item">
+              <label>Date de création</label>
+              <span class="tech-value">{{ formatDate(selectedReview.date) }}</span>
+            </div>
+            <div class="tech-item">
+              <label>Statut de visibilité</label>
+              <span class="tech-value" [class.visible]="selectedReview.isVisible" [class.hidden]="!selectedReview.isVisible">
+                {{ selectedReview.isVisible ? 'Publié' : 'En attente de modération' }}
               </span>
             </div>
-            <div class="info-item">
-              <label>ID :</label>
-              <span class="system-info">{{ selectedReview._id }}</span>
-            </div>
+          </div>
+        </div>
+
+        <!-- Section d'actions rapides -->
+        <div class="quick-actions">
+          <div class="action-buttons-modal">
+            <button 
+              class="btn-action moderate" 
+              (click)="toggleVisibility(selectedReview!)"
+              [class.hide-action]="selectedReview.isVisible"
+              [class.show-action]="!selectedReview.isVisible"
+              title="{{ selectedReview.isVisible ? 'Masquer cet avis' : 'Publier cet avis' }}">
+              <i class="fas" [class.fa-eye]="!selectedReview.isVisible" [class.fa-eye-slash]="selectedReview.isVisible"></i>
+              {{ selectedReview.isVisible ? 'Masquer cet avis' : 'Publier cet avis' }}
+            </button>
+            <button 
+              class="btn-action delete" 
+              (click)="deleteReview(selectedReview!)"
+              title="Supprimer définitivement cet avis">
+              <i class="fas fa-trash-alt"></i>
+              Supprimer définitivement
+            </button>
           </div>
         </div>
       </div>
-    </div>
-    
-    <div class="modal-footer">
-      <button class="btn btn-secondary" (click)="closeModals()">
-        <i class="fas fa-times"></i> Fermer
-      </button>
-      <button 
-        class="btn btn-primary" 
-        (click)="toggleVisibility(selectedReview!); closeModals()"
-        *ngIf="selectedReview">
-        <i class="fas" [class.fa-eye]="!selectedReview.isVisible" [class.fa-eye-slash]="selectedReview.isVisible"></i>
-        {{ selectedReview.isVisible ? 'Masquer' : 'Rendre visible' }}
-      </button>
     </div>
   </div>
 </div>

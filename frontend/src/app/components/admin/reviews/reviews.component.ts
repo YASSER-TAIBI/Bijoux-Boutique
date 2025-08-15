@@ -89,12 +89,25 @@ export class ReviewsComponent implements OnInit {
 
   // Charger la liste des produits pour les filtres
   loadProducts() {
+    console.log('loadProducts: Début du chargement des produits');
     this.productService.getProducts().subscribe({
       next: (products) => {
-        this.products = products;
+        console.log('loadProducts: Produits reçus:', products);
+        console.log('loadProducts: Nombre de produits:', products?.length || 0);
+        this.products = products || [];
+        
+        // Debug: afficher quelques exemples de produits
+        if (this.products.length > 0) {
+          console.log('loadProducts: Exemples de produits:', this.products.slice(0, 3).map(p => ({
+            _id: p._id,
+            name: p.name
+          })));
+        }
       },
       error: (error) => {
-        console.error('Erreur lors du chargement des produits:', error);
+        console.error('loadProducts: Erreur lors du chargement des produits:', error);
+        this.products = []; // S'assurer que products est un tableau vide en cas d'erreur
+        this.toastr.error('Erreur lors du chargement des produits');
       }
     });
   }
@@ -336,10 +349,38 @@ export class ReviewsComponent implements OnInit {
   }
 
   // Obtenir le nom du produit
-  getProductName(productId: string | undefined): string {
-    if (!productId) return 'Produit non spécifié';
-    const product = this.products.find(p => p._id === productId);
+  getProductName(productId: any): string {
+    
+    // Si productId est un objet, extraire l'_id
+    let actualProductId: string;
+    if (typeof productId === 'object' && productId !== null) {
+      actualProductId = productId._id || productId.id || '';
+      console.log('🔧 ProductId extrait de l\'objet:', actualProductId);
+    } else {
+      actualProductId = productId || '';
+    }
+    
+    if (!actualProductId) {
+      return 'Produit supprimé';
+    }
+    
+    this.products.forEach((product, index) => {
+      console.log(`   ${index + 1}. ${product.name} (ID: ${product._id})`);
+    });
+    
+    const product = this.products.find(p => p._id === actualProductId);
+    
     return product ? product.name : 'Produit supprimé';
+  }
+
+  // Obtenir l'ID du produit de manière sécurisée
+  getProductId(productId: any): string {
+    // Si productId est un objet, extraire l'_id
+    if (typeof productId === 'object' && productId !== null) {
+      return productId._id || productId.id || 'ID non disponible';
+    }
+    // Si c'est un string, le retourner directement
+    return productId || 'ID non disponible';
   }
 
   // Formater la date

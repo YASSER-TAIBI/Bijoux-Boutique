@@ -324,25 +324,24 @@ $danger-color: #dc3545;
 
   // Section principale des avis
   .allReviews-card {
-    background: white;
+    background: #ffffff;
     border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-    overflow: hidden;
+    padding: 25px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     
     .reviews-section {
       .reviews-title {
-        padding: 25px 30px 20px;
-        margin: 0;
-        font-size: 20px;
-        font-weight: 600;
-        color: $text-color;
-        border-bottom: 1px solid $border-color;
         display: flex;
         align-items: center;
         gap: 10px;
+        color: #2c3e50;
+        margin-bottom: 20px;
+        font-size: 20px;
+        font-weight: 600;
         
         i {
-          color: $primary-color;
+          color: #c4a661;
+          font-size: 18px;
         }
       }
       
@@ -358,21 +357,28 @@ $danger-color: #dc3545;
       }
       
       .table-container {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         overflow-x: auto;
+        margin: 20px 0;
         
         .reviews-table {
           width: 100%;
           border-collapse: collapse;
+          font-size: 14px;
           
           thead {
-            background: linear-gradient(135deg, $primary-color 0%, color.adjust($primary-color, $lightness: 10%) 100%);
+            background: #f8f9fa;
+            text-align-last: center;
             
             th {
-              padding: 15px 12px;
+              padding: 8px 12px;
               text-align: left;
               font-weight: 600;
-              color: white;
+              color: #495057;
               font-size: 14px;
+              border-bottom: 2px solid #dee2e6;
               white-space: nowrap;
               
               &.sortable {
@@ -398,8 +404,10 @@ $danger-color: #dc3545;
           }
           
           tbody {
+            background: #f8f9fa;
+
             .review-row {
-              border-bottom: 1px solid $border-color;
+              border-bottom: 1px solid #dee2e6;
               transition: background-color 0.3s ease;
               
               &:hover {
@@ -409,6 +417,7 @@ $danger-color: #dc3545;
               td {
                 padding: 15px 12px;
                 vertical-align: middle;
+                border-right: 1px solid #dee2e6;
                 
                 &.review-checkbox-cell {
                   width: 40px;
@@ -716,69 +725,102 @@ $danger-color: #dc3545;
     }
     
     .modal-body {
-      padding: 25px;
+      padding: 0;
       
       .review-details {
-        .detail-section {
-          margin-bottom: 25px;
+        // En-tête avec avatar et informations client
+        .review-header {
+          background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+          padding: 25px 30px;
+          border-bottom: 1px solid $border-color;
+          display: flex;
+          align-items: center;
+          gap: 20px;
           
-          &:last-child {
-            margin-bottom: 0;
-          }
-          
-          h4 {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin: 0 0 15px 0;
-            color: $text-color;
-            font-size: 16px;
-            font-weight: 600;
-            
+          .customer-avatar {
             i {
+              font-size: 48px;
               color: $primary-color;
             }
           }
           
-          .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
+          .customer-info {
+            flex: 1;
             
-            .info-item {
-              label {
-                display: block;
-                font-weight: 600;
-                color: #495057;
-                margin-bottom: 5px;
-                font-size: 14px;
+            .customer-name {
+              margin: 0 0 5px 0;
+              font-size: 20px;
+              font-weight: 600;
+              color: $text-color;
+            }
+            
+            .customer-email {
+              margin: 0 0 15px 0;
+              color: #6c757d;
+              font-size: 14px;
+            }
+            
+            .review-meta {
+              display: flex;
+              gap: 20px;
+              align-items: center;
+              
+              .review-date {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                font-size: 13px;
+                color: #6c757d;
+                
+                i {
+                  color: $primary-color;
+                }
               }
               
-              span {
-                color: $text-color;
-                font-size: 14px;
+              .review-status {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                padding: 4px 12px;
+                border-radius: 15px;
+                font-size: 12px;
+                font-weight: 500;
                 
-                &.system-info {
-                  font-family: monospace;
-                  font-size: 12px;
-                  color: #6c757d;
+                &.status-visible {
+                  background: #d4edda;
+                  color: #155724;
+                }
+                
+                &.status-hidden {
+                  background: #fff3cd;
+                  color: #856404;
                 }
               }
             }
           }
+        }
+        
+        // Section d'évaluation
+        .rating-section {
+          padding: 25px 30px;
+          text-align: center;
+          background: #fafbfc;
+          border-bottom: 1px solid $border-color;
           
           .rating-display {
             display: flex;
+            flex-direction: column;
             align-items: center;
             gap: 10px;
             
-            .stars {
+            .stars-large {
               display: flex;
-              gap: 3px;
+              gap: 5px;
               
               i {
+                font-size: 24px;
                 color: #ddd;
-                font-size: 16px;
+                transition: color 0.3s ease;
                 
                 &.filled {
                   color: #ffc107;
@@ -787,44 +829,218 @@ $danger-color: #dc3545;
             }
             
             .rating-text {
+              font-size: 18px;
               font-weight: 600;
               color: $text-color;
             }
           }
+        }
+        
+        // Section du commentaire
+        .comment-section {
+          padding: 25px 30px;
+          border-bottom: 1px solid $border-color;
           
-          .comment-full {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            border-left: 4px solid $primary-color;
-            line-height: 1.6;
-            color: $text-color;
-          }
-          
-          .product-info {
-            span {
-              font-weight: 500;
-              color: $text-color;
-            }
-          }
-          
-          .status-badge {
-            display: inline-flex;
+          .section-title {
+            display: flex;
             align-items: center;
-            gap: 5px;
-            padding: 6px 12px;
-            border-radius: 15px;
-            font-size: 12px;
-            font-weight: 500;
+            gap: 10px;
+            margin: 0 0 20px 0;
+            font-size: 16px;
+            font-weight: 600;
+            color: $text-color;
             
-            &.status-visible {
-              background: #d4edda;
-              color: #155724;
+            i {
+              color: $primary-color;
+              font-size: 14px;
             }
+          }
+          
+          .comment-content {
+            background: white;
+            border: 1px solid $border-color;
+            border-left: 4px solid $primary-color;
+            border-radius: 8px;
+            padding: 20px;
             
-            &.status-hidden {
-              background: #fff3cd;
-              color: #856404;
+            p {
+              margin: 0;
+              line-height: 1.6;
+              color: $text-color;
+              font-size: 15px;
+            }
+          }
+        }
+        
+        // Section du produit
+        .product-section {
+          padding: 25px 30px;
+          border-bottom: 1px solid $border-color;
+          
+          .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0 0 20px 0;
+            font-size: 16px;
+            font-weight: 600;
+            color: $text-color;
+            
+            i {
+              color: $primary-color;
+              font-size: 14px;
+            }
+          }
+          
+          .product-card {
+            background: white;
+            border: 1px solid $border-color;
+            border-radius: 8px;
+            padding: 20px;
+            
+            .product-info {
+              display: flex;
+              flex-direction: column;
+              gap: 8px;
+              
+              .product-name {
+                font-size: 16px;
+                font-weight: 600;
+                color: $text-color;
+              }
+              
+              .product-id {
+                font-size: 12px;
+                color: #6c757d;
+                font-family: monospace;
+                background: #f8f9fa;
+                padding: 4px 8px;
+                border-radius: 4px;
+                display: inline-block;
+                width: fit-content;
+              }
+            }
+          }
+        }
+        
+        // Section technique
+        .technical-section {
+          padding: 25px 30px;
+          border-bottom: 1px solid $border-color;
+          background: #fafbfc;
+          
+          .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0 0 20px 0;
+            font-size: 16px;
+            font-weight: 600;
+            color: $text-color;
+            
+            i {
+              color: $primary-color;
+              font-size: 14px;
+            }
+          }
+          
+          .technical-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            
+            .tech-item {
+              background: white;
+              border: 1px solid $border-color;
+              border-radius: 6px;
+              padding: 15px;
+              
+              label {
+                display: block;
+                font-size: 12px;
+                font-weight: 600;
+                color: #6c757d;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                margin-bottom: 8px;
+              }
+              
+              .tech-value {
+                font-size: 14px;
+                color: $text-color;
+                font-weight: 500;
+                
+                &.visible {
+                  color: #28a745;
+                }
+                
+                &.hidden {
+                  color: #ffc107;
+                }
+              }
+            }
+          }
+        }
+        
+        // Actions rapides
+        .quick-actions {
+          padding: 25px 30px;
+          background: #f8f9fa;
+          
+          .action-buttons-modal {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            
+            .btn-action {
+              display: flex;
+              align-items: center;
+              gap: 8px;
+              padding: 12px 20px;
+              border: none;
+              border-radius: 8px;
+              font-size: 14px;
+              font-weight: 500;
+              cursor: pointer;
+              transition: all 0.3s ease;
+              
+              &.moderate {
+                background: $primary-color;
+                color: white;
+                
+                &:hover {
+                  background: color.adjust($primary-color, $lightness: -10%);
+                  transform: translateY(-2px);
+                }
+                
+                &.hide-action {
+                  background: #ffc107;
+                  color: #212529;
+                  
+                  &:hover {
+                    background: color.adjust(#ffc107, $lightness: -10%);
+                  }
+                }
+                
+                &.show-action {
+                  background: #28a745;
+                  color: white;
+                  
+                  &:hover {
+                    background: color.adjust(#28a745, $lightness: -10%);
+                  }
+                }
+              }
+              
+              &.delete {
+                background: $danger-color;
+                color: white;
+                
+                &:hover {
+                  background: color.adjust($danger-color, $lightness: -10%);
+                  transform: translateY(-2px);
+                }
+              }
             }
           }
         }
