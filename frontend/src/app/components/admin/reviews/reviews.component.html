@@ -8,59 +8,90 @@
 
   <!-- Contrôles de recherche et filtrage -->
   <div class="controls-section">
-    <div class="search-box">
-      <i class="fas fa-search"></i>
-      <input 
-        type="text" 
-        placeholder="Rechercher par nom, email ou commentaire..."
-        [(ngModel)]="searchTerm"
-        (input)="applyFilters()"
-      >
+    <!-- Barre de recherche -->
+    <div class="search-container">
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input 
+          type="text" 
+          placeholder="Rechercher par nom, email ou commentaire..."
+          [(ngModel)]="searchTerm"
+          (input)="applyFilters()"
+        >
+      </div>
     </div>
     
-    <div class="filter-section">
-      <label for="ratingFilter">Filtrer par note:</label>
-      <select 
-        id="ratingFilter" 
-        [(ngModel)]="selectedRating" 
-        (change)="applyFilters()"
-      >
-        <option value="">Toutes les notes</option>
-        <option value="5">5 étoiles</option>
-        <option value="4">4 étoiles</option>
-        <option value="3">3 étoiles</option>
-        <option value="2">2 étoiles</option>
-        <option value="1">1 étoile</option>
-      </select>
+    <!-- Filtres organisés -->
+    <div class="filters-container">
+      <div class="filters-row">
+        <!-- Filtre par note -->
+        <div class="filter-group">
+          <label for="ratingFilter">
+            <i class="fas fa-star"></i>
+            Note
+          </label>
+          <select 
+            id="ratingFilter" 
+            [(ngModel)]="selectedRating" 
+            (change)="applyFilters()"
+          >
+            <option value="">Toutes les notes</option>
+            <option value="5">⭐⭐⭐⭐⭐ (5 étoiles)</option>
+            <option value="4">⭐⭐⭐⭐ (4 étoiles)</option>
+            <option value="3">⭐⭐⭐ (3 étoiles)</option>
+            <option value="2">⭐⭐ (2 étoiles)</option>
+            <option value="1">⭐ (1 étoile)</option>
+          </select>
+        </div>
 
-      <label for="visibilityFilter">Filtrer par statut:</label>
-      <select 
-        id="visibilityFilter" 
-        [(ngModel)]="selectedVisibility" 
-        (change)="applyFilters()"
-      >
-        <option value="">Tous les statuts</option>
-        <option value="visible">Visibles</option>
-        <option value="hidden">Masqués</option>
-      </select>
+        <!-- Filtre par statut -->
+        <div class="filter-group">
+          <label for="visibilityFilter">
+            <i class="fas fa-eye"></i>
+            Statut
+          </label>
+          <select 
+            id="visibilityFilter" 
+            [(ngModel)]="selectedVisibility" 
+            (change)="applyFilters()"
+          >
+            <option value="">Tous les statuts</option>
+            <option value="visible">✅ Visibles</option>
+            <option value="hidden">❌ Masqués</option>
+          </select>
+        </div>
 
-      <label for="productFilter">Filtrer par produit:</label>
-      <select 
-        id="productFilter" 
-        [(ngModel)]="selectedProduct" 
-        (change)="applyFilters()"
-      >
-        <option value="">Tous les produits</option>
-        <option *ngFor="let product of products" [value]="product._id">
-          {{ product.name }}
-        </option>
-      </select>
+        <!-- Filtre par produit -->
+        <div class="filter-group">
+          <label for="productFilter">
+            <i class="fas fa-gem"></i>
+            Produit
+          </label>
+          <select 
+            id="productFilter" 
+            [(ngModel)]="selectedProduct" 
+            (change)="applyFilters()"
+          >
+            <option value="">Tous les produits</option>
+            <option *ngFor="let product of products" [value]="product._id">
+              {{ product.name }}
+            </option>
+          </select>
+        </div>
+      </div>
     </div>
 
-    <button class="btn btn-secondary" (click)="resetFilters()">
-      <i class="fas fa-times"></i>
-      Effacer
-    </button>
+    <!-- Actions -->
+    <div class="actions-container">
+      <button class="btn btn-reset" (click)="resetFilters()" title="Effacer tous les filtres">
+        <i class="fas fa-eraser"></i>
+        Réinitialiser
+      </button>
+      <div class="results-count">
+        <i class="fas fa-list"></i>
+        {{ filteredReviews.length }} avis trouvé{{ filteredReviews.length > 1 ? 's' : '' }}
+      </div>
+    </div>
   </div>
 
   <!-- Statistiques -->

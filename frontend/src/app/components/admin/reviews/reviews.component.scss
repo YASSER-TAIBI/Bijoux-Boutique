@@ -64,100 +64,173 @@ $danger-color: #dc3545;
   .controls-section {
     background: #ffffff;
     border-radius: 12px;
-    padding: 20px 30px;
+    padding: 25px 30px;
     margin-bottom: 30px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
     display: flex;
-    align-items: center;
+    flex-direction: column;
     gap: 20px;
-    flex-wrap: wrap;
     
-    .search-box {
-      position: relative;
-      flex: 1;
-      min-width: 300px;
-      
-      i {
-        position: absolute;
-        left: 15px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #6c757d;
-        font-size: 14px;
-      }
-      
-      input {
-        width: 100%;
-        padding: 12px 15px 12px 40px;
-        border: 2px solid $border-color;
-        border-radius: 8px;
-        font-size: 14px;
-        transition: all 0.3s ease;
+    // Conteneur de recherche
+    .search-container {
+      .search-box {
+        position: relative;
         
-        &:focus {
-          outline: none;
-          border-color: $primary-color;
-          box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+        i {
+          position: absolute;
+          left: 15px;
+          top: 50%;
+          transform: translateY(-50%);
+          color: #6c757d;
+          font-size: 16px;
         }
         
-        &::placeholder {
-          color: #6c757d;
+        input {
+          width: 100%;
+          padding: 15px 20px 15px 45px;
+          border: 2px solid $border-color;
+          border-radius: 10px;
+          font-size: 15px;
+          transition: all 0.3s ease;
+          background: #fafbfc;
+          
+          &:focus {
+            outline: none;
+            border-color: $primary-color;
+            box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+            background: white;
+          }
+          
+          &::placeholder {
+            color: #6c757d;
+          }
         }
       }
     }
     
-    .filter-section {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      flex-wrap: wrap;
-      
-      label {
-        font-weight: 500;
-        color: #495057;
-        font-size: 14px;
-        white-space: nowrap;
+    // Conteneur des filtres
+    .filters-container {
+      .filters-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        
+        .filter-group {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          
+          label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            color: #495057;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            
+            i {
+              color: $primary-color;
+              font-size: 14px;
+            }
+          }
+          
+          select {
+            padding: 12px 15px;
+            border: 2px solid $border-color;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+            color: $text-color;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            
+            &:focus {
+              outline: none;
+              border-color: $primary-color;
+              box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+            }
+            
+            &:hover {
+              border-color: color.adjust($primary-color, $lightness: 20%);
+            }
+          }
+        }
       }
+    }
+    
+    // Conteneur des actions
+    .actions-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 15px;
+      border-top: 1px solid $border-color;
       
-      select {
-        padding: 8px 12px;
-        border: 2px solid $border-color;
-        border-radius: 6px;
+      .btn-reset {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        background: #6c757d;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
         font-size: 14px;
-        background: white;
-        color: $text-color;
         cursor: pointer;
         transition: all 0.3s ease;
         
-        &:focus {
-          outline: none;
-          border-color: $primary-color;
-          box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+        &:hover {
+          background: color.adjust(#6c757d, $lightness: -10%);
+          transform: translateY(-1px);
+        }
+        
+        i {
+          font-size: 12px;
+        }
+      }
+      
+      .results-count {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #6c757d;
+        font-size: 14px;
+        font-weight: 500;
+        
+        i {
+          color: $primary-color;
+          font-size: 14px;
         }
       }
     }
     
-    .btn {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 8px 15px;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 12.5px;
-      transition: all 0.3s ease;
-      cursor: pointer;
-      text-transform: capitalize;
-      letter-spacing: 0.3px;
-      border: none;
+    // Responsive
+    @media (max-width: 768px) {
+      padding: 20px;
       
-      &.btn-secondary {
-        background: #6c757d;
-        color: white;
+      .search-container .search-box {
+        max-width: 100%;
+      }
+      
+      .filters-container .filters-row {
+        grid-template-columns: 1fr;
+        gap: 15px;
+      }
+      
+      .actions-container {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
         
-        &:hover {
-          background: #5a6268;
-          transform: translateY(-2px);
+        .btn-reset {
+          justify-content: center;
+        }
+        
+        .results-count {
+          justify-content: center;
         }
       }
     }
@@ -1102,7 +1175,7 @@ $danger-color: #dc3545;
         min-width: auto;
       }
       
-      .filter-section {
+      .filters-container {
         justify-content: space-between;
       }
     }
